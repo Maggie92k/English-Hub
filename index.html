@@ -91,3 +91,81 @@
     { term: "send out", def: "to distribute or mail something to a number of people", tag: "Phrasal Verb", ex: "They sent out invitations yesterday." },
     { term: "send back", def: "to return something to the place or person it came from", tag: "Phrasal Verb", ex: "I had to send the package back because it was damaged." },
     { term: "must have done", def: "used to express strong certainty that something happened in the past", tag: "Grammar Form", ex: "She must have forgotten about our meeting." }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My English Hub v13</title>
+  <style>
+    :root { --bg:#f6f7fb; --card:#fff; --text:#1e2433; --muted:#647087; --primary:#4f46e5; --accent:#eef2ff; --border:#e2e8f0; --ok:#16a34a; --err:#dc2626; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; padding-bottom:50px; }
+    header { background:var(--card); border-bottom:1px solid var(--border); padding:14px 20px; position:sticky; top:0; z-index:10; }
+    .wrap { max-width:900px; margin:0 auto; padding:0 16px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .logo { font-size:1.15rem; font-weight:700; color:var(--primary); }
+    .badge { background:var(--accent); color:var(--primary); padding:4px 12px; border-radius:99px; font-weight:600; font-size:.85rem; }
+    .tab-r, .sec { display:none; }
+    .tabs { display:flex; gap:8px; margin:18px 0; flex-wrap:wrap; }
+    .tab-l { background:var(--card); border:1px solid var(--border); color:var(--muted); padding:9px 15px; border-radius:12px; font-weight:600; cursor:pointer; }
+    #t1:checked~.tabs label[for="t1"], #t2:checked~.tabs label[for="t2"], #t3:checked~.tabs label[for="t3"], #t4:checked~.tabs label[for="t4"] { background:var(--primary); color:#fff; border-color:var(--primary); }
+    #t1:checked~#s1, #t2:checked~#s2, #t3:checked~#s3, #t4:checked~#s4 { display:block; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:16px; }
+    h2 { font-size:1.1rem; margin-bottom:12px; }
+    .row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+    .row>* { flex:1 1 200px; }
+    input, textarea, select { width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:.95rem; font-family:inherit; }
+    .btn { background:var(--primary); color:#fff; border:none; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer; }
+    .btn-o { background:transparent; border:1px solid var(--border); color:var(--text); }
+    .btn-s { padding:6px 11px; font-size:.85rem; }
+    .msg { display:none; margin-top:10px; padding:8px 12px; border-radius:8px; font-weight:600; font-size:.9rem; }
+    .msg.ok { display:block; background:#dcfce7; color:#14532d; }
+    .msg.err { display:block; background:#fee2e2; color:#7f1d1d; }
+    .fc { background:var(--accent); border:2px dashed var(--primary); border-radius:14px; padding:28px 16px; text-align:center; cursor:pointer; margin:10px 0; }
+    .fc-w { font-size:1.45rem; font-weight:700; color:var(--primary); }
+    .fc-h { font-size:.9rem; color:var(--muted); margin-top:6px; }
+    .item { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); gap:10px; }
+    .item:last-child { border-bottom:none; }
+    .tag { background:var(--accent); color:var(--primary); font-size:.75rem; font-weight:600; padding:2px 8px; border-radius:6px; margin-left:6px; }
+    .ex { color:var(--muted); font-style:italic; font-size:.9rem; margin-top:2px; }
+    .pv-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; }
+    .pv-box { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px; }
+    .pv-head { font-weight:800; color:var(--primary); font-size:.9rem; margin-bottom:8px; display:flex; justify-content:space-between; }
+    .pv-el { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:7px 9px; margin-bottom:6px; font-size:.9rem; }
+    .q-opt { display:block; width:100%; text-align:left; padding:11px; margin-bottom:8px; background:var(--bg); border:1px solid var(--border); border-radius:10px; cursor:pointer; }
+    .q-opt.correct { background:#dcfce7; border-color:var(--ok); font-weight:600; }
+    .q-opt.wrong { background:#fee2e2; border-color:var(--err); }
+    .r-txt { background:var(--bg); padding:10px; border-radius:10px; white-space:pre-wrap; margin:8px 0; }
+    .h-row { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; cursor:pointer; }
+    .h-row.done span { text-decoration:line-through; color:var(--muted); }
+    .bar { background:var(--border); height:10px; border-radius:99px; overflow:hidden; margin:10px 0 14px; }
+    .fill { background:var(--ok); height:100%; width:0%; }
+  </style>
+</head>
+<body>
+<header><div class="wrap top"><div class="logo" id="logo">📘 My English Hub v13</div><div class="badge" id="hdrProg">Today: 0% done</div></div></header>
+<div class="wrap">
+  <input type="radio" name="t" id="t1" class="tab-r" checked><input type="radio" name="t" id="t2" class="tab-r"><input type="radio" name="t" id="t3" class="tab-r"><input type="radio" name="t" id="t4" class="tab-r">
+  <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
+  <section id="s1" class="sec">
+    <div class="card"><h2>Flashcard Practice</h2><div class="fc" onclick="flipFC()"><div class="fc-w" id="fcF">keep track of</div><div class="fc-h" id="fcB">Click card to reveal definition & example</div></div><div style="display:flex;gap:10px;justify-content:center;"><button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button><button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button></div></div>
+    <div class="card"><h2>Add New Word</h2><div class="row"><input id="wT" placeholder="Word or phrase" onkeydown="if(event.key==='Enter')addW()"><select id="wG" style="max-width:210px;"><option value="Phrasal Verb">Phrasal Verb</option><option value="Vocabulary">Vocabulary</option><option value="Idiom">Idiom</option><option value="Grammar Form">Grammar Form</option></select></div><div class="row"><input id="wD" placeholder="Definition in English" onkeydown="if(event.key==='Enter')addW()"></div><div class="row"><input id="wE" placeholder="Example sentence (optional)" onkeydown="if(event.key==='Enter')addW()"></div><button type="button" class="btn" onclick="addW()">+ Save to Dictionary</button><div id="wM" class="msg"></div></div>
+    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">🔗 Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvC">0</span></div><div id="pvL" class="pv-grid"></div></div>
+    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">All Dictionary Entries (<span id="wC">0</span>)</h2><input id="qS" placeholder="Search..." oninput="renderW()" style="max-width:220px;"></div><div id="wL"></div></div>
+  </section>
+  <section id="s2" class="sec">
+    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Grammar & Verb Forms Quiz</h2><span class="badge" id="qSc">Score: 0 / 0</span></div><p id="qT" style="font-weight:600;margin-bottom:10px;"></p><div id="qO"></div><p id="qF" style="margin-top:8px;font-weight:600;"></p><button type="button" class="btn" style="margin-top:10px;" onclick="nextQ()">Next Question →</button></div>
+    <div class="card"><h2>Add Your Own Question</h2><div class="row"><input id="qP" placeholder="Question"><input id="qC" placeholder="Correct answer"></div><div class="row"><input id="qW1" placeholder="Wrong option 1"><input id="qW2" placeholder="Wrong option 2"></div><button type="button" class="btn btn-o" onclick="addQ()">+ Add to Quiz</button><div id="qM" class="msg"></div></div>
+  </section>
+  <section id="s3" class="sec">
+    <div class="card"><h2>Save Text / Excerpt with Notes</h2><input id="rT" placeholder="Title" style="margin-bottom:10px;"><textarea id="rB" rows="4" placeholder="Paste English text here..." style="margin-bottom:10px;"></textarea><textarea id="rN" rows="2" placeholder="Your notes..." style="margin-bottom:10px;"></textarea><button type="button" class="btn" onclick="addR()">+ Save Text</button><div id="rM" class="msg"></div></div>
+    <div id="rL"></div>
+  </section>
+  <section id="s4" class="sec">
+    <div class="card"><h2>Daily Practice Checklist</h2><div class="bar"><div class="fill" id="dB"></div></div><div id="hL"></div><div style="display:flex;gap:10px;margin-top:10px;"><input id="hI" placeholder="Add new daily habit..."><button type="button" class="btn" onclick="addH()">Add</button></div></div>
+  </section>
+</div>
+<script>
+const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:d}catch{return d}},sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}},msg=(id,t,e)=>{const x=document.getElementById(id);x.textContent=t;x.className="msg "+(e?"err":"ok");setTimeout(()=>x.className="msg",3500)};
+let words=ld("eng_words",[{term:"keep track of",def:"to continue to be informed or know about someone or something",tag:"Phrasal Verb",ex:"It's hard to keep track of all new words."},{term:"keep up with",def:"to move or progress at the same rate as someone or something else",tag:"Phrasal Verb",ex:"She reads every day to keep up with her English goals."},{term:"send out",def:"to distribute or mail something to a number of people",tag:"Phrasal Verb",ex:"They sent out invitations yesterday."},{term:"send back",def:"to return something to the place or person it came from",tag:"Phrasal Verb",ex:"I had to send the package back because it was damaged."},{term:"must have done",def:"used to express strong certainty that something happened in the past",tag:"Grammar Form",ex:"She must have forgotten about our meeting."}]).filter(w=>w&&w.term).map(w=>({term:String(w.term),def:String(w.def||w.trans||"No definition"),tag:String(w.tag||"Vocabulary"),ex:String(w.ex||w.example||"")}));
