@@ -3,178 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My English Hub v10</title>
+  <title>My English Hub v11</title>
   <style>
-    :root {
-      --bg: #f6f7fb; --card: #ffffff; --text: #1e2433; --muted: #647087;
-      --primary: #4f46e5; --primary-hover: #4338ca; --accent: #eef2ff;
-      --border: #e2e8f0; --success: #16a34a; --danger: #dc2626; --radius: 14px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 60px; }
-    header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; z-index: 10; }
-    .container { max-width: 920px; margin: 0 auto; padding: 0 16px; }
-    .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
-    .badge { background: var(--accent); color: var(--primary); padding: 5px 12px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; }
-
-    .tab-radio { display: none; }
-    .tab-nav { display: flex; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
-    .tab-label {
-      background: var(--card); border: 1px solid var(--border); color: var(--muted);
-      padding: 10px 16px; border-radius: var(--radius); font-weight: 600; cursor: pointer; user-select: none;
-    }
-    .tab-label:hover { border-color: var(--primary); color: var(--primary); }
-    .section { display: none; }
-
-    #tab-vocab:checked ~ .tab-nav label[for="tab-vocab"],
-    #tab-grammar:checked ~ .tab-nav label[for="tab-grammar"],
-    #tab-reading:checked ~ .tab-nav label[for="tab-reading"],
-    #tab-tracker:checked ~ .tab-nav label[for="tab-tracker"] {
-      background: var(--primary); color: #fff; border-color: var(--primary);
-    }
-
-    #tab-vocab:checked ~ #vocab,
-    #tab-grammar:checked ~ #grammar,
-    #tab-reading:checked ~ #reading,
-    #tab-tracker:checked ~ #tracker {
-      display: block;
-    }
-
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-    h2 { font-size: 1.15rem; margin-bottom: 12px; }
-    .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-    .form-row > * { flex: 1 1 220px; }
-    input, textarea, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: #fff; }
-    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
-    button.btn { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
-    button.btn:hover { background: var(--primary-hover); }
-    button.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    button.btn-sm { padding: 6px 12px; font-size: 0.85rem; }
-
-    .status-banner {
-      display: none; margin-top: 10px; padding: 10px 14px; border-radius: 10px;
-      font-size: 0.9rem; font-weight: 600;
-    }
-    .status-banner.ok { display: block; background: #dcfce7; color: #14532d; }
-    .status-banner.err { display: block; background: #fee2e2; color: #7f1d1d; }
-
-    .flashcard { background: var(--accent); border: 2px dashed var(--primary); border-radius: var(--radius); padding: 32px 16px; text-align: center; cursor: pointer; margin: 12px 0; }
-    .flashcard .word { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-    .flashcard .hint { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
-    .word-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 10px; }
-    .word-item:last-child { border-bottom: none; }
-    .tag { background: var(--accent); color: var(--primary); font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
-    .example { color: var(--muted); font-style: italic; font-size: 0.9rem; margin-top: 3px; }
-
-    .pv-groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-    .pv-group-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-    .pv-root-title { font-weight: 800; color: var(--primary); font-size: 0.95rem; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .pv-entry { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.9rem; }
-    .pv-entry:last-child { margin-bottom: 0; }
-    .pv-entry strong { color: var(--text); display: block; }
-    .pv-entry span { color: var(--muted); font-size: 0.85rem; }
-
-    .quiz-option { display: block; width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
-    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
-    .quiz-option.wrong { background: #fee2e2; border-color: var(--danger); }
-    .reading-text { background: var(--bg); padding: 12px; border-radius: 10px; white-space: pre-wrap; margin: 10px 0; }
-    .habit-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer; }
-    .habit-row.done span { text-decoration: line-through; color: var(--muted); }
-    .bar-wrap { background: var(--border); height: 10px; border-radius: 999px; overflow: hidden; margin: 10px 0 16px; }
-    .bar-fill { background: var(--success); height: 100%; width: 0%; }
+    :root { --bg:#f6f7fb; --card:#fff; --text:#1e2433; --muted:#647087; --primary:#4f46e5; --accent:#eef2ff; --border:#e2e8f0; --ok:#16a34a; --err:#dc2626; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; padding-bottom:50px; }
+    header { background:var(--card); border-bottom:1px solid var(--border); padding:14px 20px; position:sticky; top:0; z-index:10; }
+    .wrap { max-width:900px; margin:0 auto; padding:0 16px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .logo { font-size:1.2rem; font-weight:700; color:var(--primary); }
+    .badge { background:var(--accent); color:var(--primary); padding:4px 12px; border-radius:99px; font-weight:600; font-size:.85rem; }
+    .tab-r { display:none; }
+    .tabs { display:flex; gap:8px; margin:18px 0; flex-wrap:wrap; }
+    .tab-l { background:var(--card); border:1px solid var(--border); color:var(--muted); padding:9px 15px; border-radius:12px; font-weight:600; cursor:pointer; }
+    .sec { display:none; }
+    #t1:checked~.tabs label[for="t1"], #t2:checked~.tabs label[for="t2"], #t3:checked~.tabs label[for="t3"], #t4:checked~.tabs label[for="t4"] { background:var(--primary); color:#fff; border-color:var(--primary); }
+    #t1:checked~#s1, #t2:checked~#s2, #t3:checked~#s3, #t4:checked~#s4 { display:block; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:16px; }
+    h2 { font-size:1.1rem; margin-bottom:12px; }
+    .row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+    .row>* { flex:1 1 200px; }
+    input, textarea, select { width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:.95rem; font-family:inherit; }
+    .btn { background:var(--primary); color:#fff; border:none; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer; }
+    .btn-o { background:transparent; border:1px solid var(--border); color:var(--text); }
+    .btn-s { padding:6px 11px; font-size:.85rem; }
+    .msg { display:none; margin-top:10px; padding:8px 12px; border-radius:8px; font-weight:600; font-size:.9rem; }
+    .msg.ok { display:block; background:#dcfce7; color:#14532d; }
+    .msg.err { display:block; background:#fee2e2; color:#7f1d1d; }
+    .fc { background:var(--accent); border:2px dashed var(--primary); border-radius:14px; padding:28px 16px; text-align:center; cursor:pointer; margin:10px 0; }
+    .fc-w { font-size:1.45rem; font-weight:700; color:var(--primary); }
+    .fc-h { font-size:.9rem; color:var(--muted); margin-top:6px; }
+    .item { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); gap:10px; }
+    .item:last-child { border-bottom:none; }
+    .tag { background:var(--accent); color:var(--primary); font-size:.75rem; font-weight:600; padding:2px 8px; border-radius:6px; margin-left:6px; }
+    .ex { color:var(--muted); font-style:italic; font-size:.9rem; margin-top:2px; }
+    .pv-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; }
+    .pv-box { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px; }
+    .pv-head { font-weight:800; color:var(--primary); font-size:.9rem; margin-bottom:8px; display:flex; justify-content:space-between; }
+    .pv-el { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:7px 9px; margin-bottom:6px; font-size:.9rem; }
+    .pv-el:last-child { margin-bottom:0; }
+    .q-opt { display:block; width:100%; text-align:left; padding:11px; margin-bottom:8px; background:var(--bg); border:1px solid var(--border); border-radius:10px; cursor:pointer; }
+    .q-opt.correct { background:#dcfce7; border-color:var(--ok); font-weight:600; }
+    .q-opt.wrong { background:#fee2e2; border-color:var(--err); }
+    .r-txt { background:var(--bg); padding:10px; border-radius:10px; white-space:pre-wrap; margin:8px 0; }
+    .h-row { display:flex; align-items:center; gap:10px; padding:10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; cursor:pointer; }
+    .h-row.done span { text-decoration:line-through; color:var(--muted); }
+    .bar { background:var(--border); height:10px; border-radius:99px; overflow:hidden; margin:10px 0 14px; }
+    .fill { background:var(--ok); height:100%; width:0%; }
   </style>
 </head>
 <body>
+<header><div class="wrap top"><div class="logo">📘 My English Hub v11</div><div class="badge" id="hdrProg">Today: 0% done</div></div></header>
+<div class="wrap">
+  <input type="radio" name="t" id="t1" class="tab-r" checked><input type="radio" name="t" id="t2" class="tab-r"><input type="radio" name="t" id="t3" class="tab-r"><input type="radio" name="t" id="t4" class="tab-r">
+  <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
 
-<header>
-  <div class="container header-inner">
-    <div class="logo">📘 My English Hub v10</div>
-    <div class="badge" id="headerProgress">Today: 0% done</div>
-  </div>
-</header>
-
-<div class="container">
-  <input type="radio" name="hub-tabs" id="tab-vocab" class="tab-radio" checked />
-  <input type="radio" name="hub-tabs" id="tab-grammar" class="tab-radio" />
-  <input type="radio" name="hub-tabs" id="tab-reading" class="tab-radio" />
-  <input type="radio" name="hub-tabs" id="tab-tracker" class="tab-radio" />
-
-  <nav class="tab-nav">
-    <label for="tab-vocab" class="tab-label">1. Vocabulary & Cards</label>
-    <label for="tab-grammar" class="tab-label">2. Grammar Drills</label>
-    <label for="tab-reading" class="tab-label">3. Reading & Notes</label>
-    <label for="tab-tracker" class="tab-label">4. Progress Tracker</label>
-  </nav>
-
-  <!-- 1. VOCABULARY -->
-  <section id="vocab" class="section">
-    <div class="card">
-      <h2>Flashcard Practice</h2>
-      <div class="flashcard" id="flashcardBox">
-        <div class="word" id="fcFront">keep track of</div>
-        <div class="hint" id="fcBack">Click card to reveal definition & example</div>
-      </div>
-      <div style="display:flex; gap:10px; justify-content:center;">
-        <button type="button" class="btn btn-outline btn-sm" id="prevCardBtn">← Prev</button>
-        <button type="button" class="btn btn-sm" id="nextCardBtn">Next Card →</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Add New Word</h2>
-      <div class="form-row">
-        <input id="wTerm" placeholder="Word or phrase (e.g., keep up with)" />
-        <select id="wTag" style="max-width: 220px;">
-          <option value="Phrasal Verb">Phrasal Verb</option>
-          <option value="Vocabulary">Vocabulary</option>
-          <option value="Idiom">Idiom</option>
-          <option value="Grammar Form">Grammar Form</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <input id="wDef" placeholder="Definition in English" />
-      </div>
-      <div class="form-row">
-        <input id="wExample" placeholder="Example sentence (optional)" />
-      </div>
-      <button type="button" class="btn" id="saveWordBtn">+ Save to Dictionary</button>
-      <div id="wordStatus" class="status-banner"></div>
-    </div>
-
-    <!-- GROUPED PHRASAL VERBS -->
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
-        <h2 style="margin:0;">🔗 Phrasal Verbs Bank (Grouped by Root Verb)</h2>
-        <span class="badge" id="pvCount">0 phrasal verbs</span>
-      </div>
-      <div id="pvGroups" class="pv-groups-grid"></div>
-    </div>
-
-    <!-- FULL DICTIONARY -->
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
-        <h2 style="margin:0;">All Dictionary Entries (<span id="wordCount">0</span>)</h2>
-        <input id="searchInput" placeholder="Search word or definition..." style="max-width:240px;" />
-      </div>
-      <div id="wordList"></div>
-    </div>
+  <section id="s1" class="sec">
+    <div class="card"><h2>Flashcard Practice</h2><div class="fc" id="fcBox"><div class="fc-w" id="fcFront">keep track of</div><div class="fc-h" id="fcBack">Click card to reveal definition & example</div></div><div style="display:flex;gap:10px;justify-content:center;"><button type="button" class="btn btn-o btn-s" id="prevBtn">← Prev</button><button type="button" class="btn btn-s" id="nextBtn">Next Card →</button></div></div>
+    <div class="card"><h2>Add New Word</h2><div class="row"><input id="wTerm" placeholder="Word or phrase (e.g., keep up with)"><select id="wTag" style="max-width:210px;"><option value="Phrasal Verb">Phrasal Verb</option><option value="Vocabulary">Vocabulary</option><option value="Idiom">Idiom</option><option value="Grammar Form">Grammar Form</option></select></div><div class="row"><input id="wDef" placeholder="Definition in English"></div><div class="row"><input id="wEx" placeholder="Example sentence (optional)"></div><button type="button" class="btn" id="saveWBtn">+ Save to Dictionary</button><div id="wMsg" class="msg"></div></div>
+    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">🔗 Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvCnt">0</span></div><div id="pvList" class="pv-grid"></div></div>
+    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">All Dictionary Entries (<span id="wCnt">0</span>)</h2><input id="qSearch" placeholder="Search..." style="max-width:220px;"></div><div id="wList"></div></div>
   </section>
 
-  <!-- 2. GRAMMAR DRILLS -->
-  <section id="grammar" class="section">
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h2 style="margin:0;">Grammar & Verb Forms Quiz</h2>
-        <span class="badge" id="quizScore">Score: 0 / 0</span>
-      </div>
-      <p id="quizQuestion" style="font-size:1.05rem; font-weight:600; margin-bottom:12px;"></p>
-      <div id="quizOptions"></div>
-      <p id="quizFeedback" style="margin-top:10px; font-weight:600;"></p>
-      <button type="button" class="btn" style="margin-top:10px;" id="nextQuizBtn">Next Question →</button>
-    </div>
+  <section id="s2" class="sec">
+    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Grammar & Verb Forms Quiz</h2><span class="badge" id="qScore">Score: 0 / 0</span></div><p id="qText" style="font-weight:600;margin-bottom:10px;"></p><div id="qOpts"></div><p id="qFb" style="margin-top:8px;font-weight:600;"></p><button type="button" class="btn" style="margin-top:10px;" id="nextQBtn">Next Question →</button></div>
+    <div class="card"><h2>Add Your Own Question</h2><div class="row"><input id="qP" placeholder="Question"><input id="qC" placeholder="Correct answer"></div><div class="row"><input id="qW1" placeholder="Wrong option 1"><input id="qW2" placeholder="Wrong option 2"></div><button type="button" class="btn btn-o" id="addQBtn">+ Add to Quiz</button><div id="qMsg" class="msg"></div></div>
+  </section>
 
-    <div class="card">
-      <h2>Add Your Own Question</h2>
-      <div class="form-row">
-        <input id="qPrompt" placeholder="Question" />
+  <section id="s3" class="sec">
+    <div class="card"><h2>Save Text / Excerpt with Notes</h2><input id="rT" placeholder="Title" style="margin-bottom:10px;"><textarea id="rB" rows="4" placeholder="Paste English text here..." style="margin-bottom:10px;"></textarea><textarea id="rN" rows="2" placeholder="Your notes..." style="margin-bottom:10px;"></textarea><button type="button" class="btn" id="addRBtn">+ Save Text</button><div id="rMsg" class="msg"></div></div>
+    <div id="rList"></div>
+  </section>
+
+  <section id="s4" class="sec">
+    <div class="card"><h2>Daily Practice Checklist</h2><div class="bar"><div class="fill" id="dBar"></div></div><div id="hList"></div><div style="display:flex;gap:10px;margin-top:10px;"><input id="hInp" placeholder="Add new daily habit..."><button type="button" class="btn" id="addHBtn">Add</button></div></div>
+  </section>
+</div>
+
+<script>
+  const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return Array.isArray(v) ? v : d; } catch { return d; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+  const banner = (id, t, err) => { const e = document.getElementById(id); e.textContent = t; e.className = "msg " + (err ? "err" : "ok"); setTimeout(() => e.className = "msg", 3500); };
+
+  let words = load("eng_words", [
+    { term: "keep track of", def: "to continue to be informed or know about someone or something", tag: "Phrasal Verb", ex: "It's hard to keep track of all new words." },
+    { term: "keep up with", def: "to move or progress at the same rate as someone or something else", tag: "Phrasal Verb", ex: "She reads every day to keep up with her English goals." },
+    { term: "send out", def: "to distribute or mail something to a number of people", tag: "Phrasal Verb", ex: "They sent out invitations yesterday." },
+    { term: "send back", def: "to return something to the place or person it came from", tag: "Phrasal Verb", ex: "I had to send the package back because it was damaged." },
+    { term: "must have done", def: "used to express strong certainty that something happened in the past", tag: "Grammar Form", ex: "She must have forgotten about our meeting." }
