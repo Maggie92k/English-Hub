@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My English Hub v9</title>
+  <title>My English Hub v10</title>
   <style>
     :root {
       --bg: #f6f7fb; --card: #ffffff; --text: #1e2433; --muted: #647087;
@@ -52,9 +52,12 @@
     button.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
     button.btn-sm { padding: 6px 12px; font-size: 0.85rem; }
 
-    .status-msg { font-size: 0.9rem; font-weight: 600; margin-left: 10px; }
-    .status-ok { color: var(--success); }
-    .status-err { color: var(--danger); }
+    .status-banner {
+      display: none; margin-top: 10px; padding: 10px 14px; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600;
+    }
+    .status-banner.ok { display: block; background: #dcfce7; color: #14532d; }
+    .status-banner.err { display: block; background: #fee2e2; color: #7f1d1d; }
 
     .flashcard { background: var(--accent); border: 2px dashed var(--primary); border-radius: var(--radius); padding: 32px 16px; text-align: center; cursor: pointer; margin: 12px 0; }
     .flashcard .word { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
@@ -86,7 +89,7 @@
 
 <header>
   <div class="container header-inner">
-    <div class="logo">📘 My English Hub v9</div>
+    <div class="logo">📘 My English Hub v10</div>
     <div class="badge" id="headerProgress">Today: 0% done</div>
   </div>
 </header>
@@ -108,20 +111,20 @@
   <section id="vocab" class="section">
     <div class="card">
       <h2>Flashcard Practice</h2>
-      <div class="flashcard" onclick="flipCard()">
+      <div class="flashcard" id="flashcardBox">
         <div class="word" id="fcFront">keep track of</div>
         <div class="hint" id="fcBack">Click card to reveal definition & example</div>
       </div>
       <div style="display:flex; gap:10px; justify-content:center;">
-        <button type="button" class="btn btn-outline btn-sm" onclick="prevCard()">← Prev</button>
-        <button type="button" class="btn btn-sm" onclick="nextCard()">Next Card →</button>
+        <button type="button" class="btn btn-outline btn-sm" id="prevCardBtn">← Prev</button>
+        <button type="button" class="btn btn-sm" id="nextCardBtn">Next Card →</button>
       </div>
     </div>
 
     <div class="card">
       <h2>Add New Word</h2>
       <div class="form-row">
-        <input id="wTerm" placeholder="Word or phrase (e.g., keep up with)" onkeydown="if(event.key==='Enter') addWord()" />
+        <input id="wTerm" placeholder="Word or phrase (e.g., keep up with)" />
         <select id="wTag" style="max-width: 220px;">
           <option value="Phrasal Verb">Phrasal Verb</option>
           <option value="Vocabulary">Vocabulary</option>
@@ -130,15 +133,13 @@
         </select>
       </div>
       <div class="form-row">
-        <input id="wDef" placeholder="Definition in English (required)" onkeydown="if(event.key==='Enter') addWord()" />
+        <input id="wDef" placeholder="Definition in English" />
       </div>
       <div class="form-row">
-        <input id="wExample" placeholder="Example sentence (optional)" onkeydown="if(event.key==='Enter') addWord()" />
+        <input id="wExample" placeholder="Example sentence (optional)" />
       </div>
-      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-        <button type="button" class="btn" onclick="addWord()">+ Save to Dictionary</button>
-        <span id="wordStatus" class="status-msg"></span>
-      </div>
+      <button type="button" class="btn" id="saveWordBtn">+ Save to Dictionary</button>
+      <div id="wordStatus" class="status-banner"></div>
     </div>
 
     <!-- GROUPED PHRASAL VERBS -->
@@ -154,7 +155,7 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
         <h2 style="margin:0;">All Dictionary Entries (<span id="wordCount">0</span>)</h2>
-        <input id="searchInput" placeholder="Search word or definition..." oninput="renderWords()" style="max-width:240px;" />
+        <input id="searchInput" placeholder="Search word or definition..." style="max-width:240px;" />
       </div>
       <div id="wordList"></div>
     </div>
@@ -170,9 +171,10 @@
       <p id="quizQuestion" style="font-size:1.05rem; font-weight:600; margin-bottom:12px;"></p>
       <div id="quizOptions"></div>
       <p id="quizFeedback" style="margin-top:10px; font-weight:600;"></p>
-      <button type="button" class="btn" style="margin-top:10px;" onclick="nextQuestion()">Next Question →</button>
+      <button type="button" class="btn" style="margin-top:10px;" id="nextQuizBtn">Next Question →</button>
     </div>
 
     <div class="card">
       <h2>Add Your Own Question</h2>
       <div class="form-row">
+        <input id="qPrompt" placeholder="Question" />
