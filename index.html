@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My English Hub v9</title>
+  <style>
+    :root {
+      --bg: #f6f7fb; --card: #ffffff; --text: #1e2433; --muted: #647087;
+      --primary: #4f46e5; --primary-hover: #4338ca; --accent: #eef2ff;
+      --border: #e2e8f0; --success: #16a34a; --danger: #dc2626; --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 60px; }
+    header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; z-index: 10; }
+    .container { max-width: 920px; margin: 0 auto; padding: 0 16px; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+    .badge { background: var(--accent); color: var(--primary); padding: 5px 12px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; }
+
+    .tab-radio { display: none; }
+    .tab-nav { display: flex; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+    .tab-label {
+      background: var(--card); border: 1px solid var(--border); color: var(--muted);
+      padding: 10px 16px; border-radius: var(--radius); font-weight: 600; cursor: pointer; user-select: none;
+    }
+    .tab-label:hover { border-color: var(--primary); color: var(--primary); }
+    .section { display: none; }
+
+    #tab-vocab:checked ~ .tab-nav label[for="tab-vocab"],
+    #tab-grammar:checked ~ .tab-nav label[for="tab-grammar"],
+    #tab-reading:checked ~ .tab-nav label[for="tab-reading"],
+    #tab-tracker:checked ~ .tab-nav label[for="tab-tracker"] {
+      background: var(--primary); color: #fff; border-color: var(--primary);
+    }
+
+    #tab-vocab:checked ~ #vocab,
+    #tab-grammar:checked ~ #grammar,
+    #tab-reading:checked ~ #reading,
+    #tab-tracker:checked ~ #tracker {
+      display: block;
+    }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+    h2 { font-size: 1.15rem; margin-bottom: 12px; }
+    .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .form-row > * { flex: 1 1 220px; }
+    input, textarea, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: #fff; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+    button.btn { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+    button.btn:hover { background: var(--primary-hover); }
+    button.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    button.btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+
+    .status-msg { font-size: 0.9rem; font-weight: 600; margin-left: 10px; }
+    .status-ok { color: var(--success); }
+    .status-err { color: var(--danger); }
+
+    .flashcard { background: var(--accent); border: 2px dashed var(--primary); border-radius: var(--radius); padding: 32px 16px; text-align: center; cursor: pointer; margin: 12px 0; }
+    .flashcard .word { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .flashcard .hint { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
+    .word-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 10px; }
+    .word-item:last-child { border-bottom: none; }
+    .tag { background: var(--accent); color: var(--primary); font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
+    .example { color: var(--muted); font-style: italic; font-size: 0.9rem; margin-top: 3px; }
+
+    .pv-groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .pv-group-box { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+    .pv-root-title { font-weight: 800; color: var(--primary); font-size: 0.95rem; letter-spacing: 0.04em; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .pv-entry { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.9rem; }
+    .pv-entry:last-child { margin-bottom: 0; }
+    .pv-entry strong { color: var(--text); display: block; }
+    .pv-entry span { color: var(--muted); font-size: 0.85rem; }
+
+    .quiz-option { display: block; width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
+    .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: 600; }
+    .quiz-option.wrong { background: #fee2e2; border-color: var(--danger); }
+    .reading-text { background: var(--bg); padding: 12px; border-radius: 10px; white-space: pre-wrap; margin: 10px 0; }
+    .habit-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; cursor: pointer; }
+    .habit-row.done span { text-decoration: line-through; color: var(--muted); }
+    .bar-wrap { background: var(--border); height: 10px; border-radius: 999px; overflow: hidden; margin: 10px 0 16px; }
+    .bar-fill { background: var(--success); height: 100%; width: 0%; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container header-inner">
+    <div class="logo">📘 My English Hub v9</div>
+    <div class="badge" id="headerProgress">Today: 0% done</div>
+  </div>
+</header>
+
+<div class="container">
+  <input type="radio" name="hub-tabs" id="tab-vocab" class="tab-radio" checked />
+  <input type="radio" name="hub-tabs" id="tab-grammar" class="tab-radio" />
+  <input type="radio" name="hub-tabs" id="tab-reading" class="tab-radio" />
+  <input type="radio" name="hub-tabs" id="tab-tracker" class="tab-radio" />
+
+  <nav class="tab-nav">
+    <label for="tab-vocab" class="tab-label">1. Vocabulary & Cards</label>
+    <label for="tab-grammar" class="tab-label">2. Grammar Drills</label>
+    <label for="tab-reading" class="tab-label">3. Reading & Notes</label>
+    <label for="tab-tracker" class="tab-label">4. Progress Tracker</label>
+  </nav>
+
+  <!-- 1. VOCABULARY -->
+  <section id="vocab" class="section">
+    <div class="card">
+      <h2>Flashcard Practice</h2>
+      <div class="flashcard" onclick="flipCard()">
+        <div class="word" id="fcFront">keep track of</div>
+        <div class="hint" id="fcBack">Click card to reveal definition & example</div>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="prevCard()">← Prev</button>
+        <button type="button" class="btn btn-sm" onclick="nextCard()">Next Card →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Add New Word</h2>
+      <div class="form-row">
+        <input id="wTerm" placeholder="Word or phrase (e.g., keep up with)" onkeydown="if(event.key==='Enter') addWord()" />
+        <select id="wTag" style="max-width: 220px;">
+          <option value="Phrasal Verb">Phrasal Verb</option>
+          <option value="Vocabulary">Vocabulary</option>
+          <option value="Idiom">Idiom</option>
+          <option value="Grammar Form">Grammar Form</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input id="wDef" placeholder="Definition in English (required)" onkeydown="if(event.key==='Enter') addWord()" />
+      </div>
+      <div class="form-row">
+        <input id="wExample" placeholder="Example sentence (optional)" onkeydown="if(event.key==='Enter') addWord()" />
+      </div>
+      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+        <button type="button" class="btn" onclick="addWord()">+ Save to Dictionary</button>
+        <span id="wordStatus" class="status-msg"></span>
+      </div>
+    </div>
+
+    <!-- GROUPED PHRASAL VERBS -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">🔗 Phrasal Verbs Bank (Grouped by Root Verb)</h2>
+        <span class="badge" id="pvCount">0 phrasal verbs</span>
+      </div>
+      <div id="pvGroups" class="pv-groups-grid"></div>
+    </div>
+
+    <!-- FULL DICTIONARY -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">All Dictionary Entries (<span id="wordCount">0</span>)</h2>
+        <input id="searchInput" placeholder="Search word or definition..." oninput="renderWords()" style="max-width:240px;" />
+      </div>
+      <div id="wordList"></div>
+    </div>
+  </section>
+
+  <!-- 2. GRAMMAR DRILLS -->
+  <section id="grammar" class="section">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin:0;">Grammar & Verb Forms Quiz</h2>
+        <span class="badge" id="quizScore">Score: 0 / 0</span>
+      </div>
+      <p id="quizQuestion" style="font-size:1.05rem; font-weight:600; margin-bottom:12px;"></p>
+      <div id="quizOptions"></div>
+      <p id="quizFeedback" style="margin-top:10px; font-weight:600;"></p>
+      <button type="button" class="btn" style="margin-top:10px;" onclick="nextQuestion()">Next Question →</button>
+    </div>
+
+    <div class="card">
+      <h2>Add Your Own Question</h2>
+      <div class="form-row">
