@@ -327,16 +327,26 @@ function importUrl() {
   box.textContent = "Extracting clean text from link...";
   box.className = "msg ok";
 
-  var wikiMatch = url.match(/^https?:\/\/([a-z]{2,3})\.wikipedia\.org\/wiki\/([^#?]+)/i);
-  if (wikiMatch) {
-    var lang = wikiMatch[1], slug = wikiMatch[2];
-    fetch("https://" + lang + ".wikipedia.org/api/rest_v1/page/summary/" + slug)
+  var wp = url.replace(/^https?:\/\//i, "").split(".wikipedia.org/wiki/");
+  if (wp.length === 2) {
+    var lang = wp.shift();
+    var slug = decodeURIComponent(wp.pop().split("#").shift().split("?").shift());
+    var api = "https://" + lang + ".wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&redirects=1&titles=" + encodeURIComponent(slug) + "&format=json&origin=*";
+    fetch(api)
       .then(function(r) { if (!r.ok) throw new Error("Wiki"); return r.json(); })
       .then(function(d) {
-        if (!d.extract) throw new Error("Empty");
-        finishImport(d.title || slug, d.extract, url);
+        var pages = (d && d.query && d.query.pages) ? d.query.pages : {};
+        var pageId = Object.keys(pages).shift();
+        var page = pageId ? pages[pageId] : null;
+        if (!page || !page.extract) throw new Error("Empty");
+        var clean = page.extract
+          .split(/\n==\s*(See also|Notes|References|Further reading|External links)\s*==/i).shift()
+          .replace(/={2,4}\s*([^=]+?)\s*={2,4}/g, "\n$1")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+        finishImport(page.title || slug.replace(/_/g, " "), clean, url);
       })
-      .catch(function(e) { runProxies(url); });
+      .catch(function() { runProxies(url); });
     return;
   }
   runProxies(url);
