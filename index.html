@@ -109,9 +109,40 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
 <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvC">0</span></div><div id="pvL" class="pv-grid"></div></div>
     <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">All Dictionary Entries (<span id="wC">0</span>)</h2><input id="qS" placeholder="Search..." oninput="renderW()" style="max-width:220px;"></div><div id="wL"></div></div>
   </section>
-  <section id="s2" class="sec">
-    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Grammar & Verb Forms Quiz</h2><span class="badge" id="qSc">Score: 0 / 0</span></div><p id="qT" style="font-weight:600;margin-bottom:10px;"></p><div id="qO"></div><p id="qF" style="margin-top:8px;font-weight:600;"></p><button type="button" class="btn" style="margin-top:10px;" onclick="nextQ()">Next Question →</button></div>
-    <div class="card"><h2>Add Your Own Question</h2><div class="row"><input id="qP" placeholder="Question"><input id="qC" placeholder="Correct answer"></div><div class="row"><input id="qW1" placeholder="Wrong option 1"><input id="qW2" placeholder="Wrong option 2"></div><button type="button" class="btn btn-o" onclick="addQ()">+ Add to Quiz</button><div id="qM" class="msg"></div></div>
+   <section id="s2" class="sec">
+    <div class="card">
+      <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">British Irregular Verbs</h2>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="badge" id="ivProg">Known: 0 / 137</span>
+          <button type="button" class="btn btn-o btn-s" id="ivSoundBtn" onclick="toggleIvSound()">Sound: OFF</button>
+          <button type="button" class="btn btn-o btn-s" onclick="resetIv()">Reset</button>
+        </div>
+      </div>
+      <div class="fc" onclick="flipIv()">
+        <div class="fc-w" id="ivFront">arise — arose — arisen</div>
+        <div class="fc-h" id="ivBack">Click card to reveal translation</div>
+      </div>
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:12px;">
+        <button type="button" class="btn btn-o" style="flex:1; max-width:200px;" onclick="markIv(false)">← Don't know</button>
+        <button type="button" class="btn" style="flex:1; max-width:200px;" onclick="markIv(true)">Know →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">All British Irregular Verbs (<span id="ivListCnt">137</span>)</h2>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <select id="ivFilter" onchange="changeIvFilter()" style="width:auto; padding:7px 10px; font-size:.85rem;">
+            <option value="all">All verbs</option>
+            <option value="unknown">To learn</option>
+            <option value="known">Known</option>
+          </select>
+          <input id="ivSearch" placeholder="Search verb or translation..." oninput="renderIvList()" style="width:200px; padding:7px 10px; font-size:.85rem;">
+        </div>
+      </div>
+      <div id="ivTable" style="max-height:420px; overflow-y:auto;"></div>
+    </div>
   </section>
     <section id="s3" class="sec">
     <div id="libListView">
@@ -342,41 +373,289 @@ document.getElementById("wE").style.height = "auto";
   msg("wM", 'Saved "' + t + '"!', false);
 }
 
-function renderQ() {
-  if (!qs.length) return;
-  lk = false;
-  var it = qs[qI % qs.length];
-  document.getElementById("qT").textContent = it.q;
-  document.getElementById("qF").textContent = "";
-  var box = document.getElementById("qO");
-  box.innerHTML = "";
-  it.options.forEach(function(o) {
-    var b = document.createElement("button");
-    b.type = "button"; b.className = "q-opt"; b.textContent = o;
-    b.onclick = function() {
-      if (lk) return; lk = true;
-      document.querySelectorAll(".q-opt").forEach(function(x) {
-        x.disabled = true;
-        if (x.textContent === it.correct) x.classList.add("correct");
-      });
-      ans++;
-            if (o === it.correct) { sc++; document.getElementById("qF").textContent = "Correct!"; }
-      else { b.classList.add("wrong"); document.getElementById("qF").textContent = "Incorrect. Correct: " + it.correct; }
-      document.getElementById("qSc").textContent = "Score: " + sc + " / " + ans;
-    };
-    box.appendChild(b);
+  function autoGrow(el) {
+  if (!el) return;
+  el.style.height = "auto";
+  el.style.height = (el.scrollHeight + 2) + "px";
+}
+
+var IV_RAW = [
+  "arise|arose|arisen|возникать, подниматься",
+  "awake|awoke|awoken|будить, просыпаться",
+  "be|was / were|been|быть",
+  "bear|bore|borne|нести, выносить, рождать",
+  "beat|beat|beaten|бить",
+  "become|became|become|становиться",
+  "begin|began|begun|начинать",
+  "bend|bent|bent|гнуть, сгибать",
+  "bet|bet|bet|держать пари",
+  "bind|bound|bound|связывать",
+  "bite|bit|bitten|кусать",
+  "bleed|bled|bled|кровоточить",
+  "blow|blew|blown|дуть",
+  "break|broke|broken|ломать",
+  "breed|bred|bred|разводить, выращивать",
+  "bring|brought|brought|приносить",
+  "broadcast|broadcast|broadcast|транслировать",
+  "build|built|built|строить",
+  "burn|burnt (burned)|burnt (burned)|гореть, жечь",
+  "burst|burst|burst|лопаться, взрываться",
+  "buy|bought|bought|покупать",
+  "catch|caught|caught|ловить, хватать",
+  "choose|chose|chosen|выбирать",
+  "cling|clung|clung|цепляться",
+  "come|came|come|приходить",
+  "cost|cost|cost|стоить",
+  "creep|crept|crept|ползать",
+  "cut|cut|cut|резать",
+  "deal|dealt|dealt|иметь дело, распределять",
+  "dig|dug|dug|копать",
+  "do|did|done|делать",
+  "draw|drew|drawn|рисовать, тащить",
+  "dream|dreamt (dreamed)|dreamt (dreamed)|мечтать, видеть сны",
+  "drink|drank|drunk|пить",
+  "drive|drove|driven|водить (машину)",
+  "eat|ate|eaten|есть, кушать",
+  "fall|fell|fallen|падать",
+  "feed|fed|fed|кормить",
+  "feel|felt|felt|чувствовать",
+  "fight|fought|fought|бороться, сражаться",
+  "find|found|found|находить",
+  "flee|fled|fled|убегать, спасаться бегством",
+  "fly|flew|flown|летать",
+  "forbid|forbade|forbidden|запрещать",
+  "forget|forgot|forgotten|забывать",
+  "forgive|forgave|forgiven|прощать",
+  "freeze|froze|frozen|замерзать, замораживать",
+  "get|got|got|получать, становиться",
+  "give|gave|given|давать",
+  "go|went|gone|идти, ехать",
+  "grind|ground|ground|молоть, точить",
+  "grow|grew|grown|расти, выращивать",
+  "hang|hung|hung|вешать, висеть",
+  "have|had|had|иметь",
+  "hear|heard|heard|слышать",
+  "hide|hid|hidden|прятать(ся)",
+  "hit|hit|hit|ударять, попадать",
+  "hold|held|held|держать",
+  "hurt|hurt|hurt|причинять боль, ушибить",
+  "keep|kept|kept|хранить, держать",
+  "kneel|knelt|knelt|стоять на коленях",
+  "know|knew|known|знать",
+  "lay|laid|laid|класть, положить",
+  "lead|led|led|вести, руководить",
+  "lean|leant (leaned)|leant (leaned)|наклоняться, прислоняться",
+  "leap|leapt (leaped)|leapt (leaped)|прыгать, скакать",
+  "learn|learnt (learned)|learnt (learned)|учить, узнавать",
+  "leave|left|left|покидать, оставлять, уезжать",
+  "lend|lent|lent|одалживать (давать взаймы)",
+  "let|let|let|позволять, пускать",
+  "lie|lay|lain|лежать",
+  "light|lit (lighted)|lit (lighted)|зажигать, освещать",
+  "lose|lost|lost|терять, проигрывать",
+  "make|made|made|делать, создавать",
+  "mean|meant|meant|значить, иметь в виду",
+  "meet|met|met|встречать(ся)",
+  "pay|paid|paid|платить",
+  "put|put|put|класть, ставить",
+  "read|read [red]|read [red]|читать",
+  "ride|rode|ridden|ездить верхом / на велосипеде",
+  "ring|rang|rung|звонить, звенеть",
+  "rise|rose|risen|подниматься, вставать",
+  "run|ran|run|бежать",
+  "say|said [sed]|said [sed]|сказать",
+  "see|saw|seen|видеть",
+  "seek|sought|sought|искать",
+  "sell|sold|sold|продавать",
+  "send|sent|sent|отправлять, посылать",
+  "set|set|set|устанавливать, ставить",
+  "sew|sewed|sewn (sewed)|шить",
+  "shake|shook|shaken|трясти",
+  "shine|shone|shone|светить, сиять",
+  "shoot|shot|shot|стрелять",
+  "show|showed|shown|показывать",
+  "shrink|shrank|shrunk|сжиматься, садиться (о ткани)",
+  "shut|shut|shut|закрывать",
+  "sing|sang|sung|петь",
+  "sink|sank|sunk|тонуть, погружаться",
+  "sit|sat|sat|сидеть",
+  "sleep|slept|slept|спать",
+  "slide|slid|slid|скользить",
+  "smell|smelt (smelled)|smelt (smelled)|пахнуть, нюхать",
+  "speak|spoke|spoken|говорить, разговаривать",
+  "speed|sped|sped|мчаться, ускоряться",
+  "spell|spelt (spelled)|spelt (spelled)|писать/произносить по буквам",
+  "spend|spent|spent|тратить, проводить (время)",
+  "spill|spilt (spilled)|spilt (spilled)|проливать",
+  "spin|spun|spun|вращать(ся), прясть",
+  "spit|spat|spat|плевать",
+  "split|split|split|раскалывать, разделять",
+  "spoil|spoilt (spoiled)|spoilt (spoiled)|портить, баловать",
+  "spread|spread|spread|распространять(ся), намазывать",
+  "spring|sprang|sprung|прыгать, возникать",
+  "stand|stood|stood|стоять",
+  "steal|stole|stolen|красть",
+  "stick|stuck|stuck|приклеивать, втыкать",
+  "sting|stung|stung|жалить",
+  "stink|stank|stunk|вонять",
+  "strike|struck|struck|ударять, бастовать",
+  "swear|swore|sworn|клясться, ругаться",
+  "sweep|swept|swept|подметать",
+  "swell|swelled|swollen (swelled)|опухать, набухать",
+  "swim|swam|swum|плавать",
+  "swing|swung|swung|качать(ся)",
+  "take|took|taken|брать",
+  "teach|taught|taught|учить, обучать",
+  "tear|tore|torn|рвать",
+  "tell|told|told|рассказывать, сказать",
+  "think|thought|thought|думать",
+  "throw|threw|thrown|бросать",
+  "understand|understood|understood|понимать",
+  "wake|woke|woken|просыпаться, будить",
+  "wear|wore|worn|носить (одежду)",
+  "weep|wept|wept|плакать",
+  "win|won|won|побеждать, выигрывать",
+  "wind|wound|wound|заводить (механизм), виться",
+  "write|wrote|written|писать"
+];
+
+var ivVerbs = IV_RAW.map(function(row) {
+  var p = row.split("|");
+  return { v1: p[0], v2: p[1], v3: p[2], tr: p[3] };
+});
+
+var ivKnown = ld("eng_iv_known", []);
+var ivIdx = 0, ivFlipped = false, ivSound = false;
+
+function cleanSpeakForm(s) {
+  if (s.indexOf("[red]") !== -1) return "red";
+  return s.replace(/\([^)]*\)/g, "").replace(/\[[^\]]*\]/g, "").replace(/\//g, ", ").trim();
+}
+
+function getAllFormsSpeech(cur) {
+  return cur.v1 + ", " + cleanSpeakForm(cur.v2) + ", " + cleanSpeakForm(cur.v3);
+}
+
+function speakIv(txt) {
+  if (!txt || !window.speechSynthesis) return;
+  try {
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(txt);
+    u.lang = "en-GB";
+    u.rate = 0.92;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function toggleIvSound() {
+  ivSound = !ivSound;
+  var btn = document.getElementById("ivSoundBtn");
+  if (btn) {
+    btn.textContent = ivSound ? "Sound: ON" : "Sound: OFF";
+    btn.className = ivSound ? "btn btn-s" : "btn btn-o btn-s";
+  }
+  if (ivSound) {
+    var pool = getIvPool();
+    if (pool.length) speakIv(getAllFormsSpeech(pool[ivIdx % pool.length]));
+  } else if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function getIvPool() {
+  var f = document.getElementById("ivFilter") ? document.getElementById("ivFilter").value : "all";
+  if (f === "known") return ivVerbs.filter(function(v) { return ivKnown.indexOf(v.v1) !== -1; });
+  if (f === "unknown") return ivVerbs.filter(function(v) { return ivKnown.indexOf(v.v1) === -1; });
+  return ivVerbs;
+}
+
+function changeIvFilter() {
+  ivIdx = 0;
+  ivFlipped = false;
+  renderIV(true);
+}
+
+function renderIV(shouldSpeak) {
+  var prog = document.getElementById("ivProg");
+  if (prog) prog.textContent = "Known: " + ivKnown.length + " / " + ivVerbs.length;
+  var pool = getIvPool();
+  var front = document.getElementById("ivFront");
+  var back = document.getElementById("ivBack");
+  if (!front || !back) return;
+
+  if (!pool.length) {
+    front.textContent = "All verbs completed!";
+    back.textContent = "Switch filter above or click Reset to practice again";
+    renderIvList();
+    return;
+  }
+
+  ivIdx = (ivIdx + pool.length) % pool.length;
+  var cur = pool[ivIdx];
+  front.textContent = cur.v1 + "  —  " + cur.v2 + "  —  " + cur.v3;
+  back.textContent = ivFlipped ? cur.tr : "Click card to reveal translation";
+
+  if (shouldSpeak && ivSound) speakIv(getAllFormsSpeech(cur));
+  renderIvList();
+}
+
+function flipIv() {
+  var pool = getIvPool();
+  if (!pool.length) return;
+  ivFlipped = !ivFlipped;
+  renderIV(false);
+}
+
+function markIv(known) {
+  var pool = getIvPool();
+  if (!pool.length) return;
+  var cur = pool[ivIdx % pool.length];
+  var pos = ivKnown.indexOf(cur.v1);
+  if (known && pos === -1) ivKnown.push(cur.v1);
+  if (!known && pos !== -1) ivKnown.splice(pos, 1);
+  sv("eng_iv_known", ivKnown);
+
+  var f = document.getElementById("ivFilter") ? document.getElementById("ivFilter").value : "all";
+  if (f === "all") ivIdx++;
+  ivFlipped = false;
+  renderIV(true);
+}
+
+function resetIv() {
+  ivKnown = [];
+  ivIdx = 0;
+  ivFlipped = false;
+  sv("eng_iv_known", ivKnown);
+  renderIV(true);
+}
+
+function renderIvList() {
+  var box = document.getElementById("ivTable");
+  if (!box) return;
+  var q = (document.getElementById("ivSearch") ? document.getElementById("ivSearch").value : "").toLowerCase();
+  var pool = getIvPool();
+  var filtered = pool.filter(function(v) {
+    return v.v1.indexOf(q) !== -1 || v.v2.indexOf(q) !== -1 || v.v3.indexOf(q) !== -1 || v.tr.toLowerCase().indexOf(q) !== -1;
   });
+  var cnt = document.getElementById("ivListCnt");
+  if (cnt) cnt.textContent = filtered.length;
+
+  box.innerHTML = filtered.map(function(v) {
+    var isK = ivKnown.indexOf(v.v1) !== -1;
+    var say = getAllFormsSpeech(v).replace(/'/g, "");
+    return '<div class="item" style="align-items:center;">' +
+      '<div><strong>' + esc(v.v1) + '</strong> — ' + esc(v.v2) + ' — ' + esc(v.v3) + (isK ? '<span class="tag">Known</span>' : '') +
+      '<div style="color:var(--muted); font-size:.85rem;">' + esc(v.tr) + '</div></div>' +
+      '<button type="button" class="btn btn-o btn-s" onclick="speakIv(\'' + say + '\')">Listen</button>' +
+    '</div>';
+  }).join("") || '<p style="color:var(--muted);">Nothing found.</p>';
 }
-function nextQ() { qI++; renderQ(); }
-function addQ() {
-  var q = document.getElementById("qP").value.trim(), c = document.getElementById("qC").value.trim();
-  var w1 = document.getElementById("qW1").value.trim(), w2 = document.getElementById("qW2").value.trim();
-  if (!q || !c || !w1 || !w2) return msg("qM", "Fill all 4 fields.", true);
-  qs.push({ q: q, correct: c, options: [c, w1, w2] });
-  sv("eng_questions", qs);
-  ["qP", "qC", "qW1", "qW2"].forEach(function(id) { document.getElementById(id).value = ""; });
-  msg("qM", "✓ Question added!", false);
-}
+
+document.addEventListener("keydown", function(e) {
+  var t2 = document.getElementById("t2");
+  if (!t2 || !t2.checked) return;
+  var tag = document.activeElement ? document.activeElement.tagName : "";
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
 var curReadIdx = -1;
 function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
