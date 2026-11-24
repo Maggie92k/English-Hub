@@ -313,16 +313,24 @@ var habits = ld("eng_habits", [
 
 var fcI = 0, fcF = false, fcSound = false, qI = 0, sc = 0, ans = 0, lk = false;
 
-function speakFc(txt) {
+function speakUK(txt) {
   if (!txt || !window.speechSynthesis) return;
   try {
     window.speechSynthesis.cancel();
     var u = new SpeechSynthesisUtterance(txt);
     u.lang = "en-GB";
     u.rate = 0.92;
+    var voices = window.speechSynthesis.getVoices() || [];
+    var ukVoice = voices.find(function(v) {
+      return /en[-_]GB/i.test(v.lang) || /UK English|British|Daniel|Hazel|Libby|Sonia|Ryan/i.test(v.name);
+    });
+    if (ukVoice) u.voice = ukVoice;
     window.speechSynthesis.speak(u);
   } catch (e) {}
 }
+if (window.speechSynthesis) window.speechSynthesis.getVoices();
+
+function speakFc(txt) { speakUK(txt); }
 
 function toggleFcSound() {
   fcSound = !fcSound;
@@ -607,16 +615,7 @@ function getAllFormsSpeech(cur) {
   return cur.v1 + ", " + cleanSpeakForm(cur.v2) + ", " + cleanSpeakForm(cur.v3);
 }
 
-function speakIv(txt) {
-  if (!txt || !window.speechSynthesis) return;
-  try {
-    window.speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(txt);
-    u.lang = "en-GB";
-    u.rate = 0.92;
-    window.speechSynthesis.speak(u);
-  } catch (e) {}
-}
+function speakIv(txt) { speakUK(txt); }
 
 function toggleIvSound() {
   ivSound = !ivSound;
@@ -1111,10 +1110,7 @@ function closeDictPop() {
 }
 
 function speakWord() {
-  if (!selData.word || !window.speechSynthesis) return;
-  var u = new SpeechSynthesisUtterance(selData.word);
-  u.lang = "en-US";
-  window.speechSynthesis.speak(u);
+  if (selData.word) speakUK(selData.word);
 }
 
 function saveSelectedWord() {
@@ -1323,7 +1319,7 @@ window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
-document.getElementById("logo").textContent = "My English Hub v23 • OK";
+document.getElementById("logo").textContent = "My English Hub v24 • OK";
 </script>
 </body>
 </html>
