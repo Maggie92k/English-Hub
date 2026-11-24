@@ -110,7 +110,20 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
   <input type="radio" name="t" id="t1" class="tab-r" checked><input type="radio" name="t" id="t2" class="tab-r"><input type="radio" name="t" id="t3" class="tab-r"><input type="radio" name="t" id="t4" class="tab-r">
   <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
   <section id="s1" class="sec">
-    <div class="card"><h2>Flashcard Practice</h2><div class="fc" onclick="flipFC()"><div class="fc-w" id="fcF">keep track of</div><div class="fc-h" id="fcB">Click card to reveal definition & example</div></div><div style="display:flex;gap:10px;justify-content:center;"><button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button><button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button></div></div>
+    <div class="card">
+      <div class="top" style="margin-bottom:10px;">
+        <h2 style="margin:0;">Flashcard Practice</h2>
+        <button type="button" class="btn btn-o btn-s" id="fcSoundBtn" onclick="toggleFcSound()">Sound: OFF</button>
+      </div>
+      <div class="fc" onclick="flipFC()">
+        <div class="fc-w" id="fcF">keep track of</div>
+        <div class="fc-h" id="fcB">Click card to reveal definition &amp; example</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button>
+        <button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button>
+      </div>
+    </div>
     <div class="card">
       <h2>Add New Word</h2>
       <div class="pill-row" id="wPills">
@@ -298,9 +311,34 @@ var habits = ld("eng_habits", [
   { text: "Read 1 page in English", done: false }
 ]);
 
-var fcI = 0, fcF = false, qI = 0, sc = 0, ans = 0, lk = false;
+var fcI = 0, fcF = false, fcSound = false, qI = 0, sc = 0, ans = 0, lk = false;
 
-function renderFC() {
+function speakFc(txt) {
+  if (!txt || !window.speechSynthesis) return;
+  try {
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(txt);
+    u.lang = "en-GB";
+    u.rate = 0.92;
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function toggleFcSound() {
+  fcSound = !fcSound;
+  var btn = document.getElementById("fcSoundBtn");
+  if (btn) {
+    btn.textContent = fcSound ? "Sound: ON" : "Sound: OFF";
+    btn.className = fcSound ? "btn btn-s" : "btn btn-o btn-s";
+  }
+  if (fcSound && words.length) {
+    speakFc(words[fcI % words.length].term);
+  } else if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function renderFC(shouldSpeak) {
   if (!words.length) {
     document.getElementById("fcF").textContent = "No entries yet";
     document.getElementById("fcB").textContent = "Add words below";
@@ -312,9 +350,10 @@ function renderFC() {
   document.getElementById("fcB").textContent = fcF
     ? it.def + (it.ex ? ' — "' + it.ex + '"' : "")
     : "Click card to reveal definition & example";
+  if (shouldSpeak && fcSound) speakFc(it.term);
 }
-function flipFC() { fcF = !fcF; renderFC(); }
-function stepFC(d) { fcI += d; fcF = false; renderFC(); }
+function flipFC() { fcF = !fcF; renderFC(false); }
+function stepFC(d) { fcI += d; fcF = false; renderFC(true); }
 
 function renderPV() {
   var pvs = words.filter(function(w) { return w.tag === "Phrasal Verb"; });
