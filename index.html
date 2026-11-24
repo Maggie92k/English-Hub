@@ -528,6 +528,7 @@ var ivVerbs = IV_RAW.map(function(row) {
 });
 
 var ivKnown = ld("eng_iv_known", []);
+var ivDeck = ivVerbs.slice();
 var ivIdx = 0, ivFlipped = false, ivSound = false;
 
 function cleanSpeakForm(s) {
@@ -558,19 +559,22 @@ function toggleIvSound() {
     btn.className = ivSound ? "btn btn-s" : "btn btn-o btn-s";
   }
   if (ivSound) {
-    var pool = getIvPool();
+    var pool = getIvCardPool();
     if (pool.length) speakIv(getAllFormsSpeech(pool[ivIdx % pool.length]));
   } else if (window.speechSynthesis) {
     window.speechSynthesis.cancel();
   }
 }
 
-function getIvPool() {
+function filterByMode(list) {
   var f = document.getElementById("ivFilter") ? document.getElementById("ivFilter").value : "all";
-  if (f === "known") return ivVerbs.filter(function(v) { return ivKnown.indexOf(v.v1) !== -1; });
-  if (f === "unknown") return ivVerbs.filter(function(v) { return ivKnown.indexOf(v.v1) === -1; });
-  return ivVerbs;
+  if (f === "known") return list.filter(function(v) { return ivKnown.indexOf(v.v1) !== -1; });
+  if (f === "unknown") return list.filter(function(v) { return ivKnown.indexOf(v.v1) === -1; });
+  return list;
 }
+
+function getIvCardPool() { return filterByMode(ivDeck); }
+function getIvListPool() { return filterByMode(ivVerbs); }
 
 function changeIvFilter() {
   ivIdx = 0;
@@ -581,7 +585,7 @@ function changeIvFilter() {
 function renderIV(shouldSpeak) {
   var prog = document.getElementById("ivProg");
   if (prog) prog.textContent = "Known: " + ivKnown.length + " / " + ivVerbs.length;
-  var pool = getIvPool();
+  var pool = getIvCardPool();
   var front = document.getElementById("ivFront");
   var back = document.getElementById("ivBack");
   if (!front || !back) return;
@@ -603,14 +607,14 @@ function renderIV(shouldSpeak) {
 }
 
 function flipIv() {
-  var pool = getIvPool();
+  var pool = getIvCardPool();
   if (!pool.length) return;
   ivFlipped = !ivFlipped;
   renderIV(false);
 }
 
 function markIv(known) {
-  var pool = getIvPool();
+  var pool = getIvCardPool();
   if (!pool.length) return;
   var cur = pool[ivIdx % pool.length];
   var pos = ivKnown.indexOf(cur.v1);
@@ -624,23 +628,24 @@ function markIv(known) {
   renderIV(true);
 }
 
-function resetIv() {
-  ivKnown = [];
-  ivIdx = 0;
-  ivFlipped = false;
-  sv("eng_iv_known", ivKnown);
-  renderIV(true);
-}
-  
-  function shuffleIv() {
-  for (var i = ivVerbs.length - 1; i > 0; i--) {
+function shuffleIv() {
+  for (var i = ivDeck.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
-    var tmp = ivVerbs[i];
-    ivVerbs[i] = ivVerbs[j];
-    ivVerbs[j] = tmp;
+    var tmp = ivDeck[i];
+    ivDeck[i] = ivDeck[j];
+    ivDeck[j] = tmp;
   }
   ivIdx = 0;
   ivFlipped = false;
+  renderIV(true);
+}
+
+function resetIv() {
+  ivKnown = [];
+  ivDeck = ivVerbs.slice();
+  ivIdx = 0;
+  ivFlipped = false;
+  sv("eng_iv_known", ivKnown);
   renderIV(true);
 }
 
@@ -648,7 +653,7 @@ function renderIvList() {
   var box = document.getElementById("ivTable");
   if (!box) return;
   var q = (document.getElementById("ivSearch") ? document.getElementById("ivSearch").value : "").toLowerCase();
-  var pool = getIvPool();
+  var pool = getIvListPool();
   var filtered = pool.filter(function(v) {
     return v.v1.indexOf(q) !== -1 || v.v2.indexOf(q) !== -1 || v.v3.indexOf(q) !== -1 || v.tr.toLowerCase().indexOf(q) !== -1;
   });
