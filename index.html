@@ -711,6 +711,46 @@ function lookupSelection() {
     sentence = fullText.slice(start, end === -1 ? start + 180 : end + 1).replace(/\s+/g, " ").trim();
   }
 
+  var camUrl = "https://" + "dictionary.cambridge.org" + "/dictionary/english/" + encodeURIComponent(cleanWord.replace(/\s+/g, "-"));
+  var dictUrl = "https://" + "api.dictionaryapi.dev" + "/api/v2/entries/en/" + encodeURIComponent(cleanWord);
+  var backupUrl = "https://" + "://datamuse.com" + "/words?sp=" + encodeURIComponent(cleanWord) + "&md=d&max=1";
+
+  selData = { word: cleanWord, def: "", ex: sentence };
+  document.getElementById("dpWord").textContent = cleanWord;
+  document.getElementById("dpPhon").textContent = "";
+  document.getElementById("dpDef").textContent = "Loading definition...";
+  document.getElementById("dpCamLink").href = camUrl;
+  document.getElementById("dictPop").style.display = "block";
+
+  fetch(dictUrl)
+    .then(function(r) { if (!r.ok) throw new Error("Not found"); return r.json(); })
+    .then(function(data) {
+      var entry = data.shift();
+      var phon = entry.phonetic || "";
+      var meaning = (entry.meanings && entry.meanings.length) ? entry.meanings.shift() : null;
+      var defObj = (meaning && meaning.definitions && meaning.definitions.length) ? meaning.definitions.shift() : null;
+      if (!defObj || !defObj.definition) throw new Error("Empty");
+      selData.def = defObj.definition;
+      document.getElementById("dpPhon").textContent = phon;
+      document.getElementById("dpDef").textContent = (meaning ? "[" + meaning.partOfSpeech + "] " : "") + defObj.definition;
+    })
+    .catch(function() {
+      fetch(backupUrl)
+        .then(function(r) { return r.json(); })
+        .then(function(arr) {
+          var item = (arr && arr.length) ? arr.shift() : null;
+          var defs = (item && item.defs) ? item.defs : [];
+          if (!defs.length) throw new Error("None");
+          var cleanDef = defs.shift().replace(/\t/g, "] ");
+          selData.def = cleanDef.replace(/^[a-z]+\]\s*/i, "");
+          document.getElementById("dpDef").textContent = "[" + cleanDef;
+        })
+        .catch(function() {
+          document.getElementById("dpDef").textContent = "Definition not found.";
+        });
+    });
+}
+
   selData = { word: cleanWord, def: "", ex: sentence };
   document.getElementById("dpWord").textContent = cleanWord;
   document.getElementById("dpPhon").textContent = "";
@@ -738,7 +778,7 @@ function lookupSelection() {
 document.addEventListener("mouseup", function() { setTimeout(lookupSelection, 50); });
 document.addEventListener("touchend", function() { setTimeout(lookupSelection, 200); });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
-document.getElementById("logo").textContent = "My English Hub v16 • OK";
+document.getElementById("logo").textContent = "My English Hub v17 • OK";
 </script>
 </body>
 </html>
