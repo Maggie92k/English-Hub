@@ -4,9 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My English Hub v14</title>
-  .sync-btn { margin-left:8px; padding:5px 11px; font-size:.8rem; border-radius:99px; }
-.sync-modal { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:120; display:none; align-items:center; justify-content:center; padding:16px; }
-.sync-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; width:min(440px, 100%); box-shadow:0 16px 40px rgba(0,0,0,.3); }
   <style>
 :root { --bg:#f6f7fb; --card:#fff; --text:#1e2433; --muted:#647087; --primary:#E038AD; --accent:#fce7f3; --border:#e2e8f0; --ok:#16a34a; --err:#dc2626; }body.dark { --bg:#121016; --card:#1C1824; --text:#F3F4F6; --muted:#9CA3AF; --primary:#E038AD; --accent:#361933; --border:#2E283B; }
 body.dark input, body.dark textarea, body.dark select { background:#121016; color:#F3F4F6; }
@@ -19,20 +16,6 @@ body.dark .q-opt { color:#F3F4F6; }
 .theme-switch input:checked + .slider:before { transform:translateX(26px); }
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; padding-bottom:50px; }
-<header><div class="wrap top"><div class="logo" id="logo">My English Hub v14</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><span class="badge" id="hdrProg">Today: 0% done</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
-<div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
-  <div class="sync-card">
-    <div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">GitHub Cloud Sync</h2><button type="button" class="btn btn-o btn-s" onclick="closeSync()">✕</button></div>
-    <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px;">Paste your GitHub Token (with <b>gist</b> scope). Your dictionary, library and reading calendar will sync automatically across all devices.</p>
-    <input id="ghTokenInp" type="password" placeholder="ghp_..." style="margin-bottom:10px;">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button type="button" class="btn btn-s" onclick="saveSyncToken()">Connect & Sync</button>
-      <button type="button" class="btn btn-o btn-s" onclick="syncNow(true)">Pull Latest</button>
-      <button type="button" class="btn btn-o btn-s" onclick="disconnectSync()">Disconnect</button>
-    </div>
-    <div id="syncMsg" class="msg"></div>
-  </div>
-</div>
     .wrap { max-width:900px; margin:0 auto; padding:0 16px; }
     .top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .logo { font-size:1.15rem; font-weight:700; color:var(--primary); }
@@ -97,16 +80,32 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
 .dict-phon { font-size:.85rem; color:var(--muted); margin-left:6px; font-weight:400; }
 .dict-def { font-size:.95rem; margin-bottom:10px; }
 .dict-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+   .sync-btn { margin-left:8px; padding:5px 11px; font-size:.8rem; border-radius:99px; }
+.sync-modal { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:120; display:none; align-items:center; justify-content:center; padding:16px; }
+.sync-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; width:min(440px, 100%); box-shadow:0 16px 40px rgba(0,0,0,.3); }
   </style>
 </head>
 <body>
-<header><div class="wrap top"><div class="logo" id="logo">My English Hub v14</div><div><span class="badge" id="hdrProg">Today: 0% done</span><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
+  <header><div class="wrap top"><div class="logo" id="logo">My English Hub v14</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><span class="badge" id="hdrProg">Today: 0% done</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
+<div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
+  <div class="sync-card">
+    <div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">GitHub Cloud Sync</h2><button type="button" class="btn btn-o btn-s" onclick="closeSync()">✕</button></div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px;">Paste your GitHub Token (with <b>gist</b> scope). Your dictionary, library and reading calendar will sync automatically across all devices.</p>
+    <input id="ghTokenInp" type="password" placeholder="ghp_..." style="margin-bottom:10px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" class="btn btn-s" onclick="saveSyncToken()">Connect & Sync</button>
+      <button type="button" class="btn btn-o btn-s" onclick="syncNow(true)">Pull Latest</button>
+      <button type="button" class="btn btn-o btn-s" onclick="disconnectSync()">Disconnect</button>
+    </div>
+    <div id="syncMsg" class="msg"></div>
+  </div>
+</div>
 <div class="wrap">
   <input type="radio" name="t" id="t1" class="tab-r" checked><input type="radio" name="t" id="t2" class="tab-r"><input type="radio" name="t" id="t3" class="tab-r"><input type="radio" name="t" id="t4" class="tab-r">
   <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
   <section id="s1" class="sec">
     <div class="card"><h2>Flashcard Practice</h2><div class="fc" onclick="flipFC()"><div class="fc-w" id="fcF">keep track of</div><div class="fc-h" id="fcB">Click card to reveal definition & example</div></div><div style="display:flex;gap:10px;justify-content:center;"><button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button><button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button></div></div>
-    <div class="card"><h2>Add New Word</h2><div class="row"><input id="wT" placeholder="Word or phrase" onkeydown="if(event.key==='Enter')addW()"><select id="wG" style="max-width:210px;"><option value="Phrasal Verb">Phrasal Verb</option><option value="Vocabulary">Vocabulary</option><option value="Idiom">Idiom</option><option value="Grammar Form">Grammar Form</option></select></div><div class="row"><input id="wD" placeholder="Definition in English" onkeydown="if(event.key==='Enter')addW()"></div><div class="row"><input id="wE" placeholder="Example sentence (optional)" onkeydown="if(event.key==='Enter')addW()"></div><button type="button" class="btn" onclick="addW()">+ Save to Dictionary</button><div id="wM" class="msg"></div></div>
+    <div class="card"><h2>Add New Word</h2><div class="row"><input id="wT" placeholder="Word or phrase" onkeydown="if(event.key==='Enter')addW()"><select id="wG" style="max-width:210px;"><option value="Phrasal Verb">Phrasal Verb</option><option value="Vocabulary">Vocabulary</option><option value="Idiom">Idiom</option><option value="Grammar Form">Grammar Form</option></select></div><div class="row"><textarea id="wD" rows="1" oninput="autoGrow(this)" placeholder="Definition in English" style="overflow:hidden;"></textarea></div><div class="row"><textarea id="wE" rows="1" oninput="autoGrow(this)" placeholder="Example sentence (optional)" style="overflow:hidden;"></textarea></div><button type="button" class="btn" onclick="addW()">+ Save to Dictionary</button><div id="wM" class="msg"></div></div>
 <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvC">0</span></div><div id="pvL" class="pv-grid"></div></div>
     <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">All Dictionary Entries (<span id="wC">0</span>)</h2><input id="qS" placeholder="Search..." oninput="renderW()" style="max-width:220px;"></div><div id="wL"></div></div>
   </section>
@@ -118,8 +117,10 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
     <div id="libListView">
       <div class="card">
 <h2>Import Article by Link</h2>
-       <div class="row"><textarea id="wD" rows="1" oninput="autoGrow(this)" placeholder="Definition in English" style="overflow:hidden;"></textarea></div><div class="row"><textarea id="wE" rows="1" oninput="autoGrow(this)" placeholder="Example sentence (optional)" style="overflow:hidden;"></textarea>
-       </div>
+              <div class="row">
+          <input id="rUrl" placeholder="Paste article URL (https://...)" onkeydown="if(event.key==='Enter')importUrl()">
+          <button type="button" class="btn" style="flex:0 0 auto;" onclick="importUrl()">Extract & Save</button>
+        </div>
         <div id="rM" class="msg"></div>
         <details class="manual-box">
           <summary>+ Or paste text manually (if site requires login)</summary>
