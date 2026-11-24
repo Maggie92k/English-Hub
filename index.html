@@ -75,6 +75,12 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
 .cal-min { font-size:.7rem; font-weight:600; color:var(--primary); }
 .day-log-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); gap:10px; font-size:.95rem; }
 .day-log-item:last-child { border-bottom:none; }
+    .dict-pop { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:min(680px, calc(100% - 24px)); background:var(--card); border:2px solid var(--primary); border-radius:14px; padding:16px; box-shadow:0 12px 32px rgba(0,0,0,.25); z-index:99; display:none; }
+.dict-pop-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
+.dict-word { font-size:1.2rem; font-weight:800; color:var(--primary); }
+.dict-phon { font-size:.85rem; color:var(--muted); margin-left:6px; font-weight:400; }
+.dict-def { font-size:.95rem; margin-bottom:10px; }
+.dict-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
   </style>
 </head>
 <body>
@@ -135,6 +141,18 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
         <div id="readBody" class="reader-body"></div>
         <h3 style="font-size:1rem; margin-bottom:6px;">My Notes & Vocabulary</h3>
         <textarea id="readNotes" rows="3" placeholder="Write new words, grammar notes or summary here..." oninput="saveNote()"></textarea>
+      </div>
+              <div id="dictPop" class="dict-pop">
+        <div class="dict-pop-head">
+          <div><span class="dict-word" id="dpWord"></span><span class="dict-phon" id="dpPhon"></span></div>
+          <button type="button" class="btn btn-o btn-s" onclick="closeDictPop()">✕</button>
+        </div>
+        <div class="dict-def" id="dpDef">Loading definition...</div>
+        <div class="dict-actions">
+          <button type="button" class="btn btn-s" id="dpSaveBtn" onclick="saveSelectedWord()">+ Save to Dictionary</button>
+          <button type="button" class="btn btn-o btn-s" onclick="speakWord()">Listen</button>
+          <a id="dpCamLink" href="#" target="_blank" class="btn btn-o btn-s" style="text-decoration:none;">Cambridge Dictionary ↗</a>
+        </div>
       </div>
     </div>
   </section>
@@ -644,8 +662,83 @@ function renderDayDetails() {
   }).join("");
 }
 
-renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
-document.getElementById("logo").textContent = "My English Hub v15 • OK";
+var selData = { word: "", def: "", ex: "" };
+
+function closeDictPop() {
+  document.getElementById("dictPop").style.display = "none";
+}
+
+function speakWord() {
+  if (!selData.word || !window.speechSynthesis) return;
+  var u = new SpeechSynthesisUtterance(selData.word);
+  u.lang = "en-US";
+  window.speechSynthesis.speak(u);
+}
+
+function saveSelectedWord() {
+  if (!selData.word) return;
+  var isPhrase = selData.word.indexOf(" ") !== -1;
+  words.unshift({
+    term: selData.word,
+    def: selData.def || "No definition added yet",
+    tag: isPhrase ? "Phrasal Verb" : "Vocabulary",
+    ex: selData.ex || ""
+  });
+  sv("eng_words", words);
+  renderW(); renderPV(); renderFC();
+  var btn = document.getElementById("dpSaveBtn");
+  btn.textContent = "Saved!";
+  setTimeout(function() { btn.textContent = "+ Save to Dictionary"; }, 1800);
+}
+
+function lookupSelection() {
+  var bodyEl = document.getElementById("readBody");
+  if (!bodyEl || document.getElementById("libReaderView").style.display !== "block") return;
+  var sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  var raw = sel.toString().replace(/\s+/g, " ").trim();
+  if (!raw || raw.length > 40 || !bodyEl.contains(sel.anchorNode)) return;
+
+  var cleanWord = raw.replace(/^[^a-zA-Z]+|[^a-zA-Z-]+$/g, "").toLowerCase();
+  if (!cleanWord) return;
+
+  var fullText = bodyEl.textContent || "";
+  var idx = fullText.toLowerCase().indexOf(cleanWord);
+  var sentence = "";
+  if (idx !== -1) {
+    var start = Math.max(0, fullText.lastIndexOf(".", idx) + 1);
+    var end = fullText.indexOf(".", idx + cleanWord.length);
+    sentence = fullText.slice(start, end === -1 ? start + 180 : end + 1).replace(/\s+/g, " ").trim();
+  }
+
+  selData = { word: cleanWord, def: "", ex: sentence };
+  document.getElementById("dpWord").textContent = cleanWord;
+  document.getElementById("dpPhon").textContent = "";
+  document.getElementById("dpDef").textContent = "Searching definition...";
+  document.getElementById("dpCamLink").href = "https://cambridge.org" + encodeURIComponent(cleanWord.replace(/\s+/g, "-"));
+  document.getElementById("dictPop").style.display = "block";
+
+  fetch("https://dictionaryapi.dev" + encodeURIComponent(cleanWord))
+    .then(function(r) { if (!r.ok) throw new Error("Not found"); return r.json(); })
+    .then(function(data) {
+      var entry = data.shift();
+      var phon = entry.phonetic || "";
+      var meaning = (entry.meanings && entry.meanings.length) ? entry.meanings.shift() : null;
+      var defObj = (meaning && meaning.definitions && meaning.definitions.length) ? meaning.definitions.shift() : null;
+      var defText = defObj ? defObj.definition : "Definition not found. Check Cambridge Dictionary.";
+      selData.def = defObj ? defObj.definition : "";
+      document.getElementById("dpPhon").textContent = phon;
+      document.getElementById("dpDef").textContent = (meaning ? "[" + meaning.partOfSpeech + "] " : "") + defText;
+    })
+    .catch(function() {
+      document.getElementById("dpDef").textContent = "No instant entry for this phrase. Click Cambridge Dictionary to view full meaning.";
+    });
+}
+
+document.addEventListener("mouseup", function() { setTimeout(lookupSelection, 50); });
+document.addEventListener("touchend", function() { setTimeout(lookupSelection, 200); });
+  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
+document.getElementById("logo").textContent = "My English Hub v16 • OK";
 </script>
 </body>
 </html>
