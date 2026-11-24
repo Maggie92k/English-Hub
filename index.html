@@ -656,6 +656,11 @@ document.addEventListener("keydown", function(e) {
   if (!t2 || !t2.checked) return;
   var tag = document.activeElement ? document.activeElement.tagName : "";
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  if (e.key === "ArrowLeft") markIv(false);
+  if (e.key === "ArrowRight") markIv(true);
+});
+
+function renderQ() { renderIV(false); }
 
 var curReadIdx = -1;
 function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
