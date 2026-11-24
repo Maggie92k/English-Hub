@@ -62,7 +62,19 @@ body.dark .q-opt { color:#F3F4F6; }
 .lib-meta { font-size:.8rem; color:var(--muted); margin-top:2px; }
 .reader-body { background:var(--bg); padding:18px; border-radius:12px; white-space:pre-wrap; font-size:1.05rem; line-height:1.75; margin:14px 0; border:1px solid var(--border); }
 details.manual-box { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
-details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem; font-weight:600; }
+.timer-pill { background:var(--accent); color:var(--primary); padding:5px 12px; border-radius:99px; font-weight:700; font-size:.85rem; font-variant-numeric:tabular-nums; }
+.cal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center; }
+.cal-dow { font-size:.75rem; font-weight:700; color:var(--muted); padding-bottom:4px; }
+.cal-day { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:8px 4px; min-height:54px; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:space-between; transition:.15s; }
+.cal-day:hover { border-color:var(--primary); }
+.cal-day.empty { background:transparent; border-color:transparent; cursor:default; }
+.cal-day.has-read { background:var(--accent); border-color:var(--primary); }
+.cal-day.selected { outline:2px solid var(--primary); outline-offset:1px; }
+.cal-num { font-size:.9rem; font-weight:700; }
+.cal-min { font-size:.7rem; font-weight:600; color:var(--primary); }
+.day-log-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); gap:10px; font-size:.95rem; }
+.day-log-item:last-child { border-bottom:none; }
   </style>
 </head>
 <body>
@@ -108,11 +120,15 @@ details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem
       </div>
     </div>
 
-    <div id="libReaderView" style="display:none;">
+      <div id="libReaderView" style="display:none;">
       <div class="card">
         <div class="top" style="margin-bottom:10px;">
           <button type="button" class="btn btn-o btn-s" onclick="closeR()">← Back to Library</button>
-          <a id="readSrc" href="#" target="_blank" style="color:var(--primary); font-size:.85rem; font-weight:600; text-decoration:none;">Open original ↗</a>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="timer-pill" id="liveTimer">Reading: 00:00</span>
+            <button type="button" class="btn btn-o btn-s" id="pauseBtn" onclick="togglePause()">Pause</button>
+            <a id="readSrc" href="#" target="_blank" style="color:var(--primary); font-size:.85rem; font-weight:600; text-decoration:none; margin-left:4px;">Original ↗</a>
+          </div>
         </div>
         <h2 id="readTitle" style="font-size:1.3rem; margin-top:8px;"></h2>
         <div id="readMeta" class="lib-meta"></div>
@@ -122,9 +138,25 @@ details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem
       </div>
     </div>
   </section>
+
   <section id="s4" class="sec">
-    <div class="card"><h2>Daily Practice Checklist</h2><div class="bar"><div class="fill" id="dB"></div></div><div id="hL"></div><div style="display:flex;gap:10px;margin-top:10px;"><input id="hI" placeholder="Add new daily habit..."><button type="button" class="btn" onclick="addH()">Add</button></div></div>
+    <div class="card">
+      <div class="cal-head">
+        <button type="button" class="btn btn-o btn-s" onclick="shiftMonth(-1)">← Prev</button>
+        <h2 id="calTitle" style="margin:0;">Month Year</h2>
+        <button type="button" class="btn btn-o btn-s" onclick="shiftMonth(1)">Next →</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="card">
+      <div class="top" style="margin-bottom:10px;">
+        <h2 id="dayDetailTitle" style="margin:0;">Selected Day</h2>
+        <span class="badge" id="dayDetailTotal">0 min</span>
+      </div>
+      <div id="dayDetailList"></div>
+    </div>
   </section>
+
 </div>
 <script>
   function togTheme() {
@@ -460,24 +492,160 @@ function addR() {
   renderR(); msg("rM", "✓ Saved to Library!", false);
 }
 
-function renderH() {
-  document.getElementById("hL").innerHTML = habits.map(function(h, i) {
-    return '<label class="h-row ' + (h.done ? 'done' : '') + '"><input type="checkbox" ' + (h.done ? 'checked' : '') + ' onchange="togH(' + i + ')"><span>' + h.text + '</span></label>';
-  }).join("");
-  var pct = habits.length ? Math.round((habits.filter(function(h) { return h.done; }).length / habits.length) * 100) : 0;
-  document.getElementById("dB").style.width = pct + "%";
-  document.getElementById("hdrProg").textContent = "Today: " + pct + "% done";
+function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+function getDateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+function fmtClock(sec) {
+  sec = Math.max(0, Math.floor(sec || 0));
+  var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return (h > 0 ? pad2(h) + ":" : "") + pad2(m) + ":" + pad2(s);
 }
-function togH(i) { habits[i].done = !habits[i].done; sv("eng_habits", habits); renderH(); }
-function addH() {
-  var inp = document.getElementById("hI");
-  if (!inp.value.trim()) return;
-  habits.push({ text: inp.value.trim(), done: false });
-  inp.value = ""; sv("eng_habits", habits); renderH();
+function fmtDuration(sec) {
+  sec = Math.max(0, Math.floor(sec || 0));
+  if (sec === 0) return "0 min";
+  if (sec < 60) return sec + " sec";
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + " min" + (s > 0 ? " " + s + " sec" : "");
 }
 
-renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderH();
-document.getElementById("logo").textContent = "My English Hub v14 • OK";
+var readLog = {};
+try { readLog = JSON.parse(localStorage.getItem("eng_read_log")) || {}; } catch (e) { readLog = {}; }
+function saveLog() { try { localStorage.setItem("eng_read_log", JSON.stringify(readLog)); } catch (e) {} }
+
+var timerInt = null, timerPaused = false, tickCounter = 0;
+
+function updateHeaderBadge() {
+  var today = readLog[getDateKey(new Date())];
+  var sec = today ? (today.totalSec || 0) : 0;
+  var mins = Math.floor(sec / 60);
+  document.getElementById("hdrProg").textContent = "Today: " + (sec > 0 && mins === 0 ? "<1 min" : mins + " min") + " read";
+}
+
+function startTimer() {
+  stopTimer();
+  timerPaused = false;
+  var pBtn = document.getElementById("pauseBtn");
+  if (pBtn) pBtn.textContent = "Pause";
+  timerInt = setInterval(function() {
+    var isReadingTab = document.getElementById("t3").checked;
+    var isReaderOpen = document.getElementById("libReaderView").style.display === "block";
+    if (!isReadingTab || !isReaderOpen || document.hidden || timerPaused || curReadIdx < 0 || !reads[curReadIdx]) return;
+
+    var r = reads[curReadIdx];
+    r.timeSec = (r.timeSec || 0) + 1;
+
+    var key = getDateKey(new Date());
+    if (!readLog[key]) readLog[key] = { totalSec: 0, articles: {} };
+    readLog[key].totalSec = (readLog[key].totalSec || 0) + 1;
+    readLog[key].articles[r.title] = (readLog[key].articles[r.title] || 0) + 1;
+
+    document.getElementById("liveTimer").textContent = "Reading: " + fmtClock(r.timeSec);
+    updateHeaderBadge();
+
+    tickCounter++;
+    if (tickCounter % 5 === 0) {
+      sv("eng_readings", reads);
+      saveLog();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInt) { clearInterval(timerInt); timerInt = null; }
+  sv("eng_readings", reads);
+  saveLog();
+}
+
+function togglePause() {
+  timerPaused = !timerPaused;
+  document.getElementById("pauseBtn").textContent = timerPaused ? "Resume" : "Pause";
+}
+
+var origOpenR = openR;
+openR = function(i) {
+  origOpenR(i);
+  var r = reads[i];
+  document.getElementById("liveTimer").textContent = "Reading: " + fmtClock(r ? (r.timeSec || 0) : 0);
+  startTimer();
+};
+
+var origCloseR = closeR;
+closeR = function() {
+  stopTimer();
+  origCloseR();
+  renderCal();
+};
+
+renderR = function() {
+  var q = (document.getElementById("libSearch") ? document.getElementById("libSearch").value : "").toLowerCase();
+  document.getElementById("libCnt").textContent = reads.length;
+  var html = "";
+  reads.forEach(function(r, i) {
+    if (r.title.toLowerCase().indexOf(q) === -1 && r.text.toLowerCase().indexOf(q) === -1) return;
+    var wc = r.text.split(/\s+/).length;
+    var readSpent = r.timeSec ? "Read: " + fmtDuration(r.timeSec) : "Not read yet";
+    var meta = [r.domain, wc + " words", readSpent].filter(Boolean).join(" • ");
+    html += '<div class="lib-item" onclick="openR(' + i + ')"><div><strong>' + esc(r.title) + '</strong><div class="lib-meta">' + esc(meta) + '</div></div><button type="button" class="btn btn-o btn-s" onclick="event.stopPropagation();delR(' + i + ')">✕</button></div>';
+  });
+  document.getElementById("rL").innerHTML = html || '<p style="color:var(--muted);">No saved texts yet. Paste a link above.</p>';
+};
+
+var calDate = new Date();
+var selectedDayKey = getDateKey(new Date());
+
+function shiftMonth(delta) {
+  calDate = new Date(calDate.getFullYear(), calDate.getMonth() + delta, 1);
+  renderCal();
+}
+
+function selectCalDay(key) {
+  selectedDayKey = key;
+  renderCal();
+}
+
+function renderCal() {
+  var year = calDate.getFullYear(), month = calDate.getMonth();
+  var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  document.getElementById("calTitle").textContent = monthNames[month] + " " + year;
+
+  var dows = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  var html = dows.map(function(d) { return '<div class="cal-dow">' + d + '</div>'; }).join("");
+
+  var firstDay = new Date(year, month, 1).getDay();
+  var offset = (firstDay === 0) ? 6 : firstDay - 1;
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (var e = 0; e < offset; e++) html += '<div class="cal-day empty"></div>';
+
+  for (var day = 1; day <= daysInMonth; day++) {
+    var key = year + "-" + pad2(month + 1) + "-" + pad2(day);
+    var rec = readLog[key];
+    var sec = rec ? (rec.totalSec || 0) : 0;
+    var cls = "cal-day" + (sec > 0 ? " has-read" : "") + (key === selectedDayKey ? " selected" : "");
+    var minLabel = sec > 0 ? (sec < 60 ? "<1m" : Math.floor(sec / 60) + "m") : "";
+    html += '<div class="' + cls + '" onclick="selectCalDay(\'' + key + '\')"><span class="cal-num">' + day + '</span><span class="cal-min">' + minLabel + '</span></div>';
+  }
+  document.getElementById("calGrid").innerHTML = html;
+  renderDayDetails();
+}
+
+function renderDayDetails() {
+  document.getElementById("dayDetailTitle").textContent = "Reading Log: " + selectedDayKey.split("-").reverse().join(".");
+  var rec = readLog[selectedDayKey];
+  if (!rec || !rec.totalSec) {
+    document.getElementById("dayDetailTotal").textContent = "0 min";
+    document.getElementById("dayDetailList").innerHTML = '<p style="color:var(--muted);">No reading recorded on this day.</p>';
+    return;
+  }
+  document.getElementById("dayDetailTotal").textContent = "Total: " + fmtDuration(rec.totalSec);
+  var arts = rec.articles || {};
+  var keys = Object.keys(arts);
+  document.getElementById("dayDetailList").innerHTML = keys.map(function(title) {
+    return '<div class="day-log-item"><strong>' + esc(title) + '</strong><span style="color:var(--primary); font-weight:600;">' + fmtDuration(arts[title]) + '</span></div>';
+  }).join("");
+}
+
+renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
+document.getElementById("logo").textContent = "My English Hub v15 • OK";
 </script>
 </body>
 </html>
