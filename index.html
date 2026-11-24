@@ -259,8 +259,8 @@ function renderQ() {
         if (x.textContent === it.correct) x.classList.add("correct");
       });
       ans++;
-      if (o === it.correct) { sc++; document.getElementById("qF").textContent = "✅ Correct!"; }
-      else { b.classList.add("wrong"); document.getElementById("qF").textContent = "❌ Correct: " + it.correct; }
+            if (o === it.correct) { sc++; document.getElementById("qF").textContent = "Correct!"; }
+      else { b.classList.add("wrong"); document.getElementById("qF").textContent = "Incorrect. Correct: " + it.correct; }
       document.getElementById("qSc").textContent = "Score: " + sc + " / " + ans;
     };
     box.appendChild(b);
@@ -320,10 +320,14 @@ function importUrl() {
   if (!/^https?:\/\//i.test(url)) url = "https://" + url;
 
   var box = document.getElementById("rM");
-  box.textContent = "⏳ Extracting clean text from link...";
+  box.textContent = "Extracting clean text from link...";
   box.className = "msg ok";
 
-  fetch("https://jina.ai" + url)
+  var p1 = "https://r." + "jina.ai/" + url;
+  var p2 = "https://api." + "allorigins.win/raw?url=" + encodeURIComponent(url);
+  var p3 = "https://api." + "://codetabs.com" + encodeURIComponent(url);
+
+  fetch(p1)
     .then(function(res) { if (!res.ok) throw new Error("P1"); return res.text(); })
     .then(function(raw) {
       var parsed = cleanParsed(raw, url);
@@ -331,17 +335,17 @@ function importUrl() {
       finishImport(parsed.title, parsed.text, url);
     })
     .catch(function() {
-      fetch("https://codetabs.com" + encodeURIComponent(url))
+      fetch(p2)
         .then(function(r) { if (!r.ok) throw new Error("P2"); return r.text(); })
         .then(function(html) {
           var res = extractFromHtml(html, url);
           finishImport(res.title, res.text, url);
         })
         .catch(function() {
-          fetch("https://allorigins.win" + encodeURIComponent(url))
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-              var res = extractFromHtml(data.contents, url);
+          fetch(p3)
+            .then(function(r) { if (!r.ok) throw new Error("P3"); return r.text(); })
+            .then(function(html) {
+              var res = extractFromHtml(html, url);
               finishImport(res.title, res.text, url);
             })
             .catch(function() {
