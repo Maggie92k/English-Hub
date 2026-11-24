@@ -114,7 +114,10 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
       <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
         <h2 style="margin:0;">British Irregular Verbs</h2>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="timer-pill" id="ivTimer">Time: 00:00</span>
+          <button type="button" class="btn btn-o btn-s" id="ivPauseBtn" onclick="toggleIvPause()">Pause</button>
           <span class="badge" id="ivProg">Known: 0 / 137</span>
+          <button type="button" class="btn btn-o btn-s" onclick="shuffleIv()">Shuffle</button>
           <button type="button" class="btn btn-o btn-s" id="ivSoundBtn" onclick="toggleIvSound()">Sound: OFF</button>
           <button type="button" class="btn btn-o btn-s" onclick="resetIv()">Reset</button>
         </div>
@@ -628,6 +631,18 @@ function resetIv() {
   sv("eng_iv_known", ivKnown);
   renderIV(true);
 }
+  
+  function shuffleIv() {
+  for (var i = ivVerbs.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = ivVerbs[i];
+    ivVerbs[i] = ivVerbs[j];
+    ivVerbs[j] = tmp;
+  }
+  ivIdx = 0;
+  ivFlipped = false;
+  renderIV(true);
+}
 
 function renderIvList() {
   var box = document.getElementById("ivTable");
@@ -864,46 +879,66 @@ var readLog = {};
 try { readLog = JSON.parse(localStorage.getItem("eng_read_log")) || {}; } catch (e) { readLog = {}; }
 function saveLog() { try { localStorage.setItem("eng_read_log", JSON.stringify(readLog)); } catch (e) {} }
 
-var timerInt = null, timerPaused = false, tickCounter = 0;
+var timerInt = null, timerPaused = false, ivPaused = false, tickCounter = 0;
+var ivSec = 0;
+try { ivSec = Number(localStorage.getItem("eng_iv_sec")) || 0; } catch (e) { ivSec = 0; }
 
 function updateHeaderBadge() {
   var today = readLog[getDateKey(new Date())];
   var sec = today ? (today.totalSec || 0) : 0;
   var mins = Math.floor(sec / 60);
-  document.getElementById("hdrProg").textContent = "Today: " + (sec > 0 && mins === 0 ? "<1 min" : mins + " min") + " read";
+  document.getElementById("hdrProg").textContent = "Today: " + (sec > 0 && mins === 0 ? "<1 min" : mins + " min");
+  var ivEl = document.getElementById("ivTimer");
+  if (ivEl) ivEl.textContent = "Time: " + fmtClock(ivSec);
 }
 
-function startTimer() {
-  stopTimer();
-  timerPaused = false;
-  var pBtn = document.getElementById("pauseBtn");
-  if (pBtn) pBtn.textContent = "Pause";
-  timerInt = setInterval(function() {
-    var isReadingTab = document.getElementById("t3").checked;
-    var isReaderOpen = document.getElementById("libReaderView").style.display === "block";
-    if (!isReadingTab || !isReaderOpen || document.hidden || timerPaused || curReadIdx < 0 || !reads[curReadIdx]) return;
+function toggleIvPause() {
+  ivPaused = !ivPaused;
+  var btn = document.getElementById("ivPauseBtn");
+  if (btn) btn.textContent = ivPaused ? "Resume" : "Pause";
+}
 
+setInterval(function() {
+  if (document.hidden) return;
+  var key = getDateKey(new Date());
+
+  var isReadingTab = document.getElementById("t3").checked;
+  var isReaderOpen = document.getElementById("libReaderView").style.display === "block";
+  if (isReadingTab && isReaderOpen && !timerPaused && curReadIdx >= 0 && reads[curReadIdx]) {
     var r = reads[curReadIdx];
     r.timeSec = (r.timeSec || 0) + 1;
-
-    var key = getDateKey(new Date());
     if (!readLog[key]) readLog[key] = { totalSec: 0, articles: {} };
     readLog[key].totalSec = (readLog[key].totalSec || 0) + 1;
     readLog[key].articles[r.title] = (readLog[key].articles[r.title] || 0) + 1;
-
     document.getElementById("liveTimer").textContent = "Reading: " + fmtClock(r.timeSec);
     updateHeaderBadge();
+    tickCounter++;
+    if (tickCounter % 5 === 0) { sv("eng_readings", reads); saveLog(); }
+  }
 
+  var isGrammarTab = document.getElementById("t2").checked;
+  if (isGrammarTab && !ivPaused) {
+    ivSec++;
+    if (!readLog[key]) readLog[key] = { totalSec: 0, articles: {} };
+    readLog[key].totalSec = (readLog[key].totalSec || 0) + 1;
+    readLog[key].articles["Grammar: British Irregular Verbs"] = (readLog[key].articles["Grammar: British Irregular Verbs"] || 0) + 1;
+    updateHeaderBadge();
     tickCounter++;
     if (tickCounter % 5 === 0) {
-      sv("eng_readings", reads);
+      try { localStorage.setItem("eng_iv_sec", String(ivSec)); } catch (e) {}
       saveLog();
+      if (document.getElementById("t4").checked) renderCal();
     }
-  }, 1000);
+  }
+}, 1000);
+
+function startTimer() {
+  timerPaused = false;
+  var pBtn = document.getElementById("pauseBtn");
+  if (pBtn) pBtn.textContent = "Pause";
 }
 
 function stopTimer() {
-  if (timerInt) { clearInterval(timerInt); timerInt = null; }
   sv("eng_readings", reads);
   saveLog();
 }
@@ -1216,7 +1251,7 @@ window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
-document.getElementById("logo").textContent = "My English Hub v21 • OK";
+document.getElementById("logo").textContent = "My English Hub v22 • OK";
 </script>
 </body>
 </html>
