@@ -102,10 +102,8 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
     <div id="libListView">
       <div class="card">
 <h2>Import Article by Link</h2>
-        <div class="row">
-          <input id="rUrl" placeholder="Paste article URL (https://...)" onkeydown="if(event.key==='Enter')importUrl()">
-          <button type="button" class="btn" style="flex:0 0 auto;" onclick="importUrl()">Extract & Save</button>
-        </div>
+       <div class="row"><textarea id="wD" rows="1" oninput="autoGrow(this)" placeholder="Definition in English" style="overflow:hidden;"></textarea></div><div class="row"><textarea id="wE" rows="1" oninput="autoGrow(this)" placeholder="Example sentence (optional)" style="overflow:hidden;"></textarea>
+       </div>
         <div id="rM" class="msg"></div>
         <details class="manual-box">
           <summary>+ Or paste text manually (if site requires login)</summary>
@@ -313,6 +311,8 @@ function addW() {
   var d = document.getElementById("wD").value.trim() || "No definition added yet";
   var g = document.getElementById("wG").value;
   var e = document.getElementById("wE").value.trim();
+  document.getElementById("wD").style.height = "auto";
+document.getElementById("wE").style.height = "auto";
   if (!t) return msg("wM", "Please enter a word.", true);
   words.unshift({ term: t, def: d, tag: g, ex: e });
   editWordIdx = -1;
@@ -759,7 +759,7 @@ function lookupSelection() {
 document.addEventListener("mouseup", function() { setTimeout(lookupSelection, 50); });
 document.addEventListener("touchend", function() { setTimeout(lookupSelection, 200); });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
-document.getElementById("logo").textContent = "My English Hub v17 • OK";
+document.getElementById("logo").textContent = "My English Hub v19 • OK";
 </script>
 </body>
 </html>
