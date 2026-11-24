@@ -66,14 +66,14 @@ details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem
   </style>
 </head>
 <body>
-<header><div class="wrap top"><div class="logo" id="logo">📘 My English Hub v14</div><div><span class="badge" id="hdrProg">Today: 0% done</span><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"><span>☀️</span><span>🌙</span></span></label></div></div></header>
+<header><div class="wrap top"><div class="logo" id="logo">My English Hub v14</div><div><span class="badge" id="hdrProg">Today: 0% done</span><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
 <div class="wrap">
   <input type="radio" name="t" id="t1" class="tab-r" checked><input type="radio" name="t" id="t2" class="tab-r"><input type="radio" name="t" id="t3" class="tab-r"><input type="radio" name="t" id="t4" class="tab-r">
   <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
   <section id="s1" class="sec">
     <div class="card"><h2>Flashcard Practice</h2><div class="fc" onclick="flipFC()"><div class="fc-w" id="fcF">keep track of</div><div class="fc-h" id="fcB">Click card to reveal definition & example</div></div><div style="display:flex;gap:10px;justify-content:center;"><button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button><button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button></div></div>
     <div class="card"><h2>Add New Word</h2><div class="row"><input id="wT" placeholder="Word or phrase" onkeydown="if(event.key==='Enter')addW()"><select id="wG" style="max-width:210px;"><option value="Phrasal Verb">Phrasal Verb</option><option value="Vocabulary">Vocabulary</option><option value="Idiom">Idiom</option><option value="Grammar Form">Grammar Form</option></select></div><div class="row"><input id="wD" placeholder="Definition in English" onkeydown="if(event.key==='Enter')addW()"></div><div class="row"><input id="wE" placeholder="Example sentence (optional)" onkeydown="if(event.key==='Enter')addW()"></div><button type="button" class="btn" onclick="addW()">+ Save to Dictionary</button><div id="wM" class="msg"></div></div>
-    <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">🔗 Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvC">0</span></div><div id="pvL" class="pv-grid"></div></div>
+<div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvC">0</span></div><div id="pvL" class="pv-grid"></div></div>
     <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">All Dictionary Entries (<span id="wC">0</span>)</h2><input id="qS" placeholder="Search..." oninput="renderW()" style="max-width:220px;"></div><div id="wL"></div></div>
   </section>
   <section id="s2" class="sec">
@@ -83,10 +83,10 @@ details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem
     <section id="s3" class="sec">
     <div id="libListView">
       <div class="card">
-        <h2>🌐 Import Article by Link</h2>
+<h2>Import Article by Link</h2>
         <div class="row">
           <input id="rUrl" placeholder="Paste article URL (https://...)" onkeydown="if(event.key==='Enter')importUrl()">
-          <button type="button" class="btn" style="flex:0 0 auto;" onclick="importUrl()">✨ Extract & Save</button>
+          <button type="button" class="btn" style="flex:0 0 auto;" onclick="importUrl()">Extract & Save</button>
         </div>
         <div id="rM" class="msg"></div>
         <details class="manual-box">
@@ -101,7 +101,7 @@ details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem
       </div>
       <div class="card">
         <div class="top" style="margin-bottom:12px;">
-          <h2 style="margin:0;">📚 My Reading Library (<span id="libCnt">0</span>)</h2>
+          <h2 style="margin:0;">My Reading Library (<span id="libCnt">0</span>)</h2>
           <input id="libSearch" placeholder="Search library..." oninput="renderR()" style="max-width:210px;">
         </div>
         <div id="rL"></div>
@@ -117,7 +117,7 @@ details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem
         <h2 id="readTitle" style="font-size:1.3rem; margin-top:8px;"></h2>
         <div id="readMeta" class="lib-meta"></div>
         <div id="readBody" class="reader-body"></div>
-        <h3 style="font-size:1rem; margin-bottom:6px;">📝 My Notes & Vocabulary</h3>
+        <h3 style="font-size:1rem; margin-bottom:6px;">My Notes & Vocabulary</h3>
         <textarea id="readNotes" rows="3" placeholder="Write new words, grammar notes or summary here..." oninput="saveNote()"></textarea>
       </div>
     </div>
@@ -300,6 +300,19 @@ function cleanParsed(raw, url) {
   return { title: title, text: text };
 }
 
+function extractFromHtml(html, url) {
+  var doc = new DOMParser().parseFromString(html || "", "text/html");
+  doc.querySelectorAll("script,style,nav,header,footer,aside,form,noscript,iframe").forEach(function(el) { el.remove(); });
+  var h1 = doc.querySelector("h1") || doc.querySelector("title");
+  var title = h1 ? h1.textContent.trim() : url;
+  var paras = Array.from(doc.querySelectorAll("article p, main p, .post-content p, p"))
+    .map(function(p) { return p.textContent.trim(); })
+    .filter(function(t) { return t.length > 35; });
+  var clean = Array.from(new Set(paras)).join("\n\n");
+  if (clean.length < 60) throw new Error("Empty");
+  return { title: title, text: clean };
+}
+
 function importUrl() {
   var inp = document.getElementById("rUrl");
   var url = inp.value.trim();
@@ -311,28 +324,29 @@ function importUrl() {
   box.className = "msg ok";
 
   fetch("https://jina.ai" + url)
-    .then(function(res) { if (!res.ok) throw new Error("Proxy 1 failed"); return res.text(); })
+    .then(function(res) { if (!res.ok) throw new Error("P1"); return res.text(); })
     .then(function(raw) {
       var parsed = cleanParsed(raw, url);
-      if (parsed.text.length < 80) throw new Error("Too short");
+      if (parsed.text.length < 60) throw new Error("Short");
       finishImport(parsed.title, parsed.text, url);
     })
     .catch(function() {
-      fetch("https://allorigins.win" + encodeURIComponent(url))
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          var doc = new DOMParser().parseFromString(data.contents || "", "text/html");
-          doc.querySelectorAll("script,style,nav,header,footer,aside,form,noscript,iframe").forEach(function(el) { el.remove(); });
-          var title = (doc.querySelector("h1") || doc.querySelector("title") || { textContent: url }).textContent.trim();
-          var paras = Array.from(doc.querySelectorAll("article p, main p, p"))
-            .map(function(p) { return p.textContent.trim(); })
-            .filter(function(t) { return t.length > 35; });
-          var clean = Array.from(new Set(paras)).join("\n\n");
-          if (!clean) throw new Error("Empty");
-          finishImport(title, clean, url);
+      fetch("https://codetabs.com" + encodeURIComponent(url))
+        .then(function(r) { if (!r.ok) throw new Error("P2"); return r.text(); })
+        .then(function(html) {
+          var res = extractFromHtml(html, url);
+          finishImport(res.title, res.text, url);
         })
         .catch(function() {
-          msg("rM", "❌ Could not auto-extract this site. Use 'paste text manually' below.", true);
+          fetch("https://allorigins.win" + encodeURIComponent(url))
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              var res = extractFromHtml(data.contents, url);
+              finishImport(res.title, res.text, url);
+            })
+            .catch(function() {
+              msg("rM", "❌ Could not auto-extract this site. Use 'paste text manually' below.", true);
+            });
         });
     });
 }
@@ -414,7 +428,7 @@ function addH() {
 }
 
 renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderH();
-document.getElementById("logo").textContent = "📘 My English Hub v14 • OK";
+document.getElementById("logo").textContent = "My English Hub v14 • OK";
 </script>
 </body>
 </html>
