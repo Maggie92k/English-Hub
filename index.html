@@ -323,33 +323,51 @@ function importUrl() {
   box.textContent = "Extracting clean text from link...";
   box.className = "msg ok";
 
+  var wikiMatch = url.match(/^https?:\/\/([a-z]{2,3})\.wikipedia\.org\/wiki\/([^#?]+)/i);
+  if (wikiMatch) {
+    var lang = wikiMatch[1], slug = wikiMatch[2];
+    fetch("https://" + lang + ".wikipedia.org/api/rest_v1/page/summary/" + slug)
+      .then(function(r) { if (!r.ok) throw new Error("Wiki"); return r.json(); })
+      .then(function(d) {
+        if (!d.extract) throw new Error("Empty");
+        finishImport(d.title || slug, d.extract, url);
+      })
+      .catch(function(e) { runProxies(url, e.message); });
+    return;
+  }
+  runProxies(url, "");
+}
+
+function runProxies(url, prevErr) {
   var p1 = "https://r." + "jina.ai/" + url;
-  var p2 = "https://api." + "allorigins.win/raw?url=" + encodeURIComponent(url);
+  var p2 = "https://api." + "allorigins.win/get?url=" + encodeURIComponent(url);
   var p3 = "https://api." + "://codetabs.com" + encodeURIComponent(url);
 
   fetch(p1)
-    .then(function(res) { if (!res.ok) throw new Error("P1"); return res.text(); })
+    .then(function(res) { if (!res.ok) throw new Error("Jina " + res.status); return res.text(); })
     .then(function(raw) {
       var parsed = cleanParsed(raw, url);
-      if (parsed.text.length < 60) throw new Error("Short");
+      if (parsed.text.length < 60) throw new Error("Short text");
       finishImport(parsed.title, parsed.text, url);
     })
-    .catch(function() {
+    .catch(function(e1) {
       fetch(p2)
-        .then(function(r) { if (!r.ok) throw new Error("P2"); return r.text(); })
-        .then(function(html) {
-          var res = extractFromHtml(html, url);
+        .then(function(r) { if (!r.ok) throw new Error("AO " + r.status); return r.json(); })
+        .then(function(data) {
+          var res = extractFromHtml(data.contents, url);
           finishImport(res.title, res.text, url);
         })
-        .catch(function() {
+        .catch(function(e2) {
           fetch(p3)
-            .then(function(r) { if (!r.ok) throw new Error("P3"); return r.text(); })
+            .then(function(r) { if (!r.ok) throw new Error("CT " + r.status); return r.text(); })
             .then(function(html) {
               var res = extractFromHtml(html, url);
               finishImport(res.title, res.text, url);
             })
-            .catch(function() {
-              msg("rM", "❌ Could not auto-extract this site. Use 'paste text manually' below.", true);
+            .catch(function(e3) {
+              var det = document.querySelector("details.manual-box");
+              if (det) det.open = true;
+              msg("rM", "❌ Could not auto-extract (" + e1.message + " / " + e2.message + "). Paste text manually below.", true);
             });
         });
     });
