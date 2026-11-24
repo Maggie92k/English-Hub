@@ -57,6 +57,12 @@ body.dark .q-opt { color:#F3F4F6; }
     .h-row.done span { text-decoration:line-through; color:var(--muted); }
     .bar { background:var(--border); height:10px; border-radius:99px; overflow:hidden; margin:10px 0 14px; }
     .fill { background:var(--ok); height:100%; width:0%; }
+    .lib-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; cursor:pointer; background:var(--bg); transition:.15s; gap:10px; }
+.lib-item:hover { border-color:var(--primary); }
+.lib-meta { font-size:.8rem; color:var(--muted); margin-top:2px; }
+.reader-body { background:var(--bg); padding:18px; border-radius:12px; white-space:pre-wrap; font-size:1.05rem; line-height:1.75; margin:14px 0; border:1px solid var(--border); }
+details.manual-box { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
+details.manual-box summary { cursor:pointer; color:var(--muted); font-size:.9rem; font-weight:600; }
   </style>
 </head>
 <body>
@@ -74,9 +80,47 @@ body.dark .q-opt { color:#F3F4F6; }
     <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Grammar & Verb Forms Quiz</h2><span class="badge" id="qSc">Score: 0 / 0</span></div><p id="qT" style="font-weight:600;margin-bottom:10px;"></p><div id="qO"></div><p id="qF" style="margin-top:8px;font-weight:600;"></p><button type="button" class="btn" style="margin-top:10px;" onclick="nextQ()">Next Question →</button></div>
     <div class="card"><h2>Add Your Own Question</h2><div class="row"><input id="qP" placeholder="Question"><input id="qC" placeholder="Correct answer"></div><div class="row"><input id="qW1" placeholder="Wrong option 1"><input id="qW2" placeholder="Wrong option 2"></div><button type="button" class="btn btn-o" onclick="addQ()">+ Add to Quiz</button><div id="qM" class="msg"></div></div>
   </section>
-  <section id="s3" class="sec">
-    <div class="card"><h2>Save Text / Excerpt with Notes</h2><input id="rT" placeholder="Title" style="margin-bottom:10px;"><textarea id="rB" rows="4" placeholder="Paste English text here..." style="margin-bottom:10px;"></textarea><textarea id="rN" rows="2" placeholder="Your notes..." style="margin-bottom:10px;"></textarea><button type="button" class="btn" onclick="addR()">+ Save Text</button><div id="rM" class="msg"></div></div>
-    <div id="rL"></div>
+    <section id="s3" class="sec">
+    <div id="libListView">
+      <div class="card">
+        <h2>🌐 Import Article by Link</h2>
+        <div class="row">
+          <input id="rUrl" placeholder="Paste article URL (https://...)" onkeydown="if(event.key==='Enter')importUrl()">
+          <button type="button" class="btn" style="flex:0 0 auto;" onclick="importUrl()">✨ Extract & Save</button>
+        </div>
+        <div id="rM" class="msg"></div>
+        <details class="manual-box">
+          <summary>+ Or paste text manually (if site requires login)</summary>
+          <div style="margin-top:10px;">
+            <input id="rT" placeholder="Title" style="margin-bottom:8px;">
+            <textarea id="rB" rows="4" placeholder="Paste English text here..." style="margin-bottom:8px;"></textarea>
+            <textarea id="rN" rows="2" placeholder="Your notes..." style="margin-bottom:8px;"></textarea>
+            <button type="button" class="btn btn-o btn-s" onclick="addR()">Save Manual Text</button>
+          </div>
+        </details>
+      </div>
+      <div class="card">
+        <div class="top" style="margin-bottom:12px;">
+          <h2 style="margin:0;">📚 My Reading Library (<span id="libCnt">0</span>)</h2>
+          <input id="libSearch" placeholder="Search library..." oninput="renderR()" style="max-width:210px;">
+        </div>
+        <div id="rL"></div>
+      </div>
+    </div>
+
+    <div id="libReaderView" style="display:none;">
+      <div class="card">
+        <div class="top" style="margin-bottom:10px;">
+          <button type="button" class="btn btn-o btn-s" onclick="closeR()">← Back to Library</button>
+          <a id="readSrc" href="#" target="_blank" style="color:var(--primary); font-size:.85rem; font-weight:600; text-decoration:none;">Open original ↗</a>
+        </div>
+        <h2 id="readTitle" style="font-size:1.3rem; margin-top:8px;"></h2>
+        <div id="readMeta" class="lib-meta"></div>
+        <div id="readBody" class="reader-body"></div>
+        <h3 style="font-size:1rem; margin-bottom:6px;">📝 My Notes & Vocabulary</h3>
+        <textarea id="readNotes" rows="3" placeholder="Write new words, grammar notes or summary here..." oninput="saveNote()"></textarea>
+      </div>
+    </div>
   </section>
   <section id="s4" class="sec">
     <div class="card"><h2>Daily Practice Checklist</h2><div class="bar"><div class="fill" id="dB"></div></div><div id="hL"></div><div style="display:flex;gap:10px;margin-top:10px;"><input id="hI" placeholder="Add new daily habit..."><button type="button" class="btn" onclick="addH()">Add</button></div></div>
@@ -233,19 +277,124 @@ function addQ() {
   msg("qM", "✓ Question added!", false);
 }
 
-function renderR() {
-  document.getElementById("rL").innerHTML = reads.map(function(r, i) {
-    return '<div class="card"><div class="top"><strong>' + r.title + '</strong><button type="button" class="btn btn-o btn-s" onclick="delR(' + i + ')">Delete</button></div><div class="r-txt">' + r.text + '</div>' + (r.notes ? '<p><strong>Notes:</strong> ' + r.notes + '</p>' : '') + '</div>';
-  }).join("");
+var curReadIdx = -1;
+function esc(s) { return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function cleanParsed(raw, url) {
+  var title = "", text = raw;
+  var tm = raw.match(/^Title:\s*(.+)$/m);
+  if (tm) title = tm[1].trim();
+  var idx = raw.indexOf("Markdown Content:");
+  if (idx !== -1) text = raw.slice(idx + 17);
+  text = text
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/[*_`~]+/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  if (!title) {
+    var firstLine = text.split("\n")[0] || url;
+    title = firstLine.slice(0, 70);
+  }
+  return { title: title, text: text };
 }
+
+function importUrl() {
+  var inp = document.getElementById("rUrl");
+  var url = inp.value.trim();
+  if (!url) return msg("rM", "Please paste a link first.", true);
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+
+  var box = document.getElementById("rM");
+  box.textContent = "⏳ Extracting clean text from link...";
+  box.className = "msg ok";
+
+  fetch("https://jina.ai" + url)
+    .then(function(res) { if (!res.ok) throw new Error("Proxy 1 failed"); return res.text(); })
+    .then(function(raw) {
+      var parsed = cleanParsed(raw, url);
+      if (parsed.text.length < 80) throw new Error("Too short");
+      finishImport(parsed.title, parsed.text, url);
+    })
+    .catch(function() {
+      fetch("https://allorigins.win" + encodeURIComponent(url))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var doc = new DOMParser().parseFromString(data.contents || "", "text/html");
+          doc.querySelectorAll("script,style,nav,header,footer,aside,form,noscript,iframe").forEach(function(el) { el.remove(); });
+          var title = (doc.querySelector("h1") || doc.querySelector("title") || { textContent: url }).textContent.trim();
+          var paras = Array.from(doc.querySelectorAll("article p, main p, p"))
+            .map(function(p) { return p.textContent.trim(); })
+            .filter(function(t) { return t.length > 35; });
+          var clean = Array.from(new Set(paras)).join("\n\n");
+          if (!clean) throw new Error("Empty");
+          finishImport(title, clean, url);
+        })
+        .catch(function() {
+          msg("rM", "❌ Could not auto-extract this site. Use 'paste text manually' below.", true);
+        });
+    });
+}
+
+function finishImport(title, text, url) {
+  var domain = "";
+  try { domain = new URL(url).hostname.replace(/^www\./, ""); } catch (e) {}
+  reads.unshift({ title: title, text: text, notes: "", url: url, domain: domain, date: new Date().toLocaleDateString() });
+  sv("eng_readings", reads);
+  document.getElementById("rUrl").value = "";
+  renderR();
+  openR(0);
+  msg("rM", "✓ Article saved to Library!", false);
+}
+
+function renderR() {
+  var q = (document.getElementById("libSearch") ? document.getElementById("libSearch").value : "").toLowerCase();
+  document.getElementById("libCnt").textContent = reads.length;
+  var html = "";
+  reads.forEach(function(r, i) {
+    if (r.title.toLowerCase().indexOf(q) === -1 && r.text.toLowerCase().indexOf(q) === -1) return;
+    var meta = [r.domain, r.date, Math.max(1, Math.round(r.text.split(/\s+/).length / 200)) + " min read"].filter(Boolean).join(" • ");
+    html += '<div class="lib-item" onclick="openR(' + i + ')"><div><strong>' + esc(r.title) + '</strong><div class="lib-meta">' + esc(meta) + '</div></div><button type="button" class="btn btn-o btn-s" onclick="event.stopPropagation();delR(' + i + ')">✕</button></div>';
+  });
+  document.getElementById("rL").innerHTML = html || '<p style="color:var(--muted);">No saved texts yet. Paste a link above!</p>';
+}
+
+function openR(i) {
+  var r = reads[i];
+  if (!r) return;
+  curReadIdx = i;
+  document.getElementById("libListView").style.display = "none";
+  document.getElementById("libReaderView").style.display = "block";
+  document.getElementById("readTitle").textContent = r.title;
+  document.getElementById("readMeta").textContent = [r.domain, r.date].filter(Boolean).join(" • ");
+  document.getElementById("readBody").textContent = r.text;
+  document.getElementById("readNotes").value = r.notes || "";
+  var link = document.getElementById("readSrc");
+  if (r.url) { link.href = r.url; link.style.display = "inline"; } else { link.style.display = "none"; }
+}
+
+function closeR() {
+  document.getElementById("libReaderView").style.display = "none";
+  document.getElementById("libListView").style.display = "block";
+  renderR();
+}
+
+function saveNote() {
+  if (curReadIdx < 0 || !reads[curReadIdx]) return;
+  reads[curReadIdx].notes = document.getElementById("readNotes").value;
+  sv("eng_readings", reads);
+}
+
 function delR(i) { reads.splice(i, 1); sv("eng_readings", reads); renderR(); }
+
 function addR() {
   var t = document.getElementById("rT").value.trim(), b = document.getElementById("rB").value.trim(), n = document.getElementById("rN").value.trim();
   if (!t || !b) return msg("rM", "Enter Title and Text.", true);
-  reads.unshift({ title: t, text: b, notes: n });
+  reads.unshift({ title: t, text: b, notes: n, date: new Date().toLocaleDateString() });
   sv("eng_readings", reads);
   ["rT", "rB", "rN"].forEach(function(id) { document.getElementById(id).value = ""; });
-  renderR(); msg("rM", "✓ Saved!", false);
+  renderR(); msg("rM", "✓ Saved to Library!", false);
 }
 
 function renderH() {
