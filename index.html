@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My English Hub v14</title>
+  .sync-btn { margin-left:8px; padding:5px 11px; font-size:.8rem; border-radius:99px; }
+.sync-modal { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:120; display:none; align-items:center; justify-content:center; padding:16px; }
+.sync-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; width:min(440px, 100%); box-shadow:0 16px 40px rgba(0,0,0,.3); }
   <style>
 :root { --bg:#f6f7fb; --card:#fff; --text:#1e2433; --muted:#647087; --primary:#E038AD; --accent:#fce7f3; --border:#e2e8f0; --ok:#16a34a; --err:#dc2626; }body.dark { --bg:#121016; --card:#1C1824; --text:#F3F4F6; --muted:#9CA3AF; --primary:#E038AD; --accent:#361933; --border:#2E283B; }
 body.dark input, body.dark textarea, body.dark select { background:#121016; color:#F3F4F6; }
@@ -16,7 +19,20 @@ body.dark .q-opt { color:#F3F4F6; }
 .theme-switch input:checked + .slider:before { transform:translateX(26px); }
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; padding-bottom:50px; }
-    header { background:var(--card); border-bottom:1px solid var(--border); padding:14px 20px; position:sticky; top:0; z-index:10; }
+<header><div class="wrap top"><div class="logo" id="logo">My English Hub v14</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><span class="badge" id="hdrProg">Today: 0% done</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
+<div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
+  <div class="sync-card">
+    <div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">GitHub Cloud Sync</h2><button type="button" class="btn btn-o btn-s" onclick="closeSync()">✕</button></div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px;">Paste your GitHub Token (with <b>gist</b> scope). Your dictionary, library and reading calendar will sync automatically across all devices.</p>
+    <input id="ghTokenInp" type="password" placeholder="ghp_..." style="margin-bottom:10px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" class="btn btn-s" onclick="saveSyncToken()">Connect & Sync</button>
+      <button type="button" class="btn btn-o btn-s" onclick="syncNow(true)">Pull Latest</button>
+      <button type="button" class="btn btn-o btn-s" onclick="disconnectSync()">Disconnect</button>
+    </div>
+    <div id="syncMsg" class="msg"></div>
+  </div>
+</div>
     .wrap { max-width:900px; margin:0 auto; padding:0 16px; }
     .top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
     .logo { font-size:1.15rem; font-weight:700; color:var(--primary); }
@@ -758,6 +774,162 @@ function lookupSelection() {
 
 document.addEventListener("mouseup", function() { setTimeout(lookupSelection, 50); });
 document.addEventListener("touchend", function() { setTimeout(lookupSelection, 200); });
+  var GIST_FILE = "my-english-hub-sync.json";
+var syncTimer = null, isPulling = false;
+
+function getGhApi() { return "https://" + ["api", "github", "com"].join(".") + "/gists"; }
+function setSyncLabel(txt) { var b = document.getElementById("syncBtn"); if (b) b.textContent = txt; }
+
+function openSync() {
+  var tok = "";
+  try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
+  document.getElementById("ghTokenInp").value = tok;
+  document.getElementById("syncModal").style.display = "flex";
+}
+function closeSync() { document.getElementById("syncModal").style.display = "none"; }
+
+function saveSyncToken() {
+  var tok = document.getElementById("ghTokenInp").value.trim();
+  if (!tok) return msg("syncMsg", "Please paste your GitHub token.", true);
+  try {
+    localStorage.setItem("eng_gh_token", tok);
+    localStorage.removeItem("eng_gist_id");
+  } catch (e) {}
+  syncNow(false);
+}
+
+function disconnectSync() {
+  try {
+    localStorage.removeItem("eng_gh_token");
+    localStorage.removeItem("eng_gist_id");
+  } catch (e) {}
+  document.getElementById("ghTokenInp").value = "";
+  setSyncLabel("Sync");
+  msg("syncMsg", "Disconnected.", false);
+}
+
+function collectPayload() {
+  var ts = 0;
+  try { ts = Number(localStorage.getItem("eng_updated_at")) || Date.now(); } catch (e) { ts = Date.now(); }
+  return JSON.stringify({
+    updatedAt: ts,
+    words: words,
+    questions: qs,
+    readings: reads,
+    habits: habits,
+    readLog: readLog
+  });
+}
+
+function applyPayload(obj) {
+  if (!obj || typeof obj !== "object") return;
+  isPulling = true;
+  if (Array.isArray(obj.words)) { words = obj.words; sv("eng_words", words); }
+  if (Array.isArray(obj.questions)) { qs = obj.questions; sv("eng_questions", qs); }
+  if (Array.isArray(obj.readings)) { reads = obj.readings; sv("eng_readings", reads); }
+  if (Array.isArray(obj.habits)) { habits = obj.habits; sv("eng_habits", habits); }
+  if (obj.readLog && typeof obj.readLog === "object") { readLog = obj.readLog; saveLog(); }
+  try { localStorage.setItem("eng_updated_at", String(obj.updatedAt || Date.now())); } catch (e) {}
+  isPulling = false;
+  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
+}
+
+function findOrCreateGist(tok) {
+  var savedId = "";
+  try { savedId = localStorage.getItem("eng_gist_id") || ""; } catch (e) {}
+  var headers = { "Authorization": "token " + tok, "Accept": "application/vnd.github.v3+json" };
+  if (savedId) {
+    return fetch(getGhApi() + "/" + savedId, { headers: headers }).then(function(r) {
+      if (r.ok) return r.json();
+      try { localStorage.removeItem("eng_gist_id"); } catch (e) {}
+      return findOrCreateGist(tok);
+    });
+  }
+  return fetch(getGhApi() + "?per_page=50", { headers: headers })
+    .then(function(r) { if (!r.ok) throw new Error("Auth error " + r.status); return r.json(); })
+    .then(function(list) {
+      var found = Array.isArray(list) ? list.find(function(g) { return g.files && g.files[GIST_FILE]; }) : null;
+      if (found) {
+        try { localStorage.setItem("eng_gist_id", found.id); } catch (e) {}
+        return fetch(getGhApi() + "/" + found.id, { headers: headers }).then(function(r) { return r.json(); });
+      }
+      var files = {};
+      files[GIST_FILE] = { content: collectPayload() };
+      return fetch(getGhApi(), {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": "application/json" }, headers),
+        body: JSON.stringify({ description: "My English Hub Sync Data", public: false, files: files })
+      }).then(function(r) { if (!r.ok) throw new Error("Create error"); return r.json(); })
+        .then(function(created) {
+          try { localStorage.setItem("eng_gist_id", created.id); } catch (e) {}
+          return created;
+        });
+    });
+}
+
+function pushCloud() {
+  var tok = "";
+  try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
+  if (!tok || isPulling) return;
+  setSyncLabel("Syncing...");
+  findOrCreateGist(tok).then(function(gist) {
+    var files = {};
+    files[GIST_FILE] = { content: collectPayload() };
+    return fetch(getGhApi() + "/" + gist.id, {
+      method: "PATCH",
+      headers: { "Authorization": "token " + tok, "Accept": "application/vnd.github.v3+json", "Content-Type": "application/json" },
+      body: JSON.stringify({ files: files })
+    });
+  }).then(function(r) {
+    setSyncLabel(r && r.ok ? "Synced" : "Sync Err");
+  }).catch(function() { setSyncLabel("Sync Err"); });
+}
+
+function syncNow(forcePull) {
+  var tok = "";
+  try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
+  if (!tok) return;
+  setSyncLabel("Syncing...");
+  findOrCreateGist(tok).then(function(gist) {
+    var fileObj = gist && gist.files ? gist.files[GIST_FILE] : null;
+    var remote = null;
+    try { remote = fileObj && fileObj.content ? JSON.parse(fileObj.content) : null; } catch (e) {}
+    var localTs = 0;
+    try { localTs = Number(localStorage.getItem("eng_updated_at")) || 0; } catch (e) {}
+    var remoteTs = remote ? (Number(remote.updatedAt) || 0) : 0;
+
+    if (remote && (forcePull || remoteTs > localTs)) {
+      applyPayload(remote);
+      setSyncLabel("Synced");
+      msg("syncMsg", "Loaded latest data from cloud!", false);
+    } else {
+      pushCloud();
+      msg("syncMsg", "Connected & synced!", false);
+    }
+  }).catch(function(err) {
+    setSyncLabel("Sync Err");
+    msg("syncMsg", "❌ " + err.message, true);
+  });
+}
+
+function schedulePush() {
+  if (isPulling) return;
+  try { localStorage.setItem("eng_updated_at", String(Date.now())); } catch (e) {}
+  var tok = "";
+  try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
+  if (!tok) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushCloud, 2000);
+}
+
+var origSv = sv;
+sv = function(k, v) { origSv(k, v); schedulePush(); };
+var origSaveLog = saveLog;
+saveLog = function() { origSaveLog(); schedulePush(); };
+
+window.addEventListener("load", function() {
+  try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
+});
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
 document.getElementById("logo").textContent = "My English Hub v19 • OK";
 </script>
