@@ -313,6 +313,10 @@ function extractFromHtml(html, url) {
   return { title: title, text: clean };
 }
 
+function isBlockedText(t) {
+  return /Just a moment|Enable JavaScript and cookies|Access denied|Attention Required|Cloudflare|403 Forbidden/i.test(t);
+}
+
 function importUrl() {
   var inp = document.getElementById("rUrl");
   var url = inp.value.trim();
@@ -332,42 +336,55 @@ function importUrl() {
         if (!d.extract) throw new Error("Empty");
         finishImport(d.title || slug, d.extract, url);
       })
-      .catch(function(e) { runProxies(url, e.message); });
+      .catch(function(e) { runProxies(url); });
     return;
   }
-  runProxies(url, "");
+  runProxies(url);
 }
 
-function runProxies(url, prevErr) {
+function runProxies(url) {
   var p1 = "https://r." + "jina.ai/" + url;
-  var p2 = "https://api." + "allorigins.win/get?url=" + encodeURIComponent(url);
-  var p3 = "https://api." + "://codetabs.com" + encodeURIComponent(url);
+  var p2 = "https://corsproxy." + "io/?" + encodeURIComponent(url);
+  var p3 = "https://api." + "allorigins.win/get?url=" + encodeURIComponent(url);
+  var p4 = "https://api." + "://codetabs.com" + encodeURIComponent(url);
 
   fetch(p1)
-    .then(function(res) { if (!res.ok) throw new Error("Jina " + res.status); return res.text(); })
+    .then(function(res) { if (!res.ok) throw new Error("P1"); return res.text(); })
     .then(function(raw) {
+      if (isBlockedText(raw)) throw new Error("Blocked");
       var parsed = cleanParsed(raw, url);
-      if (parsed.text.length < 60) throw new Error("Short text");
+      if (parsed.text.length < 80) throw new Error("Short");
       finishImport(parsed.title, parsed.text, url);
     })
-    .catch(function(e1) {
+    .catch(function() {
       fetch(p2)
-        .then(function(r) { if (!r.ok) throw new Error("AO " + r.status); return r.json(); })
-        .then(function(data) {
-          var res = extractFromHtml(data.contents, url);
+        .then(function(r) { if (!r.ok) throw new Error("P2"); return r.text(); })
+        .then(function(html) {
+          if (isBlockedText(html)) throw new Error("Blocked");
+          var res = extractFromHtml(html, url);
           finishImport(res.title, res.text, url);
         })
-        .catch(function(e2) {
+        .catch(function() {
           fetch(p3)
-            .then(function(r) { if (!r.ok) throw new Error("CT " + r.status); return r.text(); })
-            .then(function(html) {
-              var res = extractFromHtml(html, url);
+            .then(function(r) { if (!r.ok) throw new Error("P3"); return r.json(); })
+            .then(function(data) {
+              if (!data.contents || isBlockedText(data.contents)) throw new Error("Blocked");
+              var res = extractFromHtml(data.contents, url);
               finishImport(res.title, res.text, url);
             })
-            .catch(function(e3) {
-              var det = document.querySelector("details.manual-box");
-              if (det) det.open = true;
-              msg("rM", "❌ Could not auto-extract (" + e1.message + " / " + e2.message + "). Paste text manually below.", true);
+            .catch(function() {
+              fetch(p4)
+                .then(function(r) { if (!r.ok) throw new Error("P4"); return r.text(); })
+                .then(function(html) {
+                  if (isBlockedText(html)) throw new Error("Blocked");
+                  var res = extractFromHtml(html, url);
+                  finishImport(res.title, res.text, url);
+                })
+                .catch(function() {
+                  var det = document.querySelector("details.manual-box");
+                  if (det) det.open = true;
+                  msg("rM", "❌ Site blocks auto-readers. Paste text manually below.", true);
+                });
             });
         });
     });
