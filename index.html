@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My English Hub v14</title>
+  <title>My English Hub </title>
   <style>
 :root { --bg:#f6f7fb; --card:#fff; --text:#1e2433; --muted:#647087; --primary:#E038AD; --accent:#fce7f3; --border:#e2e8f0; --ok:#16a34a; --err:#dc2626; }body.dark { --bg:#121016; --card:#1C1824; --text:#F3F4F6; --muted:#9CA3AF; --primary:#E038AD; --accent:#361933; --border:#2E283B; }
 body.dark input, body.dark textarea, body.dark select { background:#121016; color:#F3F4F6; }
@@ -83,6 +83,12 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
    .sync-btn { margin-left:8px; padding:5px 11px; font-size:.8rem; border-radius:99px; }
 .sync-modal { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:120; display:none; align-items:center; justify-content:center; padding:16px; }
 .sync-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; width:min(440px, 100%); box-shadow:0 16px 40px rgba(0,0,0,.3); }
+ .pill-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.tag-pill { background:var(--bg); border:1px solid var(--border); color:var(--muted); padding:6px 13px; border-radius:99px; font-size:.82rem; font-weight:600; cursor:pointer; transition:.15s; }
+.tag-pill:hover { border-color:var(--primary); color:var(--primary); }
+.tag-pill.active { background:var(--accent); border-color:var(--primary); color:var(--primary); }
+.soft-inp { background:var(--bg) !important; border:1px solid transparent !important; border-radius:12px !important; padding:11px 14px !important; resize:none !important; overflow:hidden; margin-bottom:10px; transition:border-color .2s; }
+.soft-inp:focus { outline:none; border-color:var(--primary) !important; }
   </style>
 </head>
 <body>
@@ -105,7 +111,23 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
   <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
   <section id="s1" class="sec">
     <div class="card"><h2>Flashcard Practice</h2><div class="fc" onclick="flipFC()"><div class="fc-w" id="fcF">keep track of</div><div class="fc-h" id="fcB">Click card to reveal definition & example</div></div><div style="display:flex;gap:10px;justify-content:center;"><button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button><button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button></div></div>
-    <div class="card"><h2>Add New Word</h2><div class="row"><input id="wT" placeholder="Word or phrase" onkeydown="if(event.key==='Enter')addW()"><select id="wG" style="max-width:210px;"><option value="Phrasal Verb">Phrasal Verb</option><option value="Vocabulary">Vocabulary</option><option value="Idiom">Idiom</option><option value="Grammar Form">Grammar Form</option></select></div><div class="row"><textarea id="wD" rows="1" oninput="autoGrow(this)" placeholder="Definition in English" style="overflow:hidden;"></textarea></div><div class="row"><textarea id="wE" rows="1" oninput="autoGrow(this)" placeholder="Example sentence (optional)" style="overflow:hidden;"></textarea></div><button type="button" class="btn" onclick="addW()">+ Save to Dictionary</button><div id="wM" class="msg"></div></div>
+    <div class="card">
+      <h2>Add New Word</h2>
+      <div class="pill-row" id="wPills">
+        <button type="button" class="tag-pill active" onclick="pickWTag(this,'Phrasal Verb')">Phrasal Verb</button>
+        <button type="button" class="tag-pill" onclick="pickWTag(this,'Vocabulary')">Vocabulary</button>
+        <button type="button" class="tag-pill" onclick="pickWTag(this,'Idiom')">Idiom</button>
+        <button type="button" class="tag-pill" onclick="pickWTag(this,'Grammar Form')">Grammar Form</button>
+      </div>
+      <input type="hidden" id="wG" value="Phrasal Verb">
+      <input id="wT" class="soft-inp" placeholder="Word or phrase..." onkeydown="if(event.key==='Enter')addW()">
+      <textarea id="wD" class="soft-inp" rows="1" oninput="autoGrow(this)" placeholder="Definition in English..."></textarea>
+      <textarea id="wE" class="soft-inp" rows="1" oninput="autoGrow(this)" placeholder="Example sentence (optional)..."></textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div id="wM" class="msg" style="margin-top:0;"></div>
+        <button type="button" class="btn" onclick="addW()">+ Save Word</button>
+      </div>
+    </div>
 <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">Phrasal Verbs Bank (Grouped by Root Verb)</h2><span class="badge" id="pvC">0</span></div><div id="pvL" class="pv-grid"></div></div>
     <div class="card"><div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">All Dictionary Entries (<span id="wC">0</span>)</h2><input id="qS" placeholder="Search..." oninput="renderW()" style="max-width:220px;"></div><div id="wL"></div></div>
   </section>
@@ -355,6 +377,12 @@ function delW(i) {
   words.splice(i, 1);
   sv("eng_words", words);
   renderW(); renderPV(); renderFC();
+}
+  
+function pickWTag(btn, val) {
+  document.getElementById("wG").value = val;
+  document.querySelectorAll("#wPills .tag-pill").forEach(function(b) { b.classList.remove("active"); });
+  btn.classList.add("active");
 }
 
 function addW() {
@@ -1256,7 +1284,7 @@ window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
-document.getElementById("logo").textContent = "My English Hub v22 • OK";
+document.getElementById("logo").textContent = "My English Hub v23 • OK";
 </script>
 </body>
 </html>
