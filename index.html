@@ -264,16 +264,49 @@ function renderPV() {
   }).join("");
 }
 
+var editWordIdx = -1;
+function escAttr(s) { return String(s || "").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function editW(i) { editWordIdx = i; renderW(); }
+function cancelEditW() { editWordIdx = -1; renderW(); }
+function saveEditW(i) {
+  var t = document.getElementById("edT_" + i).value.trim();
+  if (!t) return;
+  var d = document.getElementById("edD_" + i).value.trim() || "No definition added yet";
+  var g = document.getElementById("edG_" + i).value;
+  var e = document.getElementById("edE_" + i).value.trim();
+  words[i] = { term: t, def: d, tag: g, ex: e };
+  editWordIdx = -1;
+  sv("eng_words", words);
+  renderW(); renderPV(); renderFC();
+}
+
 function renderW() {
   var q = document.getElementById("qS").value.toLowerCase();
   document.getElementById("wC").textContent = words.length;
+  var tags = ["Phrasal Verb", "Vocabulary", "Idiom", "Grammar Form"];
   document.getElementById("wL").innerHTML = words.map(function(w, i) {
     if (w.term.toLowerCase().indexOf(q) === -1 && w.def.toLowerCase().indexOf(q) === -1) return "";
-    return '<div class="item"><div><strong>' + w.term + '</strong><span class="tag">' + w.tag + '</span><div>' + w.def + '</div>' + (w.ex ? '<div class="ex">"' + w.ex + '"</div>' : '') + '</div><button type="button" class="btn btn-o btn-s" onclick="delW(' + i + ')">✕</button></div>';
+    if (i === editWordIdx) {
+      var opts = tags.map(function(tg) { return '<option value="' + tg + '"' + (w.tag === tg ? ' selected' : '') + '>' + tg + '</option>'; }).join("");
+      return '<div class="item" style="display:block;">' +
+        '<div class="row"><input id="edT_' + i + '" value="' + escAttr(w.term) + '" placeholder="Word or phrase" onkeydown="if(event.key===\'Enter\')saveEditW(' + i + ')">' +
+        '<select id="edG_' + i + '" style="max-width:210px;">' + opts + '</select></div>' +
+        '<input id="edD_' + i + '" value="' + escAttr(w.def) + '" placeholder="Definition in English" onkeydown="if(event.key===\'Enter\')saveEditW(' + i + ')" style="margin-bottom:8px;">' +
+        '<input id="edE_' + i + '" value="' + escAttr(w.ex) + '" placeholder="Example sentence (optional)" onkeydown="if(event.key===\'Enter\')saveEditW(' + i + ')" style="margin-bottom:8px;">' +
+        '<div style="display:flex;gap:8px;"><button type="button" class="btn btn-s" onclick="saveEditW(' + i + ')">Save</button><button type="button" class="btn btn-o btn-s" onclick="cancelEditW()">Cancel</button></div>' +
+      '</div>';
+    }
+    return '<div class="item"><div><strong>' + esc(w.term) + '</strong><span class="tag">' + esc(w.tag) + '</span><div>' + esc(w.def) + '</div>' + (w.ex ? '<div class="ex">"' + esc(w.ex) + '"</div>' : '') + '</div><div style="display:flex;gap:6px;flex-shrink:0;"><button type="button" class="btn btn-o btn-s" onclick="editW(' + i + ')">Edit</button><button type="button" class="btn btn-o btn-s" onclick="delW(' + i + ')">✕</button></div></div>';
   }).join("") || '<p style="color:var(--muted);">Nothing found.</p>';
 }
 
-function delW(i) { words.splice(i, 1); sv("eng_words", words); renderW(); renderPV(); renderFC(); }
+function delW(i) {
+  if (editWordIdx === i) editWordIdx = -1;
+  words.splice(i, 1);
+  sv("eng_words", words);
+  renderW(); renderPV(); renderFC();
+}
 
 function addW() {
   var t = document.getElementById("wT").value.trim();
@@ -282,13 +315,14 @@ function addW() {
   var e = document.getElementById("wE").value.trim();
   if (!t) return msg("wM", "Please enter a word.", true);
   words.unshift({ term: t, def: d, tag: g, ex: e });
+  editWordIdx = -1;
   sv("eng_words", words);
   document.getElementById("wT").value = "";
   document.getElementById("wD").value = "";
   document.getElementById("wE").value = "";
   fcI = 0; fcF = false;
   renderW(); renderPV(); renderFC();
-  msg("wM", '✓ Saved "' + t + '"!', false);
+  msg("wM", 'Saved "' + t + '"!', false);
 }
 
 function renderQ() {
@@ -711,47 +745,15 @@ function lookupSelection() {
   }
 
   var camHost = ["dictionary", "cambridge", "org"].join(".");
-  var dictHost = ["api", "dictionaryapi", "dev"].join(".");
-  var backupHost = ["api", "datamuse", "com"].join(".");
-
   var camUrl = "https://" + camHost + "/dictionary/english/" + encodeURIComponent(cleanWord.replace(/\s+/g, "-"));
-  var dictUrl = "https://" + dictHost + "/api/v2/entries/en/" + encodeURIComponent(cleanWord);
-  var backupUrl = "https://" + backupHost + "/words?sp=" + encodeURIComponent(cleanWord) + "&md=d&max=1";
 
   selData = { word: cleanWord, def: "", ex: sentence };
   document.getElementById("dpWord").textContent = cleanWord;
   document.getElementById("dpPhon").textContent = "";
-  document.getElementById("dpDef").textContent = "Loading definition...";
+  var defEl = document.getElementById("dpDef");
+  if (defEl) defEl.style.display = "none";
   document.getElementById("dpCamLink").href = camUrl;
   document.getElementById("dictPop").style.display = "block";
-
-  fetch(dictUrl)
-    .then(function(r) { if (!r.ok) throw new Error("Not found"); return r.json(); })
-    .then(function(data) {
-      var entry = data.shift();
-      var phon = entry.phonetic || "";
-      var meaning = (entry.meanings && entry.meanings.length) ? entry.meanings.shift() : null;
-      var defObj = (meaning && meaning.definitions && meaning.definitions.length) ? meaning.definitions.shift() : null;
-      if (!defObj || !defObj.definition) throw new Error("Empty");
-      selData.def = defObj.definition;
-      document.getElementById("dpPhon").textContent = phon;
-      document.getElementById("dpDef").textContent = (meaning ? "[" + meaning.partOfSpeech + "] " : "") + defObj.definition;
-    })
-    .catch(function() {
-      fetch(backupUrl)
-        .then(function(r) { return r.json(); })
-        .then(function(arr) {
-          var item = (arr && arr.length) ? arr.shift() : null;
-          var defs = (item && item.defs) ? item.defs : [];
-          if (!defs.length) throw new Error("None");
-          var cleanDef = defs.shift().replace(/\t/g, "] ");
-          selData.def = cleanDef.replace(/^[a-z]+\]\s*/i, "");
-          document.getElementById("dpDef").textContent = "[" + cleanDef;
-        })
-        .catch(function() {
-          document.getElementById("dpDef").textContent = "Definition not found.";
-        });
-    });
 }
 
 document.addEventListener("mouseup", function() { setTimeout(lookupSelection, 50); });
