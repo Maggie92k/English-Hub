@@ -690,6 +690,69 @@ function saveSelectedWord() {
   btn.textContent = "Saved!";
   setTimeout(function() { btn.textContent = "+ Save to Dictionary"; }, 1800);
 }
+function lookupSelection() {
+  var bodyEl = document.getElementById("readBody");
+  if (!bodyEl || document.getElementById("libReaderView").style.display !== "block") return;
+  var sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  var raw = sel.toString().replace(/\s+/g, " ").trim();
+  if (!raw || raw.length > 40 || !bodyEl.contains(sel.anchorNode)) return;
+
+  var cleanWord = raw.replace(/^[^a-zA-Z]+|[^a-zA-Z-]+$/g, "").toLowerCase();
+  if (!cleanWord) return;
+
+  var fullText = bodyEl.textContent || "";
+  var idx = fullText.toLowerCase().indexOf(cleanWord);
+  var sentence = "";
+  if (idx !== -1) {
+    var start = Math.max(0, fullText.lastIndexOf(".", idx) + 1);
+    var end = fullText.indexOf(".", idx + cleanWord.length);
+    sentence = fullText.slice(start, end === -1 ? start + 180 : end + 1).replace(/\s+/g, " ").trim();
+  }
+
+  var camHost = ["dictionary", "cambridge", "org"].join(".");
+  var dictHost = ["api", "dictionaryapi", "dev"].join(".");
+  var backupHost = ["api", "datamuse", "com"].join(".");
+
+  var camUrl = "https://" + camHost + "/dictionary/english/" + encodeURIComponent(cleanWord.replace(/\s+/g, "-"));
+  var dictUrl = "https://" + dictHost + "/api/v2/entries/en/" + encodeURIComponent(cleanWord);
+  var backupUrl = "https://" + backupHost + "/words?sp=" + encodeURIComponent(cleanWord) + "&md=d&max=1";
+
+  selData = { word: cleanWord, def: "", ex: sentence };
+  document.getElementById("dpWord").textContent = cleanWord;
+  document.getElementById("dpPhon").textContent = "";
+  document.getElementById("dpDef").textContent = "Loading definition...";
+  document.getElementById("dpCamLink").href = camUrl;
+  document.getElementById("dictPop").style.display = "block";
+
+  fetch(dictUrl)
+    .then(function(r) { if (!r.ok) throw new Error("Not found"); return r.json(); })
+    .then(function(data) {
+      var entry = data.shift();
+      var phon = entry.phonetic || "";
+      var meaning = (entry.meanings && entry.meanings.length) ? entry.meanings.shift() : null;
+      var defObj = (meaning && meaning.definitions && meaning.definitions.length) ? meaning.definitions.shift() : null;
+      if (!defObj || !defObj.definition) throw new Error("Empty");
+      selData.def = defObj.definition;
+      document.getElementById("dpPhon").textContent = phon;
+      document.getElementById("dpDef").textContent = (meaning ? "[" + meaning.partOfSpeech + "] " : "") + defObj.definition;
+    })
+    .catch(function() {
+      fetch(backupUrl)
+        .then(function(r) { return r.json(); })
+        .then(function(arr) {
+          var item = (arr && arr.length) ? arr.shift() : null;
+          var defs = (item && item.defs) ? item.defs : [];
+          if (!defs.length) throw new Error("None");
+          var cleanDef = defs.shift().replace(/\t/g, "] ");
+          selData.def = cleanDef.replace(/^[a-z]+\]\s*/i, "");
+          document.getElementById("dpDef").textContent = "[" + cleanDef;
+        })
+        .catch(function() {
+          document.getElementById("dpDef").textContent = "Definition not found.";
+        });
+    });
+}
 
 document.addEventListener("mouseup", function() { setTimeout(lookupSelection, 50); });
 document.addEventListener("touchend", function() { setTimeout(lookupSelection, 200); });
