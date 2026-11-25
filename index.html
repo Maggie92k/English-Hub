@@ -124,6 +124,26 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
         <button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button>
       </div>
     </div>
+        <div class="card">
+      <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Listen and Write</h2>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge" id="lwScore">Score: 0 / 0</span>
+          <button type="button" class="btn btn-o btn-s" onclick="playLw()">Listen</button>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <span class="tag" id="lwTag" style="margin-left:0;">Phrasal Verb</span>
+        <div id="lwDef" style="margin-top:6px; font-size:1rem; font-weight:500;"></div>
+      </div>
+      <input id="lwInp" class="soft-inp" placeholder="Type the word you hear..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')handleLwEnter()">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <button type="button" class="btn btn-s" id="lwCheckBtn" onclick="checkLw()">Check</button>
+        <button type="button" class="btn btn-o btn-s" onclick="nextLw()">Next →</button>
+        <span id="lwFeedback" style="font-weight:600; font-size:.92rem;"></span>
+      </div>
+      <div id="lwEx" class="ex" style="margin-top:8px;"></div>
+    </div>
     <div class="card">
       <h2>Add New Word</h2>
       <div class="pill-row" id="wPills">
@@ -362,6 +382,108 @@ function renderFC(shouldSpeak) {
 }
 function flipFC() { fcF = !fcF; renderFC(false); }
 function stepFC(d) { fcI += d; fcF = false; renderFC(true); }
+var lwIdx = 0, lwOk = 0, lwTotal = 0, lwChecked = false;
+
+function normLw(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[’‘]/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getLwPool() {
+  return words.filter(function(w) { return w && w.term && w.term.trim().length > 0; });
+}
+
+function playLw() {
+  var pool = getLwPool();
+  if (!pool.length) return;
+  speakUK(pool[lwIdx % pool.length].term);
+}
+
+function renderLw(shouldSpeak) {
+  var pool = getLwPool();
+  var defEl = document.getElementById("lwDef");
+  var tagEl = document.getElementById("lwTag");
+  var inp = document.getElementById("lwInp");
+  var fb = document.getElementById("lwFeedback");
+  var exEl = document.getElementById("lwEx");
+  if (!defEl || !inp) return;
+
+  lwChecked = false;
+  inp.value = "";
+  inp.style.borderColor = "transparent";
+  if (fb) fb.textContent = "";
+  if (exEl) exEl.textContent = "";
+
+  if (!pool.length) {
+    defEl.textContent = "Add words to your dictionary first.";
+    if (tagEl) tagEl.style.display = "none";
+    return;
+  }
+
+  lwIdx = (lwIdx + pool.length) % pool.length;
+  var cur = pool[lwIdx];
+  if (tagEl) {
+    tagEl.style.display = "inline-block";
+    tagEl.textContent = cur.tag || "Vocabulary";
+  }
+  defEl.textContent = cur.def || "Listen to the audio and type the word";
+  if (shouldSpeak) speakUK(cur.term);
+}
+
+function checkLw() {
+  var pool = getLwPool();
+  if (!pool.length) return;
+  if (lwChecked) { nextLw(); return; }
+
+  var cur = pool[lwIdx % pool.length];
+  var inp = document.getElementById("lwInp");
+  var fb = document.getElementById("lwFeedback");
+  var exEl = document.getElementById("lwEx");
+  var userVal = normLw(inp.value);
+  if (!userVal) {
+    inp.focus();
+    return;
+  }
+
+  lwChecked = true;
+  lwTotal++;
+  var targetVal = normLw(cur.term);
+
+  if (userVal === targetVal) {
+    lwOk++;
+    inp.style.borderColor = "var(--ok)";
+    fb.style.color = "var(--ok)";
+    fb.textContent = "Correct!";
+  } else {
+    inp.style.borderColor = "var(--err)";
+    fb.style.color = "var(--err)";
+    fb.textContent = "Incorrect. Answer: " + cur.term;
+  }
+
+  if (cur.ex && exEl) exEl.textContent = '"' + cur.ex + '"';
+  document.getElementById("lwScore").textContent = "Score: " + lwOk + " / " + lwTotal;
+}
+
+function nextLw() {
+  var pool = getLwPool();
+  if (!pool.length) return;
+  if (pool.length > 1) {
+    var next = lwIdx;
+    while (next === lwIdx) next = Math.floor(Math.random() * pool.length);
+    lwIdx = next;
+  }
+  renderLw(true);
+  var inp = document.getElementById("lwInp");
+  if (inp) inp.focus();
+}
+
+function handleLwEnter() {
+  if (lwChecked) nextLw();
+  else checkLw();
+}
 
 function renderPV() {
   var pvs = words.filter(function(w) { return w.tag === "Phrasal Verb"; });
@@ -1318,7 +1440,7 @@ saveLog = function() { origSaveLog(); schedulePush(); };
 window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
-  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
+  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
 document.getElementById("logo").textContent = "My English Hub v24 • OK";
 </script>
 </body>
