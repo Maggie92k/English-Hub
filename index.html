@@ -61,6 +61,34 @@ body.dark .q-opt { color:#F3F4F6; }
 .lib-item:hover { border-color:var(--primary); }
 .lib-meta { font-size:.8rem; color:var(--muted); margin-top:2px; }
 .reader-body { background:var(--bg); padding:18px; border-radius:12px; white-space:pre-wrap; font-size:1.05rem; line-height:1.75; margin:14px 0; border:1px solid var(--border); }
+    /* --- Стили для макета с оглавлением --- */
+.reader-layout { display: flex; gap: 20px; align-items: flex-start; margin-top: 15px; }
+.reader-main { flex: 1; min-width: 0; }
+.reader-toc { width: 240px; flex-shrink: 0; position: sticky; top: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; max-height: 80vh; overflow-y: auto; display: none; }
+.reader-toc.active { display: block; }
+.reader-toc h4 { font-size: 0.9rem; margin-bottom: 12px; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
+.reader-toc ul { list-style: none; padding: 0; margin: 0; }
+.reader-toc li { margin-bottom: 8px; }
+.reader-toc a { color: var(--muted); text-decoration: none; font-size: 0.85rem; display: block; line-height: 1.3; transition: 0.2s; border-left: 2px solid transparent; padding-left: 8px; }
+.reader-toc a:hover, .reader-toc a.active { color: var(--primary); font-weight: 600; border-left-color: var(--primary); }
+
+/* --- Стиль подсветки слов (Пунктир) --- */
+.vocab-highlight { 
+  border-bottom: 2px dashed var(--primary); 
+  cursor: pointer; 
+  padding: 0 2px; 
+  transition: background 0.2s, border-color 0.2s; 
+  border-radius: 3px; 
+}
+.vocab-highlight:hover { 
+  background: var(--accent); 
+  border-bottom-style: solid;
+}
+
+@media (max-width: 768px) {
+  .reader-layout { flex-direction: column; }
+  .reader-toc { width: 100%; position: static; max-height: none; margin-bottom: 15px; }
+}
 details.manual-box { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
 .timer-pill { background:var(--accent); color:var(--primary); padding:5px 12px; border-radius:99px; font-weight:700; font-size:.85rem; font-variant-numeric:tabular-nums; }
 .cal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
@@ -419,9 +447,21 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
             <a id="readSrc" href="#" target="_blank" style="color:var(--primary); font-size:.85rem; font-weight:600; text-decoration:none; margin-left:4px;">Original ↗</a>
           </div>
         </div>
-        <h2 id="readTitle" style="font-size:1.3rem; margin-top:8px;"></h2>
-        <div id="readMeta" class="lib-meta"></div>
-        <div id="readBody" class="reader-body"></div>
+             <!-- НОВЫЙ МАКЕТ (Оглавление слева, текст справа) -->
+        <div class="reader-layout">
+          <!-- Оглавление -->
+          <aside id="readTOC" class="reader-toc">
+            <h4>Содержание</h4>
+            <ul id="tocList"></ul>
+          </aside>
+          
+          <!-- Сама статья -->
+          <div class="reader-main">
+            <h2 id="readTitle" style="font-size:1.3rem; margin-top:8px;"></h2>
+            <div id="readMeta" class="lib-meta" style="margin-bottom:12px;"></div>
+            <div id="readBody" class="reader-body"></div>
+          </div>
+        </div>
         <h3 style="font-size:1rem; margin-bottom:6px;">My Notes & Vocabulary</h3>
         <textarea id="readNotes" rows="3" placeholder="Write new words, grammar notes or summary here..." oninput="saveNote()"></textarea>
       </div>
@@ -1945,6 +1985,163 @@ initGt();
 
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
 document.getElementById("logo").textContent = "My English Hub 29 • OK";
+// ==========================================
+// НОВЫЕ ФУНКЦИИ ДЛЯ ЧИТАЛКИ (Оглавление и Словарь)
+// ==========================================
+
+// 1. Умный поиск базовой формы слова
+function getBaseForm(word) {
+  let w = word.toLowerCase();
+  
+  // Прямое совпадение
+  if (words.some(d => d.term.toLowerCase() === w)) return w;
+
+  // Ищем в неправильных глаголах (IV_RAW)
+  let baseFromIv = null;
+  IV_RAW.forEach(row => {
+    let parts = row.split('|');
+    if (parts.length >= 3) {
+      let v1 = parts[0].trim();
+      let v2 = parts[1].replace(/\(.*?\)/g, '').trim(); // убираем (burned)
+      let v3 = parts[2].replace(/\(.*?\)/g, '').trim();
+      
+      let forms = [v1, ...v2.split('/'), ...v3.split('/')];
+      forms.forEach(f => {
+        if (f.trim().toLowerCase() === w) baseFromIv = v1;
+      });
+    }
+  });
+  if (baseFromIv && words.some(d => d.term.toLowerCase() === baseFromIv)) return baseFromIv;
+
+  // Правила для правильных глаголов
+  let suffixes = ['ing', 'ed', 'es', 's', 'd'];
+  for (let suf of suffixes) {
+    if (w.endsWith(suf) && w.length > suf.length + 1) {
+      let base = w.slice(0, -suf.length);
+      // Удвоение согласной (stopped -> stop)
+      let lastChar = base.slice(-1);
+      let doubleBase = base + lastChar;
+      if (words.some(d => d.term.toLowerCase() === base)) return base;
+      if (words.some(d => d.term.toLowerCase() === doubleBase)) return doubleBase;
+      // Немые e (making -> make)
+      if (suf === 'ing' && words.some(d => d.term.toLowerCase() === base + 'e')) return base + 'e';
+      if (suf === 'es' && words.some(d => d.term.toLowerCase() === base + 'e')) return base + 'e';
+    }
+  }
+  return null;
+}
+
+// 2. Подсветка слов в тексте
+function highlightWords(container) {
+  if (!words.length) return;
+  
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+  let textNodes = [];
+  let node;
+  while (node = walker.nextNode()) {
+    if (node.parentNode.nodeName === 'H2') continue; // не трогаем заголовки
+    textNodes.push(node);
+  }
+
+  textNodes.forEach(node => {
+    let text = node.nodeValue;
+    let regex = /\b([a-zA-Z]+)\b/g;
+    let hasMatch = false;
+    let result = text.replace(regex, (match) => {
+      let base = getBaseForm(match);
+      if (base) {
+        hasMatch = true;
+        return `<span class="vocab-highlight" data-base="${base}" onclick="triggerDictLookup(event)">${match}</span>`;
+      }
+      return match;
+    });
+
+    if (hasMatch) {
+      let span = document.createElement('span');
+      span.innerHTML = result;
+      node.parentNode.replaceChild(span, node);
+    }
+  });
+}
+
+// 3. Всплывающая карточка при клике на слово
+function triggerDictLookup(e) {
+  e.stopPropagation();
+  let el = e.target;
+  let match = el.textContent;
+  let base = el.getAttribute('data-base');
+  
+  let dictEntry = words.find(w => w.term.toLowerCase() === base);
+  let def = dictEntry ? dictEntry.def : "No definition saved yet.";
+  
+  selData = { word: match, def: def, ex: dictEntry ? dictEntry.ex : "" };
+  
+  let wordDisplay = match;
+  if (match.toLowerCase() !== base) {
+    wordDisplay += ` <span style="font-size:0.85rem; font-weight:normal; color:var(--muted);">(${base})</span>`;
+  }
+  
+  document.getElementById("dpWord").innerHTML = wordDisplay;
+  document.getElementById("dpPhon").textContent = "";
+  let defEl = document.getElementById("dpDef");
+  defEl.style.display = "block";
+  defEl.textContent = def;
+  document.getElementById("dpCamLink").href = "https://dictionary.cambridge.org/dictionary/english/" + encodeURIComponent(base);
+  document.getElementById("dictPop").style.display = "block";
+}
+
+// 4. Плавный скролл по оглавлению
+function scrollToSec(e, id) {
+  e.preventDefault();
+  let el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// 5. Переопределяем openR для генерации оглавления и подсветки
+var originalOpenR = openR;
+openR = function(i) {
+  originalOpenR(i);
+  var r = reads[i];
+  if (!r) return;
+
+  let bodyEl = document.getElementById("readBody");
+  let tocBox = document.getElementById("readTOC");
+  let tocList = document.getElementById("tocList");
+  let rawText = r.text;
+  
+  // Парсим текст на абзацы и заголовки
+  let formatted = "";
+  let tocHTML = "";
+  let count = 0;
+  
+  let lines = rawText.split('\n');
+  lines.forEach(line => {
+    let t = line.trim();
+    if (!t) return;
+    // Если строка начинается с # или ##, считаем её заголовком
+    if (t.startsWith('## ') || t.startsWith('# ')) {
+      let title = t.replace(/^#+\s*/, '');
+      count++;
+      let id = 'sec-' + count;
+      formatted += `<h2 id="${id}" style="margin-top:20px; font-size:1.15rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:4px;">${title}</h2>`;
+      tocHTML += `<li><a href="#${id}" onclick="scrollToSec(event, '${id}')">${title}</a></li>`;
+    } else {
+      formatted += `<p>${t}</p>`;
+    }
+  });
+
+  // Если заголовков нет, просто разбиваем по абзацам
+  if (count === 0) {
+    formatted = rawText.split('\n').filter(x => x.trim()).map(x => `<p>${x.trim()}</p>`).join('');
+    tocBox.classList.remove('active'); // Скрываем оглавление, если нечего показывать
+  } else {
+    tocBox.classList.add('active');
+    tocList.innerHTML = tocHTML;
+  }
+
+  bodyEl.innerHTML = formatted;
+  highlightWords(bodyEl); // Запускаем подсветку
+};
 </script>
 </body>
 </html>
