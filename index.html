@@ -1574,19 +1574,31 @@ function schedulePush() {
   try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
   if (!tok) return;
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(pushCloud, 2000);
+  syncTimer = setTimeout(pushCloud, 1500);
 }
 
-var origSv = sv;
-sv = function(k, v) { origSv(k, v); schedulePush(); };
-var origSaveLog = saveLog;
-saveLog = function() { origSaveLog(); schedulePush(); };
+if (!sv._wrapped) {
+  var origSv = sv;
+  sv = function(k, v) { origSv(k, v); schedulePush(); };
+  sv._wrapped = true;
+}
+if (!saveLog._wrapped) {
+  var origSaveLog = saveLog;
+  saveLog = function() { origSaveLog(); schedulePush(); };
+  saveLog._wrapped = true;
+}
 
 window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
-  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub v26 • OK";
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) {
+    try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
+  }
+});
+
+renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
+document.getElementById("logo").textContent = "My English Hub • OK";
 </script>
 </body>
 </html>
