@@ -377,7 +377,53 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
         <button type="button" class="btn btn-o btn-s" onclick="downloadGtTemplate()">Скачать шаблон .json</button>
         <span id="gtIoMsg" style="font-size:.85rem; font-weight:600; color:var(--primary);"></span>
       </div>
+    </div>    <div class="card" id="gtCard">
+      <div class="top" style="margin-bottom:12px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Gap-Fill Grammar Practice</h2>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="badge" id="gtProg">Correct: 0 / 0</span>
+          <button type="button" class="btn btn-o btn-s" onclick="shuffleGt()">Shuffle</button>
+        </div>
+      </div>
+
+      <details class="gt-details" id="gtFilterBox" open>
+        <summary class="gt-summary">
+          <span>Topic Filter (<span id="gtSelSummary">All topics</span>)</span>
+          <span style="font-size:.8rem; color:var(--muted);">Click to collapse / expand</span>
+        </summary>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
+          <button type="button" class="btn btn-s" onclick="gtSelectPreset('all')">Select All</button>
+          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('tenses')">12 Tenses Only</button>
+          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('pairs')">Confusing Pairs Only</button>
+          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('none')">Clear</button>
+        </div>
+        <div class="gt-grp-title">12 Tenses</div>
+        <div class="gt-chips" id="gtChipsTenses"></div>
+        <div class="gt-grp-title">Confusing &amp; Related Topics</div>
+        <div class="gt-chips" id="gtChipsPairs"></div>
+      </details>
+
+      <div id="gtTaskArea">
+        <div class="gt-sentence" id="gtSentence">Loading tasks...</div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn" id="gtCheckBtn" onclick="checkGt()">Check</button>
+          <button type="button" class="btn btn-o" onclick="nextGt()">Next →</button>
+          <span id="gtStatus" style="font-weight:700; font-size:.95rem;"></span>
+        </div>
+        <div class="gt-hint-box" id="gtHintBox">
+          <div class="gt-hint-topic" id="gtHintTopic"></div>
+          <div id="gtHintRule"></div>
+        </div>
+      </div>
+
+      <div class="gt-io-bar">
+        <input type="file" id="gtFileInp" accept=".json,application/json" style="display:none;" onchange="importGtJson(event)">
+        <button type="button" class="btn btn-o btn-s" onclick="document.getElementById('gtFileInp').click()">+ Import .json</button>
+        <button type="button" class="btn btn-o btn-s" onclick="downloadGtTemplate()">Download .json Template</button>
+        <span id="gtIoMsg" style="font-size:.85rem; font-weight:600; color:var(--primary);"></span>
+      </div>
     </div>
+     
   </section>
     <section id="s3" class="sec">
     <div id="libListView">
@@ -1704,7 +1750,7 @@ function renderGtChips() {
   var activeCnt = topics.filter(function(tp) { return gtSelectedTopics[tp]; }).length;
   var sumEl = document.getElementById("gtSelSummary");
   if (sumEl) {
-    sumEl.textContent = activeCnt === topics.length ? "Все темы (" + activeCnt + ")" : "Выбрано тем: " + activeCnt;
+    sumEl.textContent = activeCnt === topics.length ? "All topics (" + activeCnt + ")" : "Selected: " + activeCnt;
   }
 }
 
@@ -1783,7 +1829,7 @@ function renderGtTask() {
   if (hintBox) hintBox.style.display = "none";
 
   if (!gtDeck.length) {
-    box.innerHTML = '<span style="color:var(--muted);">Выберите хотя бы одну тему в фильтре выше.</span>';
+    box.innerHTML = '<span style="color:var(--muted);">Select at least one topic in the filter above.</span>';
     return;
   }
 
@@ -1849,14 +1895,14 @@ function checkGt() {
   if (taskAllRight) {
     gtOk++;
     stEl.style.color = "var(--ok)";
-    stEl.textContent = "Верно!";
+    stEl.textContent = "Correct!";
   } else {
     stEl.style.color = "var(--err)";
-    stEl.textContent = "Есть ошибки";
+    stEl.textContent = "Incorrect";
   }
 
-  document.getElementById("gtProg").textContent = "Верно: " + gtOk + " / " + gtTotal;
-  document.getElementById("gtHintTopic").textContent = "Тема: " + cur.topic;
+  document.getElementById("gtProg").textContent = "Correct: " + gtOk + " / " + gtTotal;
+  document.getElementById("gtHintTopic").textContent = "Topic: " + cur.topic;
   document.getElementById("gtHintRule").textContent = cur.rule || "";
   document.getElementById("gtHintBox").style.display = "block";
 }
@@ -1904,7 +1950,7 @@ function importGtJson(e) {
   reader.onload = function(ev) {
     try {
       var parsed = JSON.parse(ev.target.result);
-      if (!Array.isArray(parsed)) throw new Error("Ожидается JSON-массив заданий.");
+      if (!Array.isArray(parsed)) throw new Error("Expected a JSON array of tasks.");
       var map = {};
       gtTasks.forEach(function(t) { map[t.sentence.toLowerCase().replace(/\s+/g, " ").trim()] = true; });
       var added = 0;
@@ -1929,10 +1975,10 @@ function importGtJson(e) {
       try { localStorage.setItem(GT_KEY, JSON.stringify(gtTasks)); } catch (err) {}
       renderGtChips();
       rebuildGtDeck(true);
-      msgEl.textContent = "Добавлено новых заданий: " + added;
+      msgEl.textContent = "Added new tasks: " + added;
       setTimeout(function() { msgEl.textContent = ""; }, 4000);
     } catch (err) {
-      msgEl.textContent = "Ошибка файла: " + err.message;
+      msgEl.textContent = "File error: " + err.message;
     }
     e.target.value = "";
   };
@@ -1942,7 +1988,7 @@ function importGtJson(e) {
 initGt();
 
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub 5 • OK";
+document.getElementById("logo").textContent = "My English Hub 29 • OK";
 </script>
 </body>
 </html>
