@@ -332,52 +332,7 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
       </div>
       <div id="ivTable" style="max-height:420px; overflow-y:auto;"></div>
     </div>
-         <div class="card" id="gtCard">
-      <div class="top" style="margin-bottom:12px; flex-wrap:wrap;">
-        <h2 style="margin:0;">Gap-Fill Grammar Practice (Раскрытие скобок)</h2>
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <span class="badge" id="gtProg">Верно: 0 / 0</span>
-          <button type="button" class="btn btn-o btn-s" onclick="shuffleGt()">Перемешать</button>
-        </div>
-      </div>
-
-      <details class="gt-details" id="gtFilterBox" open>
-        <summary class="gt-summary">
-          <span>Фильтр тем (<span id="gtSelSummary">Все темы</span>)</span>
-          <span style="font-size:.8rem; color:var(--muted);">Нажмите, чтобы свернуть / развернуть</span>
-        </summary>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
-          <button type="button" class="btn btn-s" onclick="gtSelectPreset('all')">Выбрать все</button>
-          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('tenses')">Только 12 времён</button>
-          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('pairs')">Только смежные</button>
-          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('none')">Сбросить</button>
-        </div>
-        <div class="gt-grp-title">12 Времён</div>
-        <div class="gt-chips" id="gtChipsTenses"></div>
-        <div class="gt-grp-title">Смежные и путаемые темы</div>
-        <div class="gt-chips" id="gtChipsPairs"></div>
-      </details>
-
-      <div id="gtTaskArea">
-        <div class="gt-sentence" id="gtSentence">Загрузка заданий...</div>
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <button type="button" class="btn" id="gtCheckBtn" onclick="checkGt()">Проверить</button>
-          <button type="button" class="btn btn-o" onclick="nextGt()">Далее →</button>
-          <span id="gtStatus" style="font-weight:700; font-size:.95rem;"></span>
-        </div>
-        <div class="gt-hint-box" id="gtHintBox">
-          <div class="gt-hint-topic" id="gtHintTopic"></div>
-          <div id="gtHintRule"></div>
-        </div>
-      </div>
-
-      <div class="gt-io-bar">
-        <input type="file" id="gtFileInp" accept=".json,application/json" style="display:none;" onchange="importGtJson(event)">
-        <button type="button" class="btn btn-o btn-s" onclick="document.getElementById('gtFileInp').click()">+ Загрузить .json</button>
-        <button type="button" class="btn btn-o btn-s" onclick="downloadGtTemplate()">Скачать шаблон .json</button>
-        <span id="gtIoMsg" style="font-size:.85rem; font-weight:600; color:var(--primary);"></span>
-      </div>
-    </div>    <div class="card" id="gtCard">
+             <div class="card" id="gtCard">
       <div class="top" style="margin-bottom:12px; flex-wrap:wrap;">
         <h2 style="margin:0;">Gap-Fill Grammar Practice</h2>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
