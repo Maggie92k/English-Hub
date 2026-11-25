@@ -89,10 +89,75 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
 .tag-pill.active { background:var(--accent); border-color:var(--primary); color:var(--primary); }
 .soft-inp { background:var(--bg) !important; border:1px solid transparent !important; border-radius:12px !important; padding:11px 14px !important; resize:none !important; overflow:hidden; margin-bottom:10px; transition:border-color .2s; }
 .soft-inp:focus { outline:none; border-color:var(--primary) !important; }
+    /* Theme Gallery & Napoleon Theme */
+.theme-gal { display:flex; align-items:center; gap:6px; margin-right:4px; }
+.t-swatch { width:24px; height:24px; border-radius:50%; border:2px solid var(--border); cursor:pointer; padding:0; transition:transform .15s, border-color .15s; position:relative; }
+.t-swatch:hover { transform:scale(1.1); }
+.t-swatch.active { border-color:var(--primary); box-shadow:0 0 0 2px var(--card), 0 0 0 4px var(--primary); }
+.sw-rose { background:linear-gradient(135deg, #fce7f3 50%, #E038AD 50%); }
+.sw-nap { background:linear-gradient(135deg, #FCF6EC 50%, #D98032 50%); }
+
+body.theme-napoleon {
+  --bg:#FCF6EC; --card:rgba(252, 246, 236, 0.85); --text:#2A3642; --muted:#63584E;
+  --primary:#D98032; --accent:#F5E3D3; --border:#E5C79D;
+  background:url('napoleon.jpeg') 32% center / cover no-repeat fixed;
+}
+body.theme-napoleon.dark {
+  --bg:#1A1412; --card:rgba(26, 20, 18, 0.86); --text:#F5ECE5; --muted:#B8A99E;
+  --primary:#C76B4A; --accent:#2E221E; --border:#806B52;
+  background:url('napoleon.jpeg') 32% center / cover no-repeat fixed;
+}
+body.theme-napoleon .card,
+body.theme-napoleon header,
+body.theme-napoleon .tab-l,
+body.theme-napoleon .sync-card,
+body.theme-napoleon .dict-pop {
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+body.theme-napoleon input,
+body.theme-napoleon textarea,
+body.theme-napoleon select {
+  background:rgba(255, 255, 255, 0.55);
+  color:var(--text);
+}
+body.theme-napoleon.dark input,
+body.theme-napoleon.dark textarea,
+body.theme-napoleon.dark select {
+  background:rgba(18, 13, 11, 0.65);
+  color:var(--text);
+}
+body.theme-napoleon .pv-box,
+body.theme-napoleon .pv-el,
+body.theme-napoleon .lib-item,
+body.theme-napoleon .reader-body,
+body.theme-napoleon .cal-day:not(.empty):not(.has-read),
+body.theme-napoleon .q-opt {
+  background:rgba(252, 246, 236, 0.5);
+}
+body.theme-napoleon.dark .pv-box,
+body.theme-napoleon.dark .pv-el,
+body.theme-napoleon.dark .lib-item,
+body.theme-napoleon.dark .reader-body,
+body.theme-napoleon.dark .cal-day:not(.empty):not(.has-read),
+body.theme-napoleon.dark .q-opt {
+  background:rgba(26, 20, 18, 0.55);
+}
+@media (min-width: 980px) {
+  body.theme-napoleon .wrap {
+    max-width:640px;
+    margin-left:auto;
+    margin-right:4%;
+  }
+  body.theme-napoleon header .wrap {
+    max-width:900px;
+    margin:0 auto;
+  }
+}
   </style>
 </head>
 <body>
-  <header><div class="wrap top"><div class="logo" id="logo">My English Hub v14</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;"><span class="badge" id="hdrProg">Today: 0% done</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><label class="theme-switch"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
+<header><div class="wrap top"><div class="logo" id="logo">My English Hub</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;"><span class="badge" id="hdrProg">Today: 0 min</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><div class="theme-gal" title="Theme Gallery"><button type="button" class="t-swatch sw-rose active" id="swRose" onclick="setStyleTheme('rose')" title="Velvet Rose"></button><button type="button" class="t-swatch sw-nap" id="swNap" onclick="setStyleTheme('napoleon')" title="Coronation of Napoleon"></button></div><label class="theme-switch" title="Light / Dark mode"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
 <div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
   <div class="sync-card">
     <div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">GitHub Cloud Sync</h2><button type="button" class="btn btn-o btn-s" onclick="closeSync()">✕</button></div>
@@ -281,15 +346,29 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
 
 </div>
 <script>
-  function togTheme() {
+ function setStyleTheme(name) {
+  var isNap = (name === "napoleon");
+  document.body.classList.toggle("theme-napoleon", isNap);
+  var rBtn = document.getElementById("swRose");
+  var nBtn = document.getElementById("swNap");
+  if (rBtn) rBtn.classList.toggle("active", !isNap);
+  if (nBtn) nBtn.classList.toggle("active", isNap);
+  try { localStorage.setItem("eng_style_theme", isNap ? "napoleon" : "rose"); } catch (e) {}
+}
+function togTheme() {
   var d = document.getElementById("tSw").checked;
   document.body.classList.toggle("dark", d);
   try { localStorage.setItem("eng_theme", d ? "dark" : "light"); } catch (e) {}
 }
-try { if (localStorage.getItem("eng_theme") === "dark") { document.body.classList.add("dark"); document.getElementById("tSw").checked = true; } } catch (e) {}
-window.onerror = function(m) {
-  document.getElementById("logo").textContent = "Err: " + m;
-};
+try {
+  if (localStorage.getItem("eng_theme") === "dark") {
+    document.body.classList.add("dark");
+    document.getElementById("tSw").checked = true;
+  }
+  if (localStorage.getItem("eng_style_theme") === "napoleon") {
+    setStyleTheme("napoleon");
+  }
+} catch (e) {}
 
 function ld(k, d) {
   try {
@@ -1441,7 +1520,7 @@ window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub v24 • OK";
+document.getElementById("logo").textContent = "My English Hub v25 • OK";
 </script>
 </body>
 </html>
