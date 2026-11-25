@@ -193,6 +193,33 @@ body.theme-sea.dark .q-opt {
   background:rgba(12, 24, 33, 0.55);
 }
 
+    /* Gap-fill Grammar Trainer */
+.gt-details { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:14px; }
+body.theme-napoleon .gt-details { background:rgba(252,246,236,0.5); }
+body.theme-napoleon.dark .gt-details { background:rgba(26,20,18,0.55); }
+body.theme-sea .gt-details { background:rgba(242,248,250,0.5); }
+body.theme-sea.dark .gt-details { background:rgba(12,24,33,0.55); }
+.gt-summary { cursor:pointer; font-weight:700; font-size:.95rem; color:var(--primary); display:flex; justify-content:space-between; align-items:center; }
+.gt-grp-title { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:12px 0 6px; }
+.gt-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.gt-chip { background:var(--card); border:1px solid var(--border); color:var(--muted); padding:5px 11px; border-radius:99px; font-size:.8rem; font-weight:600; cursor:pointer; transition:.15s; }
+.gt-chip:hover { border-color:var(--primary); color:var(--primary); }
+.gt-chip.active { background:var(--accent); border-color:var(--primary); color:var(--primary); }
+.gt-sentence { font-size:1.12rem; line-height:2.1; padding:16px; background:var(--bg); border:1px solid var(--border); border-radius:12px; margin:12px 0; }
+body.theme-napoleon .gt-sentence { background:rgba(252,246,236,0.55); }
+body.theme-napoleon.dark .gt-sentence { background:rgba(26,20,18,0.6); }
+body.theme-sea .gt-sentence { background:rgba(242,248,250,0.55); }
+body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
+.gt-gap-wrap { display:inline-flex; flex-direction:column; vertical-align:middle; margin:0 4px; }
+.gt-inp { width:165px; min-width:110px; padding:4px 10px !important; border:2px solid var(--border) !important; border-radius:8px !important; font-size:1rem !important; font-weight:600; text-align:center; background:var(--card) !important; color:var(--text) !important; transition:.2s; }
+.gt-inp:focus { outline:none; border-color:var(--primary) !important; }
+.gt-inp.ok { border-color:var(--ok) !important; background:rgba(22,163,74,0.12) !important; color:var(--ok) !important; }
+.gt-inp.err { border-color:var(--err) !important; background:rgba(220,38,38,0.12) !important; color:var(--err) !important; }
+.gt-fix { font-size:.76rem; font-weight:700; color:var(--ok); text-align:center; line-height:1.2; margin-top:2px; }
+.gt-hint-box { display:none; margin-top:12px; padding:12px 14px; border-radius:12px; background:var(--accent); border-left:4px solid var(--primary); font-size:.92rem; }
+.gt-hint-topic { font-weight:800; color:var(--primary); margin-bottom:4px; font-size:.85rem; text-transform:uppercase; }
+.gt-io-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
+
   </style>
 </head>
 <body>
@@ -305,6 +332,52 @@ body.theme-sea.dark .q-opt {
       </div>
       <div id="ivTable" style="max-height:420px; overflow-y:auto;"></div>
     </div>
+         <div class="card" id="gtCard">
+      <div class="top" style="margin-bottom:12px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Gap-Fill Grammar Practice (Раскрытие скобок)</h2>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="badge" id="gtProg">Верно: 0 / 0</span>
+          <button type="button" class="btn btn-o btn-s" onclick="shuffleGt()">Перемешать</button>
+        </div>
+      </div>
+
+      <details class="gt-details" id="gtFilterBox" open>
+        <summary class="gt-summary">
+          <span>Фильтр тем (<span id="gtSelSummary">Все темы</span>)</span>
+          <span style="font-size:.8rem; color:var(--muted);">Нажмите, чтобы свернуть / развернуть</span>
+        </summary>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
+          <button type="button" class="btn btn-s" onclick="gtSelectPreset('all')">Выбрать все</button>
+          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('tenses')">Только 12 времён</button>
+          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('pairs')">Только смежные</button>
+          <button type="button" class="btn btn-o btn-s" onclick="gtSelectPreset('none')">Сбросить</button>
+        </div>
+        <div class="gt-grp-title">12 Времён</div>
+        <div class="gt-chips" id="gtChipsTenses"></div>
+        <div class="gt-grp-title">Смежные и путаемые темы</div>
+        <div class="gt-chips" id="gtChipsPairs"></div>
+      </details>
+
+      <div id="gtTaskArea">
+        <div class="gt-sentence" id="gtSentence">Загрузка заданий...</div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn" id="gtCheckBtn" onclick="checkGt()">Проверить</button>
+          <button type="button" class="btn btn-o" onclick="nextGt()">Далее →</button>
+          <span id="gtStatus" style="font-weight:700; font-size:.95rem;"></span>
+        </div>
+        <div class="gt-hint-box" id="gtHintBox">
+          <div class="gt-hint-topic" id="gtHintTopic"></div>
+          <div id="gtHintRule"></div>
+        </div>
+      </div>
+
+      <div class="gt-io-bar">
+        <input type="file" id="gtFileInp" accept=".json,application/json" style="display:none;" onchange="importGtJson(event)">
+        <button type="button" class="btn btn-o btn-s" onclick="document.getElementById('gtFileInp').click()">+ Загрузить .json</button>
+        <button type="button" class="btn btn-o btn-s" onclick="downloadGtTemplate()">Скачать шаблон .json</button>
+        <span id="gtIoMsg" style="font-size:.85rem; font-weight:600; color:var(--primary);"></span>
+      </div>
+    </div>
   </section>
     <section id="s3" class="sec">
     <div id="libListView">
@@ -384,6 +457,8 @@ body.theme-sea.dark .q-opt {
   </section>
 
 </div>
+
+  <script src="grammar-bank.js"></script>
 <script>
 function setStyleTheme(name) {
   document.body.classList.remove("theme-napoleon", "theme-sea");
@@ -1569,8 +1644,305 @@ window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
 
-renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub 1 • OK";
+/* === GAP-FILL GRAMMAR TRAINER === */
+var GT_KEY = "eng_gt_tasks_v1";
+var gtTasks = [];
+var gtSelectedTopics = {};
+var gtDeck = [];
+var gtIdx = 0, gtOk = 0, gtTotal = 0, gtChecked = false;
+
+function initGt() {
+  var base = Array.isArray(window.GRAMMAR_BANK) ? window.GRAMMAR_BANK : [];
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem(GT_KEY)) || []; } catch (e) { saved = []; }
+  var map = {};
+  gtTasks = [];
+  base.concat(saved).forEach(function(item) {
+    if (!item || !item.sentence || !Array.isArray(item.answers)) return;
+    var normKey = item.sentence.toLowerCase().replace(/\s+/g, " ").trim();
+    if (!map[normKey]) {
+      map[normKey] = true;
+      gtTasks.push(item);
+    }
+  });
+  try { localStorage.setItem(GT_KEY, JSON.stringify(gtTasks)); } catch (e) {}
+
+  gtTasks.forEach(function(t) { gtSelectedTopics[t.topic] = true; });
+  renderGtChips();
+  rebuildGtDeck(true);
+}
+
+function renderGtChips() {
+  var tBox = document.getElementById("gtChipsTenses");
+  var pBox = document.getElementById("gtChipsPairs");
+  if (!tBox || !pBox) return;
+
+  var counts = {}, cats = {};
+  gtTasks.forEach(function(t) {
+    counts[t.topic] = (counts[t.topic] || 0) + 1;
+    cats[t.topic] = t.category || "pairs";
+  });
+
+  var topics = Object.keys(counts);
+  tBox.innerHTML = "";
+  pBox.innerHTML = "";
+
+  topics.forEach(function(topic) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "gt-chip" + (gtSelectedTopics[topic] ? " active" : "");
+    btn.textContent = topic + " (" + counts[topic] + ")";
+    btn.onclick = function() {
+      gtSelectedTopics[topic] = !gtSelectedTopics[topic];
+      renderGtChips();
+      rebuildGtDeck(true);
+    };
+    if (cats[topic] === "tenses") tBox.appendChild(btn);
+    else pBox.appendChild(btn);
+  });
+
+  var activeCnt = topics.filter(function(tp) { return gtSelectedTopics[tp]; }).length;
+  var sumEl = document.getElementById("gtSelSummary");
+  if (sumEl) {
+    sumEl.textContent = activeCnt === topics.length ? "Все темы (" + activeCnt + ")" : "Выбрано тем: " + activeCnt;
+  }
+}
+
+function gtSelectPreset(mode) {
+  var cats = {};
+  gtTasks.forEach(function(t) { cats[t.topic] = t.category || "pairs"; });
+  Object.keys(cats).forEach(function(tp) {
+    if (mode === "all") gtSelectedTopics[tp] = true;
+    else if (mode === "none") gtSelectedTopics[tp] = false;
+    else if (mode === "tenses") gtSelectedTopics[tp] = (cats[tp] === "tenses");
+    else if (mode === "pairs") gtSelectedTopics[tp] = (cats[tp] === "pairs");
+  });
+  renderGtChips();
+  rebuildGtDeck(true);
+}
+
+function rebuildGtDeck(shouldShuffle) {
+  gtDeck = gtTasks.filter(function(t) { return gtSelectedTopics[t.topic]; });
+  if (shouldShuffle) {
+    for (var i = gtDeck.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = gtDeck[i]; gtDeck[i] = gtDeck[j]; gtDeck[j] = tmp;
+    }
+  }
+  gtIdx = 0;
+  renderGtTask();
+}
+
+function shuffleGt() {
+  rebuildGtDeck(true);
+}
+
+function expandContractions(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[’‘`]/g, "'")
+    .replace(/\bwon't\b/g, "will not")
+    .replace(/\bcan't\b/g, "cannot")
+    .replace(/\bshan't\b/g, "shall not")
+    .replace(/\bain't\b/g, "am not")
+    .replace(/n't\b/g, " not")
+    .replace(/'ll\b/g, " will")
+    .replace(/'re\b/g, " are")
+    .replace(/'ve\b/g, " have")
+    .replace(/'m\b/g, " am")
+    .replace(/'d\b/g, " would_had")
+    .replace(/'s\b/g, " is_has")
+    .replace(/\bcannot\b/g, "can not")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isAnswerMatch(userRaw, validList) {
+  var uNorm = expandContractions(userRaw);
+  if (!uNorm) return false;
+  var variants = Array.isArray(validList) ? validList : [validList];
+  return variants.some(function(ans) {
+    var aNorm = expandContractions(ans);
+    if (uNorm === aNorm) return true;
+    if (uNorm.replace(/would_had/g, "had") === aNorm || uNorm.replace(/would_had/g, "would") === aNorm) return true;
+    if (uNorm.replace(/is_has/g, "is") === aNorm || uNorm.replace(/is_has/g, "has") === aNorm) return true;
+    if (aNorm.replace(/would_had/g, "had") === uNorm || aNorm.replace(/would_had/g, "would") === uNorm) return true;
+    if (aNorm.replace(/is_has/g, "is") === uNorm || aNorm.replace(/is_has/g, "has") === uNorm) return true;
+    return false;
+  });
+}
+
+function renderGtTask() {
+  var box = document.getElementById("gtSentence");
+  var stEl = document.getElementById("gtStatus");
+  var hintBox = document.getElementById("gtHintBox");
+  if (!box) return;
+
+  gtChecked = false;
+  if (stEl) stEl.textContent = "";
+  if (hintBox) hintBox.style.display = "none";
+
+  if (!gtDeck.length) {
+    box.innerHTML = '<span style="color:var(--muted);">Выберите хотя бы одну тему в фильтре выше.</span>';
+    return;
+  }
+
+  gtIdx = (gtIdx + gtDeck.length) % gtDeck.length;
+  var cur = gtDeck[gtIdx];
+  var parts = cur.sentence.split("___");
+  var html = "";
+
+  parts.forEach(function(part, idx) {
+    html += esc(part);
+    if (idx < parts.length - 1) {
+      html += '<span class="gt-gap-wrap">' +
+        '<input type="text" class="gt-inp" id="gtInp_' + idx + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key===\'Enter\')handleGtEnter()">' +
+        '<span class="gt-fix" id="gtFix_' + idx + '"></span>' +
+      '</span>';
+    }
+  });
+
+  box.innerHTML = html;
+  var firstInp = document.getElementById("gtInp_0");
+  if (firstInp) firstInp.focus();
+}
+
+function checkGt() {
+  if (!gtDeck.length) return;
+  if (gtChecked) { nextGt(); return; }
+
+  var cur = gtDeck[gtIdx % gtDeck.length];
+  var gapCount = cur.answers.length;
+  var allFilled = true;
+
+  for (var i = 0; i < gapCount; i++) {
+    var el = document.getElementById("gtInp_" + i);
+    if (!el || !el.value.trim()) {
+      allFilled = false;
+      if (el) el.focus();
+      break;
+    }
+  }
+  if (!allFilled) return;
+
+  gtChecked = true;
+  gtTotal++;
+  var taskAllRight = true;
+
+  for (var j = 0; j < gapCount; j++) {
+    var inp = document.getElementById("gtInp_" + j);
+    var fix = document.getElementById("gtFix_" + j);
+    var validArr = Array.isArray(cur.answers[j]) ? cur.answers[j] : [cur.answers[j]];
+    var ok = isAnswerMatch(inp.value, validArr);
+
+    inp.disabled = true;
+    if (ok) {
+      inp.classList.add("ok");
+    } else {
+      taskAllRight = false;
+      inp.classList.add("err");
+      if (fix) fix.textContent = validArr[0];
+    }
+  }
+
+  var stEl = document.getElementById("gtStatus");
+  if (taskAllRight) {
+    gtOk++;
+    stEl.style.color = "var(--ok)";
+    stEl.textContent = "Верно!";
+  } else {
+    stEl.style.color = "var(--err)";
+    stEl.textContent = "Есть ошибки";
+  }
+
+  document.getElementById("gtProg").textContent = "Верно: " + gtOk + " / " + gtTotal;
+  document.getElementById("gtHintTopic").textContent = "Тема: " + cur.topic;
+  document.getElementById("gtHintRule").textContent = cur.rule || "";
+  document.getElementById("gtHintBox").style.display = "block";
+}
+
+function nextGt() {
+  if (!gtDeck.length) return;
+  gtIdx++;
+  renderGtTask();
+}
+
+function handleGtEnter() {
+  if (gtChecked) nextGt();
+  else checkGt();
+}
+
+function downloadGtTemplate() {
+  var sample = [
+    {
+      "category": "tenses",
+      "topic": "Present Perfect",
+      "sentence": "She ___ (not / finish) her report yet.",
+      "answers": [["hasn't finished", "has not finished"]],
+      "rule": "Маркер yet в отрицании указывает на незавершённое действие к моменту речи — используем Present Perfect (hasn't + V3)."
+    },
+    {
+      "category": "pairs",
+      "topic": "Past Simple vs Past Continuous",
+      "sentence": "While I ___ (walk) home yesterday, it suddenly ___ (start) to rain.",
+      "answers": [["was walking"], ["started"]],
+      "rule": "Длительный фон в прошлом (while I was walking) прерывается коротким действием (started)."
+    }
+  ];
+  var blob = new Blob([JSON.stringify(sample, null, 2)], { type: "application/json" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "grammar-template.json";
+  a.click();
+}
+
+function importGtJson(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var msgEl = document.getElementById("gtIoMsg");
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var parsed = JSON.parse(ev.target.result);
+      if (!Array.isArray(parsed)) throw new Error("Ожидается JSON-массив заданий.");
+      var map = {};
+      gtTasks.forEach(function(t) { map[t.sentence.toLowerCase().replace(/\s+/g, " ").trim()] = true; });
+      var added = 0;
+
+      parsed.forEach(function(item) {
+        if (!item || typeof item.sentence !== "string" || !Array.isArray(item.answers) || !item.topic) return;
+        var norm = item.sentence.toLowerCase().replace(/\s+/g, " ").trim();
+        if (!map[norm]) {
+          map[norm] = true;
+          gtTasks.push({
+            category: item.category === "tenses" ? "tenses" : "pairs",
+            topic: String(item.topic).trim(),
+            sentence: item.sentence.trim(),
+            answers: item.answers,
+            rule: String(item.rule || "").trim()
+          });
+          gtSelectedTopics[String(item.topic).trim()] = true;
+          added++;
+        }
+      });
+
+      try { localStorage.setItem(GT_KEY, JSON.stringify(gtTasks)); } catch (err) {}
+      renderGtChips();
+      rebuildGtDeck(true);
+      msgEl.textContent = "Добавлено новых заданий: " + added;
+      setTimeout(function() { msgEl.textContent = ""; }, 4000);
+    } catch (err) {
+      msgEl.textContent = "Ошибка файла: " + err.message;
+    }
+    e.target.value = "";
+  };
+  reader.readAsText(file);
+}
+
+initGt();
+
+  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
+document.getElementById("logo").textContent = "My English Hub 3 • OK";
 </script>
 </body>
 </html>
