@@ -3037,5 +3037,1525 @@ window.GRAMMAR_BANK = [
     sentence: "There ___ (be) a cinema here, but they knocked it down.",
     answers: [["used to be"]],
     rule: "Существование в прошлом, которого больше нет, — used to be."
+  },
+
+  // ==========================================
+  // === БАНК 3: ПОВЫШЕННАЯ СЛОЖНОСТЬ ===
+  // ==========================================
+
+  // --- PRESENT SIMPLE ---
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "The committee ___ (meet) on the first Monday of every month to review the budget.",
+    answers: [["meets"]],
+    rule: "Коллективное существительное committee в значении единого органа согласуется с глаголом в единственном числе — Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "She rarely ___ (admit) her mistakes, even when the evidence is overwhelming.",
+    answers: [["admits"]],
+    rule: "Наречие частоты rarely + 3-е лицо ед. ч. — Present Simple с окончанием -s."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "Neither of the twins ___ (enjoy) reading long novels.",
+    answers: [["enjoys"]],
+    rule: "Neither of + множественное число требует глагола в единственном числе — Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "Every time it ___ (snow), the children rush outside to build a snowman.",
+    answers: [["snows"]],
+    rule: "Повторяющееся действие после every time — Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "The old clock on the mantelpiece ___ (chime) loudly at every hour, disturbing the whole household.",
+    answers: [["chimes"]],
+    rule: "Регулярное действие (at every hour) — Present Simple; 3-е лицо ед. ч."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "The professor, along with his assistants, ___ (conduct) research on marine biology every summer.",
+    answers: [["conducts"]],
+    rule: "Оборот along with не меняет числа подлежащего: the professor — единственное число, Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "It rarely ___ (rain) in this part of the desert, yet the plants manage to survive.",
+    answers: [["rains"]],
+    rule: "Общая характеристика климата с наречием rarely — Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "She ___ (not / tolerate) any form of disrespect in her classroom.",
+    answers: [["doesn't tolerate", "does not tolerate"]],
+    rule: "Отрицание постоянного правила/принципа — Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "The company ___ (produce) over a thousand units daily to meet the growing demand.",
+    answers: [["produces"]],
+    rule: "Регулярный производственный процесс (daily) — Present Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Present Simple",
+    sentence: "Whenever the boss ___ (raise) his voice, the entire office falls silent.",
+    answers: [["raises"]],
+    rule: "Придаточное с whenever описывает регулярное условие — Present Simple."
+  },
+
+  // --- PRESENT CONTINUOUS ---
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "The manager ___ (currently / negotiate) a new contract with our overseas partners.",
+    answers: [["is currently negotiating", "'s currently negotiating"]],
+    rule: "Процесс в текущий момент с наречием currently — Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "You ___ (always / leave) your dirty dishes in the sink — it drives me crazy!",
+    answers: [["are always leaving", "'re always leaving"]],
+    rule: "Always + Continuous выражает раздражение по поводу повторяющегося действия."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "The temperature ___ (rise) steadily, which suggests global warming is accelerating.",
+    answers: [["is rising", "'s rising"]],
+    rule: "Развивающаяся тенденция вокруг настоящего момента — Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "I ___ (consider) changing my career path after ten years in the same industry.",
+    answers: [["am considering", "'m considering"]],
+    rule: "Глагол consider в значении «обдумывать в данный период» используется в Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "The children ___ (not / behave) well today because they are exhausted.",
+    answers: [["aren't behaving", "are not behaving"]],
+    rule: "Временное поведение (today) в отрицательной форме — Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "The actors ___ (rehearse) the final scene for the opening night this week.",
+    answers: [["are rehearsing", "'re rehearsing"]],
+    rule: "Временный процесс в текущем периоде (this week) — Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "Why ___ you ___ (constantly / check) your phone during the meeting?",
+    answers: [["are"], ["constantly checking"]],
+    rule: "Constantly + Continuous в вопросе выражает неодобрение повторяющегося действия."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "The new supermarket ___ (open) next Monday, and the whole neighbourhood is excited.",
+    answers: [["is opening", "'s opening"]],
+    rule: "Запланированное будущее событие с конкретной датой — Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "My mother ___ (taste) the sauce to see whether it needs more salt.",
+    answers: [["is tasting", "'s tasting"]],
+    rule: "Taste в значении «пробовать» — действие, а не состояние, поэтому Present Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Continuous",
+    sentence: "I ___ (think) of selling my old car and buying an electric one instead.",
+    answers: [["am thinking", "'m thinking"]],
+    rule: "Think в значении «обдумывать намерение» — Present Continuous."
+  },
+
+  // --- PRESENT PERFECT ---
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "She ___ (already / submit) her application, so you can't add your recommendation letter.",
+    answers: [["has already submitted", "'s already submitted"]],
+    rule: "Завершённое действие с результатом к настоящему (already) — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "I ___ (never / encounter) such a difficult problem in all my years of experience.",
+    answers: [["have never encountered", "'ve never encountered"]],
+    rule: "Жизненный опыт (never) — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "The company ___ (expand) its operations to three new countries since the new CEO took over.",
+    answers: [["has expanded", "'s expanded"]],
+    rule: "Изменения с момента в прошлом (since) — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "They ___ (not / speak) to each other since the argument at the family reunion.",
+    answers: [["haven't spoken", "have not spoken"]],
+    rule: "Отрицание с since — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "How many times ___ you ___ (witness) a total solar eclipse in your lifetime?",
+    answers: [["have"], ["witnessed"]],
+    rule: "Вопрос об опыте (how many times) — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "The museum ___ (recently / acquire) a rare painting by a Renaissance master.",
+    answers: [["has recently acquired", "'s recently acquired"]],
+    rule: "Недавнее событие с результатом в настоящем (recently) — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "He ___ (be) a vegetarian for over a decade, and he says he feels healthier than ever.",
+    answers: [["has been", "'s been"]],
+    rule: "Состояние, начавшееся в прошлом и продолжающееся (for over a decade), — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "We ___ (just / receive) the test results, and they are better than expected.",
+    answers: [["have just received", "'ve just received"]],
+    rule: "Только что завершившееся действие (just) — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "It ___ (be) years since I last visited my hometown, and so much has changed.",
+    answers: [["has been", "'s been"]],
+    rule: "Конструкция It has been years since — Present Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect",
+    sentence: "She ___ (not / complete) the necessary training yet, so she can't start the new role.",
+    answers: [["hasn't completed", "has not completed"]],
+    rule: "Отрицание с yet — Present Perfect."
+  },
+
+  // --- PRESENT PERFECT CONTINUOUS ---
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "The workers ___ (strike) for better wages since the beginning of the month.",
+    answers: [["have been striking", "'ve been striking"]],
+    rule: "Длительный процесс (since the beginning of the month) — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "My back hurts because I ___ (sit) in the same position for hours.",
+    answers: [["have been sitting", "'ve been sitting"]],
+    rule: "Процесс (for hours), вызвавший результат (back hurts), — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "The researchers ___ (study) the effects of climate change on polar bears for the past decade.",
+    answers: [["have been studying", "'ve been studying"]],
+    rule: "Длительный процесс (for the past decade) — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "She ___ (try) to reach you all morning, but your phone seems to be switched off.",
+    answers: [["has been trying", "'s been trying"]],
+    rule: "Процесс в течение всего периода (all morning) — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "The children's clothes are muddy because they ___ (play) in the garden.",
+    answers: [["have been playing", "'ve been playing"]],
+    rule: "Видимый результат (clothes are muddy) как следствие процесса — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "How long ___ you ___ (experience) these symptoms?",
+    answers: [["have"], ["been experiencing"]],
+    rule: "Вопрос о длительности процесса до настоящего момента — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "The orchestra ___ (rehearse) the symphony for weeks, and they're finally ready for the concert.",
+    answers: [["has been rehearsing", "'s been rehearsing"]],
+    rule: "Длительный процесс (for weeks) — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "His eyes are bloodshot because he ___ (stare) at the computer screen all night.",
+    answers: [["has been staring", "'s been staring"]],
+    rule: "Длительный процесс (all night), вызвавший видимый результат, — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "The local community ___ (petition) the council to build a new playground for months.",
+    answers: [["has been petitioning", "'s been petitioning"]],
+    rule: "Длительный процесс (for months) — Present Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Present Perfect Continuous",
+    sentence: "Why is the kitchen so hot? — Because I ___ (bake) bread all afternoon.",
+    answers: [["have been baking", "'ve been baking"]],
+    rule: "Процесс (all afternoon), вызвавший результат (kitchen is hot), — Present Perfect Continuous."
+  },
+
+  // --- PAST SIMPLE ---
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "The company ___ (lay off) twenty employees during the economic crisis of 2008.",
+    answers: [["laid off"]],
+    rule: "Завершённое действие с точным временем (2008) — Past Simple; неправильный глагол lay off."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "She ___ (overhear) their conversation quite by accident and learned the truth.",
+    answers: [["overheard"]],
+    rule: "Завершённое действие в прошлом — Past Simple; неправильный глагол overhear."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "We ___ (not / anticipate) such a strong reaction from the audience.",
+    answers: [["didn't anticipate", "did not anticipate"]],
+    rule: "Отрицание завершённого действия в прошлом — Past Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "The fire ___ (destroy) the entire warehouse in a matter of hours.",
+    answers: [["destroyed"]],
+    rule: "Завершённое действие в прошлом — Past Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "He ___ (resign) from his position abruptly, leaving everyone in shock.",
+    answers: [["resigned"]],
+    rule: "Завершённое действие в прошлом — Past Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "The ancient Romans ___ (build) an extensive network of roads across their empire.",
+    answers: [["built"]],
+    rule: "Историческое действие в прошлом — Past Simple; неправильный глагол build."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "They ___ (give) up their holiday plans because of the unexpected medical expenses.",
+    answers: [["gave up"]],
+    rule: "Завершённое действие в прошлом — Past Simple; неправильный глагол give."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "The children ___ (not / obey) their nanny, which caused a great deal of trouble.",
+    answers: [["didn't obey", "did not obey"]],
+    rule: "Отрицание завершённого действия в прошлом — Past Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "I ___ (misunderstand) your instructions entirely, and I apologize for the confusion.",
+    answers: [["misunderstood"]],
+    rule: "Завершённое действие в прошлом — Past Simple; неправильный глагол misunderstand."
+  },
+  {
+    category: "tenses",
+    topic: "Past Simple",
+    sentence: "The volcano ___ (erupt) without warning, catching the nearby villagers off guard.",
+    answers: [["erupted"]],
+    rule: "Завершённое действие в прошлом — Past Simple."
+  },
+
+  // --- PAST CONTINUOUS ---
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "While the orchestra ___ (perform), a power outage plunged the hall into darkness.",
+    answers: [["was performing"]],
+    rule: "Фоновый процесс (while), прерванный событием, — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "The detective noticed that the suspect ___ (sweat) nervously during the interrogation.",
+    answers: [["was sweating"]],
+    rule: "Фоновый процесс в прошлом в момент наблюдения — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "They ___ (not / pay) attention when the guide explained the safety procedures.",
+    answers: [["weren't paying", "were not paying"]],
+    rule: "Отрицание процесса в прошлом — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "At exactly midnight, the crew ___ (prepare) for the ship's departure.",
+    answers: [["were preparing"]],
+    rule: "Процесс в конкретный момент в прошлом (at exactly midnight) — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "While I ___ (examine) the documents, my assistant ___ (answer) phone calls.",
+    answers: [["was examining"], ["was answering"]],
+    rule: "Параллельные процессы в прошлом (while) — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "The children ___ (whisper) to each other while the teacher ___ (write) on the board.",
+    answers: [["were whispering"], ["was writing"]],
+    rule: "Параллельные процессы в прошлом — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "She ___ (sunbathe) on the beach when a sudden wave washed away her towel.",
+    answers: [["was sunbathing"]],
+    rule: "Длительный процесс, прерванный событием, — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "The chefs ___ (argue) in the kitchen while the guests were waiting for their meals.",
+    answers: [["were arguing"]],
+    rule: "Параллельный процесс в прошлом — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "He ___ (not / look) where he was going, so he crashed into a lamppost.",
+    answers: [["wasn't looking", "was not looking"]],
+    rule: "Отрицание фонового процесса в прошлом — Past Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Continuous",
+    sentence: "What ___ she ___ (wear) when you last saw her at the party?",
+    answers: [["was"], ["wearing"]],
+    rule: "Вопрос о процессе/описании в прошлом — Past Continuous."
+  },
+
+  // --- PAST PERFECT ---
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "By the time the ambulance arrived, the injured man ___ (already / lose) a lot of blood.",
+    answers: [["had already lost", "'d already lost"]],
+    rule: "Действие завершилось до другого события в прошлом (by the time) — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "She was furious because someone ___ (read) her private diary without permission.",
+    answers: [["had read", "'d read"]],
+    rule: "Действие произошло раньше другого действия/состояния в прошлом — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "The convict escaped because the guards ___ (not / lock) the cell door properly.",
+    answers: [["hadn't locked", "had not locked"]],
+    rule: "Отрицание причины в прошлом, произошедшей раньше следствия, — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "He realized he ___ (leave) his briefcase on the train after it had departed.",
+    answers: [["had left", "'d left"]],
+    rule: "Действие до момента осознания в прошлом — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "They ___ (prepare) everything for the surprise party before the birthday girl came home.",
+    answers: [["had prepared", "'d prepared"]],
+    rule: "Действие до другого события в прошлом (before) — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "I ___ (never / witness) such a magnificent sunset until I visited Santorini.",
+    answers: [["had never witnessed", "'d never witnessed"]],
+    rule: "Опыт до момента в прошлом (until I visited) — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "The company ___ (not / anticipate) such a hostile takeover bid.",
+    answers: [["hadn't anticipated", "had not anticipated"]],
+    rule: "Отрицание предшествующего действия в прошлом — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "By the time the guests arrived, the chef ___ (already / prepare) a feast.",
+    answers: [["had already prepared", "'d already prepared"]],
+    rule: "Действие завершилось до другого события в прошлом — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "She ___ (live) in five different countries before she finally settled in Norway.",
+    answers: [["had lived", "'d lived"]],
+    rule: "Предшествующий опыт до момента в прошлом — Past Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect",
+    sentence: "The manager ___ (not / authorize) the expenditure, yet the funds were withdrawn.",
+    answers: [["hadn't authorized", "had not authorized"]],
+    rule: "Отрицание предшествующего действия в прошлом — Past Perfect."
+  },
+
+  // --- PAST PERFECT CONTINUOUS ---
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "The house smelled of fresh paint because the workers ___ (paint) all day.",
+    answers: [["had been painting", "'d been painting"]],
+    rule: "Процесс (all day) до момента в прошлом, вызвавший результат, — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "He ___ (not / feel) well for weeks before he was finally diagnosed.",
+    answers: [["hadn't been feeling", "had not been feeling"]],
+    rule: "Отрицание длительного процесса до события в прошлом — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "They ___ (search) for the missing hiker for nearly twenty-four hours when they found him.",
+    answers: [["had been searching", "'d been searching"]],
+    rule: "Длительный процесс (for nearly twenty-four hours) до события в прошлом — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "Her eyes were red from crying because she ___ (watch) emotional movies all evening.",
+    answers: [["had been watching", "'d been watching"]],
+    rule: "Процесс (all evening), вызвавший видимый результат в прошлом, — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "The garden was overgrown — the previous owners ___ (not / maintain) it properly.",
+    answers: [["hadn't been maintaining", "had not been maintaining"]],
+    rule: "Отрицание длительного процесса до момента в прошлом — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "The police suspected that the suspect ___ (lie) during the entire interrogation.",
+    answers: [["had been lying", "'d been lying"]],
+    rule: "Длительный процесс до момента в прошлом — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "How long ___ he ___ (train) before he won the marathon?",
+    answers: [["had"], ["been training"]],
+    rule: "Вопрос о длительности процесса до события в прошлом — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "The children ___ (dig) in the sand for hours, and they'd built an enormous castle.",
+    answers: [["had been digging", "'d been digging"]],
+    rule: "Длительный процесс (for hours), приведший к результату в прошлом, — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "It was clear that the old man ___ (suffer) in silence for years.",
+    answers: [["had been suffering", "'d been suffering"]],
+    rule: "Длительный процесс (for years) до момента в прошлом — Past Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Past Perfect Continuous",
+    sentence: "The chef was exhausted because he ___ (cook) since dawn.",
+    answers: [["had been cooking", "'d been cooking"]],
+    rule: "Процесс с указанием начала (since dawn) до момента в прошлом — Past Perfect Continuous."
+  },
+
+  // --- FUTURE SIMPLE ---
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "I promise I ___ (not / disappoint) you — this project will be my priority.",
+    answers: [["won't disappoint", "will not disappoint"]],
+    rule: "Обещание (promise) в Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "The forecast warns that temperatures ___ (drop) sharply overnight.",
+    answers: [["will drop", "'ll drop"]],
+    rule: "Предсказание на основе прогноза — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "Perhaps your parents ___ (agree) to lend us the car for the weekend.",
+    answers: [["will agree", "'ll agree"]],
+    rule: "Предположение (perhaps) — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "I ___ (handle) the situation personally — you have my word.",
+    answers: [["will handle", "'ll handle"]],
+    rule: "Обещание/заверение в момент речи — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "Don't worry about tomorrow's presentation; you ___ (do) fine.",
+    answers: [["will do", "'ll do"]],
+    rule: "Успокоение/предсказание в Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "I think this new policy ___ (generate) a lot of controversy.",
+    answers: [["will generate", "'ll generate"]],
+    rule: "Мнение (I think) о будущем — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "I'll make the announcement, and then the director ___ (address) the audience.",
+    answers: [["will address", "'ll address"]],
+    rule: "Последовательность спонтанно запланированных действий — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "We ___ (not / tolerate) any discrimination in this workplace.",
+    answers: [["won't tolerate", "will not tolerate"]],
+    rule: "Категоричное заявление/обещание в отрицательной форме — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "I hope the weather ___ (improve) before our trip.",
+    answers: [["will improve", "'ll improve"]],
+    rule: "Надежда на будущее — Future Simple."
+  },
+  {
+    category: "tenses",
+    topic: "Future Simple",
+    sentence: "She ___ (not / reveal) the secret — she's trustworthy.",
+    answers: [["won't reveal", "will not reveal"]],
+    rule: "Заверение в Future Simple."
+  },
+
+  // --- FUTURE CONTINUOUS ---
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "At this time tomorrow, we ___ (cruise) along the Amalfi Coast, enjoying the view.",
+    answers: [["will be cruising", "'ll be cruising"]],
+    rule: "Процесс в конкретный момент будущего (at this time tomorrow) — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "Don't interrupt them between 3 and 4 p.m. — they ___ (conduct) a crucial board meeting.",
+    answers: [["will be conducting", "'ll be conducting"]],
+    rule: "Запланированный процесс в определённый отрезок будущего времени — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "Next Monday, I ___ (train) the new interns, so I won't be at my desk.",
+    answers: [["will be training", "'ll be training"]],
+    rule: "Запланированный процесс в будущем — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "This time next year, the company ___ (operate) from its new headquarters.",
+    answers: [["will be operating", "'ll be operating"]],
+    rule: "Процесс в конкретный момент будущего — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "Please be quiet at 7 p.m. — the children ___ (take) their piano lesson.",
+    answers: [["will be taking", "'ll be taking"]],
+    rule: "Запланированный процесс в будущем — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "I ___ (not / sleep) when you call at midnight — I'll be working.",
+    answers: [["won't be sleeping", "will not be sleeping"]],
+    rule: "Отрицание процесса в конкретный момент будущего — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "By the way, what ___ you ___ (do) at 6 p.m. tomorrow?",
+    answers: [["will"], ["be doing"]],
+    rule: "Вопрос о процессе в конкретный момент будущего — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "The band ___ (rehearse) all evening, so expect some noise.",
+    answers: [["will be rehearsing", "'ll be rehearsing"]],
+    rule: "Длительный процесс в будущем (all evening) — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "In an hour, we ___ (sit) by the fireplace, sipping hot chocolate.",
+    answers: [["will be sitting", "'ll be sitting"]],
+    rule: "Процесс в конкретный момент будущего — Future Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Continuous",
+    sentence: "She ___ (not / answer) calls during the presentation.",
+    answers: [["won't be answering", "will not be answering"]],
+    rule: "Отрицание запланированного процесса в будущем — Future Continuous."
+  },
+
+  // --- FUTURE PERFECT ---
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By the end of the trial, the lawyer ___ (present) compelling evidence to the jury.",
+    answers: [["will have presented", "'ll have presented"]],
+    rule: "Завершение к сроку в будущем (by the end of the trial) — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By the time the new bridge opens, the city ___ (spend) over a billion dollars on it.",
+    answers: [["will have spent", "'ll have spent"]],
+    rule: "Действие завершится до другого события в будущем (by the time) — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "She ___ (not / finish) her doctoral thesis by the summer deadline — the research is taking longer than expected.",
+    answers: [["won't have finished", "will not have finished"]],
+    rule: "Отрицание завершения к сроку в будущем — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By next Monday, we ___ (finalize) all the arrangements for the wedding.",
+    answers: [["will have finalized", "'ll have finalized"]],
+    rule: "Завершение к конкретному сроку в будущем — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By 2030, scientists ___ (develop) more efficient solar panels.",
+    answers: [["will have developed", "'ll have developed"]],
+    rule: "Завершение к будущему сроку — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By next month, we ___ (hire) three new engineers to join the team.",
+    answers: [["will have hired", "'ll have hired"]],
+    rule: "Завершение к сроку в будущем — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "The film ___ (already / start) by the time we get to the cinema, given the traffic.",
+    answers: [["will have already started", "'ll have already started"]],
+    rule: "Завершение до момента в будущем (by the time) — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By the end of the tour, the band ___ (perform) in over twenty cities.",
+    answers: [["will have performed", "'ll have performed"]],
+    rule: "Завершение к концу периода в будущем — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "I ___ (not / read) all these reports by tomorrow — there are simply too many.",
+    answers: [["won't have read", "will not have read"]],
+    rule: "Отрицание завершения к сроку в будущем — Future Perfect."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect",
+    sentence: "By the time the guests arrive, the catering team ___ (set) up everything.",
+    answers: [["will have set", "'ll have set"]],
+    rule: "Завершение до другого события в будущем — Future Perfect."
+  },
+
+  // --- FUTURE PERFECT CONTINUOUS ---
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "By next week, she ___ (volunteer) at the animal shelter for a full year.",
+    answers: [["will have been volunteering", "'ll have been volunteering"]],
+    rule: "Длительность процесса (for a full year) к будущему моменту (by next week) — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "When the renovation finishes, the workers ___ (remodel) the house for eight months.",
+    answers: [["will have been remodeling", "'ll have been remodeling"]],
+    rule: "Длительный процесс к моменту завершения в будущем — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "By the time the guests leave, we ___ (celebrate) for over six hours.",
+    answers: [["will have been celebrating", "'ll have been celebrating"]],
+    rule: "Длительность процесса (for over six hours) к будущему моменту — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "At the end of the term, the students ___ (attend) this class for fifteen weeks.",
+    answers: [["will have been attending", "'ll have been attending"]],
+    rule: "Длительность процесса к концу периода в будущем — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "By 2040, our team ___ (research) this disease for two decades.",
+    answers: [["will have been researching", "'ll have been researching"]],
+    rule: "Длительность процесса (for two decades) к будущему моменту — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "By Christmas, she ___ (not / speak) to her brother for three years.",
+    answers: [["won't have been speaking", "will not have been speaking"]],
+    rule: "Отрицание длительного процесса к будущему моменту — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "When the trial ends, the judge ___ (listen) to testimonies for weeks.",
+    answers: [["will have been listening", "'ll have been listening"]],
+    rule: "Процесс будет длиться в течение недель к моменту в будущем — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "By the time the concert starts, the fans ___ (stand) in line for twelve hours.",
+    answers: [["will have been standing", "'ll have been standing"]],
+    rule: "Длительность процесса к моменту в будущем — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "The team ___ (train) for the Olympics for four years by the time the games begin.",
+    answers: [["will have been training", "'ll have been training"]],
+    rule: "Длительность процесса (for four years) к моменту в будущем — Future Perfect Continuous."
+  },
+  {
+    category: "tenses",
+    topic: "Future Perfect Continuous",
+    sentence: "When they finally meet, they ___ (correspond) via letters for over a decade.",
+    answers: [["will have been corresponding", "'ll have been corresponding"]],
+    rule: "Длительный процесс (for over a decade) к моменту в будущем — Future Perfect Continuous."
+  },
+
+  // ==========================================
+  // === СМЕЖНЫЕ ПАРЫ (БЛОК 3) ===
+  // ==========================================
+
+  // --- PRESENT SIMPLE vs PRESENT CONTINUOUS ---
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "She normally ___ (take) the train to work, but this week she ___ (drive) because of the strikes.",
+    answers: [["takes"], ["is driving", "'s driving"]],
+    rule: "Привычка (normally) — Present Simple; временное действие (this week) — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "I ___ (see) what you mean, but I ___ (not / agree) with your conclusion.",
+    answers: [["see"], ["don't agree", "do not agree"]],
+    rule: "Глаголы состояния see и agree в Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "The shop ___ (close) at 9 p.m. every day, but it ___ (close) early today for renovations.",
+    answers: [["closes"], ["is closing", "'s closing"]],
+    rule: "Расписание — Present Simple; временное отклонение (today) — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "Listen, I ___ (know) you're busy, but I ___ (wonder) if you could spare a minute.",
+    answers: [["know"], ["am wondering", "'m wondering"]],
+    rule: "Know — состояние в Present Simple; wonder в значении вежливой просьбы часто используется в Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "My grandmother ___ (have) a wonderful collection of antique dolls, but she ___ (not / want) to sell any.",
+    answers: [["has"], ["doesn't want", "does not want"]],
+    rule: "Have в значении «владеть» и want — состояния, Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "What ___ you ___ (think) about? You look so serious.",
+    answers: [["are"], ["thinking"]],
+    rule: "Think в значении «размышлять» — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "The committee ___ (meet) this afternoon to discuss the new proposal.",
+    answers: [["is meeting", "'s meeting"]],
+    rule: "Запланированное собрание в конкретное время — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "These days, more and more people ___ (work) from home, and the trend ___ (seem) to continue.",
+    answers: [["are working", "'re working"], ["seems"]],
+    rule: "Развивающаяся тенденция (these days) — Present Continuous; seem — stative, Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "He ___ (be) usually very punctual, so I ___ (not / understand) why he's late today.",
+    answers: [["is"], ["don't understand", "do not understand"]],
+    rule: "Постоянная характеристика и stative understand в Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Present Simple vs Present Continuous",
+    sentence: "My brother ___ (weigh) himself every morning, but he ___ (not / lose) any weight despite his diet.",
+    answers: [["weighs"], ["isn't losing", "is not losing"]],
+    rule: "Регулярное действие — Present Simple; развивающийся процесс в настоящий период — Present Continuous."
+  },
+
+  // --- PAST SIMPLE vs PRESENT PERFECT ---
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "She ___ (graduate) from Oxford in 2018, and she ___ (already / publish) two bestselling novels since then.",
+    answers: [["graduated"], ["has already published", "'s already published"]],
+    rule: "Конкретная дата (in 2018) — Past Simple; результат с since — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "I ___ (meet) him at a conference last year, but I ___ (not / see) him since.",
+    answers: [["met"], ["haven't seen", "have not seen"]],
+    rule: "Конкретное прошлое (last year) — Past Simple; состояние до сих пор с since — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "How many times ___ the team ___ (win) the championship? — They ___ (win) it in 2015 and 2020.",
+    answers: [["has"], ["won"], ["won"]],
+    rule: "Вопрос об опыте — Present Perfect; конкретные годы в ответе — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "We ___ (buy) this house in 2010, and property prices ___ (rise) significantly since then.",
+    answers: [["bought"], ["have risen", "'ve risen"]],
+    rule: "Конкретная дата (in 2010) — Past Simple; изменения до настоящего (since then) — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "The company ___ (launch) its new product last month, and it ___ (become) a bestseller already.",
+    answers: [["launched"], ["has become", "'s become"]],
+    rule: "Конкретное прошлое (last month) — Past Simple; результат с already — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "He ___ (live) in Tokyo for five years, but he ___ (move) back to London last spring.",
+    answers: [["lived"], ["moved"]],
+    rule: "Оба действия — завершённые факты в прошлом с конкретным временем, Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "I ___ (never / taste) such a delicious dessert until I tried this one at the restaurant yesterday.",
+    answers: [["had never tasted", "'d never tasted"]],
+    rule: "Опыт до момента в прошлом (until I tried yesterday) — Past Perfect (сложный случай, эквивалент 'never before that moment')."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "___ you ___ (finish) the report? — Yes, I ___ (send) it to the manager an hour ago.",
+    answers: [["Have"], ["finished"], ["sent"]],
+    rule: "Вопрос о результате к настоящему — Present Perfect; ответ с конкретным временем (an hour ago) — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "They ___ (announce) the engagement last weekend, and they ___ (not / set) a date yet.",
+    answers: [["announced"], ["haven't set", "have not set"]],
+    rule: "Конкретное время (last weekend) — Past Simple; результат с yet — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Present Perfect",
+    sentence: "She ___ (write) three books before she turned thirty, and she ___ (just / release) her fourth.",
+    answers: [["wrote"], ["has just released", "'s just released"]],
+    rule: "Завершённое действие с указанием возраста в прошлом — Past Simple; результат с just — Present Perfect."
+  },
+
+  // --- PRESENT PERFECT vs PRESENT PERFECT CONTINUOUS ---
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "He ___ (read) that book for weeks, but he ___ (not / finish) it yet.",
+    answers: [["has been reading", "'s been reading"], ["hasn't finished", "has not finished"]],
+    rule: "Процесс (for weeks) — Present Perfect Continuous; результат с yet — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "The manager ___ (interview) candidates all morning, and he ___ (already / hire) two of them.",
+    answers: [["has been interviewing", "'s been interviewing"], ["has already hired", "'s already hired"]],
+    rule: "Длительный процесс (all morning) — Present Perfect Continuous; количественный результат (already) — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "I ___ (try) to call you all day — where have you been?",
+    answers: [["have been trying", "'ve been trying"]],
+    rule: "Длительный процесс (all day) — Present Perfect Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "She ___ (paint) the living room since morning, and the smell is unbearable.",
+    answers: [["has been painting", "'s been painting"]],
+    rule: "Процесс (since morning), вызвавший результат, — Present Perfect Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "How long ___ you ___ (own) this car? — I ___ (have) it for about five years.",
+    answers: [["have"], ["owned"], ["have had", "'ve had"]],
+    rule: "Stative own и have не употребляются в Continuous — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "The dog ___ (bark) constantly since the postman arrived.",
+    answers: [["has been barking", "'s been barking"]],
+    rule: "Длительный процесс (since) — Present Perfect Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "They ___ (renovate) their kitchen for months, but they ___ (not / finish) it yet.",
+    answers: [["have been renovating", "'ve been renovating"], ["haven't finished", "have not finished"]],
+    rule: "Процесс (for months) — Present Perfect Continuous; результат с yet — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "She ___ (already / see) that film three times — she absolutely loves it.",
+    answers: [["has already seen", "'s already seen"]],
+    rule: "Количественный результат (three times) — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "We ___ (wait) for over an hour, and our patience is running out.",
+    answers: [["have been waiting", "'ve been waiting"]],
+    rule: "Длительный процесс (for over an hour) — Present Perfect Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Present Perfect vs Present Perfect Continuous",
+    sentence: "The scientist ___ (study) this phenomenon for years and ___ (make) several important discoveries.",
+    answers: [["has been studying", "'s been studying"], ["has made", "'s made"]],
+    rule: "Процесс (for years) — Present Perfect Continuous; результат — Present Perfect."
+  },
+
+  // --- PAST SIMPLE vs PAST CONTINUOUS ---
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "While I ___ (prepare) the presentation, my computer suddenly ___ (crash), and I lost everything.",
+    answers: [["was preparing"], ["crashed"]],
+    rule: "Процесс (while), прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "She ___ (walk) down the stairs when she ___ (slip) on the wet floor.",
+    answers: [["was walking"], ["slipped"]],
+    rule: "Длительный процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "The students ___ (take) notes when the professor ___ (announce) the surprise quiz.",
+    answers: [["were taking"], ["announced"]],
+    rule: "Фоновый процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "They ___ (drive) through the countryside when they ___ (notice) a beautiful old castle.",
+    answers: [["were driving"], ["noticed"]],
+    rule: "Длительный процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "What ___ you ___ (do) when I ___ (call) you last night? You didn't answer.",
+    answers: [["were"], ["doing"], ["called"]],
+    rule: "Вопрос о процессе, прерванном событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "The cat ___ (sleep) on the sofa when the dog ___ (jump) onto it.",
+    answers: [["was sleeping"], ["jumped"]],
+    rule: "Фоновый процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "I ___ (wait) at the bus stop when a stranger ___ (approach) me and asked for directions.",
+    answers: [["was waiting"], ["approached"]],
+    rule: "Процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "She ___ (not / pay) attention to the road when the traffic light ___ (turn) red.",
+    answers: [["wasn't paying", "was not paying"], ["turned"]],
+    rule: "Отрицание процесса, прерванного событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "They ___ (argue) loudly when the manager ___ (enter) the room and silenced them.",
+    answers: [["were arguing"], ["entered"]],
+    rule: "Процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Continuous",
+    sentence: "He ___ (clean) the attic when he ___ (find) his grandfather's war medals.",
+    answers: [["was cleaning"], ["found"]],
+    rule: "Процесс, прерванный событием, — Past Continuous + Past Simple."
+  },
+
+  // --- PAST SIMPLE vs PAST PERFECT ---
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "She ___ (arrive) at the office only to discover that the meeting ___ (be) cancelled.",
+    answers: [["arrived"], ["had been", "'d been"]],
+    rule: "Приехала (Past Simple), но собрание было отменено раньше (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "By the time the firefighters ___ (arrive), the building ___ (already / collapse).",
+    answers: [["arrived"], ["had already collapsed", "'d already collapsed"]],
+    rule: "Действие до момента в прошлом (by the time) — Past Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "He ___ (not / recognize) his old friend because he ___ (gain) so much weight.",
+    answers: [["didn't recognize", "did not recognize"], ["had gained", "'d gained"]],
+    rule: "Не узнал (Past Simple) из-за того, что поправился ранее (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "The teacher ___ (ask) why I ___ (not / do) my homework.",
+    answers: [["asked"], ["hadn't done", "had not done"]],
+    rule: "Спросил (Past Simple) о том, что не было сделано раньше (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "When I ___ (get) to the station, I realized I ___ (leave) my ticket at home.",
+    answers: [["got"], ["had left", "'d left"]],
+    rule: "Добрался (Past Simple), осознал, что оставил билет раньше (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "She ___ (tell) me that she ___ (never / see) such a beautiful sunset before.",
+    answers: [["told"], ["had never seen", "'d never seen"]],
+    rule: "Сказала (Past Simple) об опыте до того момента (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "They ___ (announce) that the team ___ (win) the championship for the third consecutive year.",
+    answers: [["announced"], ["had won", "'d won"]],
+    rule: "Объявили (Past Simple) о ранее случившемся (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "I ___ (not / know) the answer because I ___ (not / study) that chapter.",
+    answers: [["didn't know", "did not know"], ["hadn't studied", "had not studied"]],
+    rule: "Не знал (Past Simple), потому что не учил главу ранее (Past Perfect)."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "After he ___ (finish) the marathon, he ___ (collapse) from exhaustion.",
+    answers: [["had finished", "'d finished"], ["collapsed"]],
+    rule: "Действие завершилось до другого (after) — Past Perfect + Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Past Simple vs Past Perfect",
+    sentence: "The movie ___ (already / begin) by the time we ___ (find) our seats.",
+    answers: [["had already begun", "'d already begun"], ["found"]],
+    rule: "Начался раньше (Past Perfect) до момента, как мы нашли места (Past Simple)."
+  },
+
+  // --- WILL vs BE GOING TO vs PRESENT CONTINUOUS (FUTURE) ---
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "I ___ (see) the doctor tomorrow at 3 p.m. — it's already scheduled.",
+    answers: [["am seeing", "'m seeing"]],
+    rule: "Запланированная встреча с конкретным временем — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "The phone is ringing. — Don't worry, I ___ (get) it.",
+    answers: [["will get", "'ll get"]],
+    rule: "Спонтанное решение в момент речи — will."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "We ___ (not / go) to the conference; the organizers ___ (postpone) it until further notice.",
+    answers: [["aren't going", "are not going"], ["have postponed", "'ve postponed"]],
+    rule: "Запланированное изменение в планах — Present Continuous; уже случившийся факт с результатом — Present Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "Look at that man on the ladder! He ___ (fall)!",
+    answers: [["is going to fall", "'s going to fall"]],
+    rule: "Предсказание на основе видимых доказательств — be going to."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "I've made up my mind: I ___ (study) medicine at university next year.",
+    answers: [["am going to study", "'m going to study"]],
+    rule: "Заранее принятое решение — be going to."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "She ___ (visit) her parents this weekend — she promised them last week.",
+    answers: [["is visiting", "'s visiting"]],
+    rule: "Договорённость с конкретным временем — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "What ___ you ___ (do) for your birthday next month? — I'm not sure, maybe I ___ (throw) a party.",
+    answers: [["are"], ["doing"], ["will throw", "'ll throw"]],
+    rule: "Вопрос о планах — Present Continuous; спонтанное предположение — will."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "I ___ (not / tell) anyone your secret, I promise.",
+    answers: [["won't tell", "will not tell"]],
+    rule: "Обещание — will."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "We ___ (get) married in June — the venue is already booked.",
+    answers: [["are getting", "'re getting"]],
+    rule: "Организованное мероприятие с договорённостью — Present Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Will vs Be going to vs Present Continuous",
+    sentence: "I can't meet you tomorrow — I ___ (have) lunch with my grandmother.",
+    answers: [["am having", "'m having"]],
+    rule: "Запланированная встреча — Present Continuous."
+  },
+
+  // --- FUTURE PERFECT vs FUTURE CONTINUOUS ---
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "By the end of the year, I ___ (complete) my master's degree and I'll finally be free.",
+    answers: [["will have completed", "'ll have completed"]],
+    rule: "Завершение к сроку (by the end of the year) — Future Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "At 8 p.m. tomorrow, I ___ (enjoy) a romantic dinner with my wife.",
+    answers: [["will be enjoying", "'ll be enjoying"]],
+    rule: "Процесс в конкретный момент будущего (at 8 p.m. tomorrow) — Future Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "By next spring, they ___ (plant) over a thousand trees in the park.",
+    answers: [["will have planted", "'ll have planted"]],
+    rule: "Завершение к сроку (by next spring) — Future Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "Don't call between 6 and 7 — I ___ (put) the kids to bed.",
+    answers: [["will be putting", "'ll be putting"]],
+    rule: "Запланированный процесс в определённый период будущего — Future Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "By the time you finish reading this book, you ___ (learn) hundreds of new words.",
+    answers: [["will have learned", "'ll have learned"]],
+    rule: "Завершение до другого события в будущем — Future Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "This time next week, we ___ (sunbathe) on a beach in Bali.",
+    answers: [["will be sunbathing", "'ll be sunbathing"]],
+    rule: "Процесс в конкретный момент будущего — Future Continuous."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "By Friday, the committee ___ (make) its final decision.",
+    answers: [["will have made", "'ll have made"]],
+    rule: "Завершение к сроку (by Friday) — Future Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "In five years, the company ___ (launch) at least ten new products.",
+    answers: [["will have launched", "'ll have launched"]],
+    rule: "Завершение к моменту в будущем — Future Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "By tomorrow morning, I ___ (finish) reading the entire novel.",
+    answers: [["will have finished", "'ll have finished"]],
+    rule: "Завершение к сроку в будущем — Future Perfect."
+  },
+  {
+    category: "pairs",
+    topic: "Future Perfect vs Future Continuous",
+    sentence: "At midnight, I ___ (probably / sleep), so please don't call.",
+    answers: [["will probably be sleeping", "'ll probably be sleeping"]],
+    rule: "Процесс в конкретный момент будущего с наречием вероятности — Future Continuous."
+  },
+
+  // --- FIRST vs SECOND CONDITIONALS ---
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "If you ___ (leave) now, you will catch the last train home.",
+    answers: [["leave"]],
+    rule: "Реальное условие в будущем (First Conditional) — Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "If I ___ (have) a million dollars, I would travel the world for a year.",
+    answers: [["had"]],
+    rule: "Нереальное условие (Second Conditional) — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "Unless you ___ (apologize), she won't forgive you.",
+    answers: [["apologize"]],
+    rule: "Реальное условие с unless (First Conditional) — Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "If he ___ (not / study) harder, he will fail the exam.",
+    answers: [["doesn't study", "does not study"]],
+    rule: "Реальное условие (First Conditional), отрицание — Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "What would you do if you ___ (lose) your passport while traveling abroad?",
+    answers: [["lost"]],
+    rule: "Нереальное условие (Second Conditional) — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "If the weather ___ (be) fine tomorrow, we'll have a barbecue in the garden.",
+    answers: [["is"]],
+    rule: "Реальное условие в будущем (First Conditional) — Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "She would call you if she ___ (know) your number.",
+    answers: [["knew"]],
+    rule: "Нереальное условие (Second Conditional) — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "If you ___ (not / water) the plants, they will die.",
+    answers: [["don't water", "do not water"]],
+    rule: "Реальное условие (First Conditional), отрицание — Present Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "I would help you if I ___ (have) more time, but I'm swamped this week.",
+    answers: [["had"]],
+    rule: "Нереальное условие (Second Conditional) — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "First vs Second Conditionals",
+    sentence: "Unless we ___ (leave) soon, we will miss our flight.",
+    answers: [["leave"]],
+    rule: "Реальное условие с unless (First Conditional) — Present Simple."
+  },
+
+  // --- USED TO vs PAST SIMPLE ---
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "When I was a teenager, I ___ (spend) every summer at my grandparents' farm.",
+    answers: [["used to spend"]],
+    rule: "Прошлая привычка, которой больше нет, — used to."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "I ___ (visit) Paris in 2019, and I absolutely loved it.",
+    answers: [["visited"]],
+    rule: "Однократное действие с точным временем (in 2019) — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "She ___ (not / like) coffee, but now she drinks it every day.",
+    answers: [["didn't use to like", "did not use to like"]],
+    rule: "Отрицание прошлой привычки/состояния — didn't use to."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "They ___ (meet) at a conference in Berlin in 2015.",
+    answers: [["met"]],
+    rule: "Однократное событие с конкретной датой — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "___ you ___ (ride) a bicycle to school when you were young?",
+    answers: [["Did"], ["use to ride"]],
+    rule: "Вопрос о прошлой привычке — did you use to + инфинитив."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "The old factory ___ (produce) thousands of cars a year before it closed down.",
+    answers: [["used to produce"]],
+    rule: "Прошлая регулярная деятельность, прекратившаяся, — used to."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "I ___ (lose) my wallet at the concert, and I had to walk home.",
+    answers: [["lost"]],
+    rule: "Однократное событие в прошлом — Past Simple."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "There ___ (be) a beautiful forest here, but it was cleared for farmland.",
+    answers: [["used to be"]],
+    rule: "Существование в прошлом, которого больше нет, — used to be."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "My father ___ (work) as a journalist before he changed careers.",
+    answers: [["used to work"]],
+    rule: "Прошлое занятие, изменившееся, — used to."
+  },
+  {
+    category: "pairs",
+    topic: "Used to vs Past Simple",
+    sentence: "She ___ (find) a stray cat on the street and adopted it immediately.",
+    answers: [["found"]],
+    rule: "Однократное действие в прошлом — Past Simple."
   }
 ];
