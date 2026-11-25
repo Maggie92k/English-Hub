@@ -1424,8 +1424,9 @@ function saveSyncToken() {
   try {
     localStorage.setItem("eng_gh_token", tok);
     localStorage.removeItem("eng_gist_id");
+    localStorage.setItem("eng_updated_at", "0");
   } catch (e) {}
-  syncNow(false);
+  syncNow(true);
 }
 
 function disconnectSync() {
@@ -1528,7 +1529,7 @@ function syncNow(forcePull) {
     try { localTs = Number(localStorage.getItem("eng_updated_at")) || 0; } catch (e) {}
     var remoteTs = remote ? (Number(remote.updatedAt) || 0) : 0;
 
-    if (remote && (forcePull || remoteTs > localTs)) {
+    if (remote && (forcePull || remoteTs > localTs || localTs === 0)) {
       applyPayload(remote);
       setSyncLabel("Synced");
       msg("syncMsg", "Loaded latest data from cloud!", false);
@@ -1541,6 +1542,30 @@ function syncNow(forcePull) {
     msg("syncMsg", "❌ " + err.message, true);
   });
 }
+
+function schedulePush() {
+  if (isPulling) return;
+  try { localStorage.setItem("eng_updated_at", String(Date.now())); } catch (e) {}
+  var tok = "";
+  try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
+  if (!tok) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushCloud, 1500);
+}
+
+var origSv = sv;
+sv = function(k, v) { origSv(k, v); schedulePush(); };
+var origSaveLog = saveLog;
+saveLog = function() { origSaveLog(); schedulePush(); };
+
+window.addEventListener("load", function() {
+  try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
+});
+document.addEventListener("visibilitychange", function() {
+  if (!document.hidden) {
+    try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
+  }
+});
 
 function schedulePush() {
   if (isPulling) return;
