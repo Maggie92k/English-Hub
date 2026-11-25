@@ -143,10 +143,60 @@ body.theme-napoleon.dark .cal-day:not(.empty):not(.has-read),
 body.theme-napoleon.dark .q-opt {
   background:rgba(26, 20, 18, 0.55);
 }
+
+    .sw-sea { background:linear-gradient(135deg, #E0F2FE 50%, #0E7490 50%); }
+
+body.theme-sea {
+  --bg:#F2F8FA; --card:rgba(242, 248, 250, 0.85); --text:#162A36; --muted:#526D7A;
+  --primary:#0E7490; --accent:#E0F2FE; --border:#A5D8E6;
+  background:url('sea.jpg') center center / cover no-repeat fixed;
+}
+body.theme-sea.dark {
+  --bg:#0C1821; --card:rgba(12, 24, 33, 0.86); --text:#F0F8FF; --muted:#94B0C2;
+  --primary:#38BDF8; --accent:#163242; --border:#27516B;
+  background:url('sea.jpg') center center / cover no-repeat fixed;
+}
+body.theme-sea .card,
+body.theme-sea header,
+body.theme-sea .tab-l,
+body.theme-sea .sync-card,
+body.theme-sea .dict-pop {
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+body.theme-sea input,
+body.theme-sea textarea,
+body.theme-sea select {
+  background:rgba(255, 255, 255, 0.6);
+  color:var(--text);
+}
+body.theme-sea.dark input,
+body.theme-sea.dark textarea,
+body.theme-sea.dark select {
+  background:rgba(10, 20, 28, 0.65);
+  color:var(--text);
+}
+body.theme-sea .pv-box,
+body.theme-sea .pv-el,
+body.theme-sea .lib-item,
+body.theme-sea .reader-body,
+body.theme-sea .cal-day:not(.empty):not(.has-read),
+body.theme-sea .q-opt {
+  background:rgba(242, 248, 250, 0.5);
+}
+body.theme-sea.dark .pv-box,
+body.theme-sea.dark .pv-el,
+body.theme-sea.dark .lib-item,
+body.theme-sea.dark .reader-body,
+body.theme-sea.dark .cal-day:not(.empty):not(.has-read),
+body.theme-sea.dark .q-opt {
+  background:rgba(12, 24, 33, 0.55);
+}
+
   </style>
 </head>
 <body>
-<header><div class="wrap top"><div class="logo" id="logo">My English Hub</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;"><span class="badge" id="hdrProg">Today: 0 min</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><div class="theme-gal" title="Theme Gallery"><button type="button" class="t-swatch sw-rose active" id="swRose" onclick="setStyleTheme('rose')" title="Velvet Rose"></button><button type="button" class="t-swatch sw-nap" id="swNap" onclick="setStyleTheme('napoleon')" title="Coronation of Napoleon"></button></div><label class="theme-switch" title="Light / Dark mode"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>
+<div class="theme-gal" title="Theme Gallery"><button type="button" class="t-swatch sw-rose active" id="swRose" onclick="setStyleTheme('rose')" title="Velvet Rose"></button><button type="button" class="t-swatch sw-nap" id="swNap" onclick="setStyleTheme('napoleon')" title="Coronation of Napoleon"></button><button type="button" class="t-swatch sw-sea" id="swSea" onclick="setStyleTheme('sea')" title="Sea Breeze"></button></div>
 <div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
   <div class="sync-card">
     <div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">GitHub Cloud Sync</h2><button type="button" class="btn btn-o btn-s" onclick="closeSync()">✕</button></div>
@@ -335,14 +385,17 @@ body.theme-napoleon.dark .q-opt {
 
 </div>
 <script>
- function setStyleTheme(name) {
-  var isNap = (name === "napoleon");
-  document.body.classList.toggle("theme-napoleon", isNap);
+function setStyleTheme(name) {
+  document.body.classList.remove("theme-napoleon", "theme-sea");
+  if (name === "napoleon") document.body.classList.add("theme-napoleon");
+  if (name === "sea") document.body.classList.add("theme-sea");
   var rBtn = document.getElementById("swRose");
   var nBtn = document.getElementById("swNap");
-  if (rBtn) rBtn.classList.toggle("active", !isNap);
-  if (nBtn) nBtn.classList.toggle("active", isNap);
-  try { localStorage.setItem("eng_style_theme", isNap ? "napoleon" : "rose"); } catch (e) {}
+  var sBtn = document.getElementById("swSea");
+  if (rBtn) rBtn.classList.toggle("active", name === "rose" || !name);
+  if (nBtn) nBtn.classList.toggle("active", name === "napoleon");
+  if (sBtn) sBtn.classList.toggle("active", name === "sea");
+  try { localStorage.setItem("eng_style_theme", name || "rose"); } catch (e) {}
 }
 function togTheme() {
   var d = document.getElementById("tSw").checked;
@@ -354,9 +407,8 @@ try {
     document.body.classList.add("dark");
     document.getElementById("tSw").checked = true;
   }
-  if (localStorage.getItem("eng_style_theme") === "napoleon") {
-    setStyleTheme("napoleon");
-  }
+  var savedStyle = localStorage.getItem("eng_style_theme");
+  if (savedStyle) setStyleTheme(savedStyle);
 } catch (e) {}
 
 function ld(k, d) {
@@ -1509,7 +1561,7 @@ window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
 });
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub v25 • OK";
+document.getElementById("logo").textContent = "My English Hub v26 • OK";
 </script>
 </body>
 </html>
