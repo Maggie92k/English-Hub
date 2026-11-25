@@ -2142,6 +2142,26 @@ openR = function(i) {
   bodyEl.innerHTML = formatted;
   highlightWords(bodyEl); // Запускаем подсветку
 };
+  // ==========================================
+// ЗАПОМИНАНИЕ АКТИВНОЙ ВКЛАДКИ
+// ==========================================
+document.addEventListener("DOMContentLoaded", function() {
+  // 1. Восстанавливаем вкладку при загрузке
+  var savedTab = localStorage.getItem("eng_active_tab");
+  if (savedTab) {
+    var radio = document.getElementById(savedTab);
+    if (radio) radio.checked = true;
+  }
+
+  // 2. Сохраняем вкладку при клике
+  var tabRadios = document.querySelectorAll('input[name="t"]');
+  tabRadios.forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      localStorage.setItem("eng_active_tab", this.id);
+    });
+  });
+});
+  
 </script>
 </body>
 </html>
