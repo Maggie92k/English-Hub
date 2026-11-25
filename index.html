@@ -1455,25 +1455,29 @@ function collectPayload() {
 function applyPayload(obj) {
   if (!obj || typeof obj !== "object") return;
   isPulling = true;
-  if (Array.isArray(obj.words)) { words = obj.words; sv("eng_words", words); }
-  if (Array.isArray(obj.questions)) { qs = obj.questions; sv("eng_questions", qs); }
-  if (Array.isArray(obj.readings)) { reads = obj.readings; sv("eng_readings", reads); }
-  if (Array.isArray(obj.habits)) { habits = obj.habits; sv("eng_habits", habits); }
-  if (obj.readLog && typeof obj.readLog === "object") { readLog = obj.readLog; saveLog(); }
-  try { localStorage.setItem("eng_updated_at", String(obj.updatedAt || Date.now())); } catch (e) {}
+  try {
+    if (Array.isArray(obj.words)) { words = obj.words; localStorage.setItem("eng_words", JSON.stringify(words)); }
+    if (Array.isArray(obj.questions)) { qs = obj.questions; localStorage.setItem("eng_questions", JSON.stringify(qs)); }
+    if (Array.isArray(obj.readings)) { reads = obj.readings; localStorage.setItem("eng_readings", JSON.stringify(reads)); }
+    if (Array.isArray(obj.habits)) { habits = obj.habits; localStorage.setItem("eng_habits", JSON.stringify(habits)); }
+    if (obj.readLog && typeof obj.readLog === "object") { readLog = obj.readLog; localStorage.setItem("eng_read_log", JSON.stringify(readLog)); }
+    if (Array.isArray(obj.ivKnown)) { ivKnown = obj.ivKnown; localStorage.setItem("eng_iv_known", JSON.stringify(ivKnown)); }
+    if (typeof obj.ivSec === "number") { ivSec = obj.ivSec; localStorage.setItem("eng_iv_sec", String(ivSec)); }
+    localStorage.setItem("eng_updated_at", String(obj.updatedAt || Date.now()));
+  } catch (e) {}
   isPulling = false;
-  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge();
+  renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
 }
 
-function findOrCreateGist(tok) {
+function findOrCreateGist(tok, noRetry) {
   var savedId = "";
   try { savedId = localStorage.getItem("eng_gist_id") || ""; } catch (e) {}
   var headers = { "Authorization": "token " + tok, "Accept": "application/vnd.github.v3+json" };
-  if (savedId) {
+  if (savedId && !noRetry) {
     return fetch(getGhApi() + "/" + savedId, { headers: headers }).then(function(r) {
       if (r.ok) return r.json();
       try { localStorage.removeItem("eng_gist_id"); } catch (e) {}
-      return findOrCreateGist(tok);
+      return findOrCreateGist(tok, true);
     });
   }
   return fetch(getGhApi() + "?per_page=50", { headers: headers })
@@ -1503,7 +1507,7 @@ function pushCloud() {
   try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
   if (!tok || isPulling) return;
   setSyncLabel("Syncing...");
-  findOrCreateGist(tok).then(function(gist) {
+  findOrCreateGist(tok, false).then(function(gist) {
     var files = {};
     files[GIST_FILE] = { content: collectPayload() };
     return fetch(getGhApi() + "/" + gist.id, {
@@ -1513,7 +1517,11 @@ function pushCloud() {
     });
   }).then(function(r) {
     setSyncLabel(r && r.ok ? "Synced" : "Sync Err");
-  }).catch(function() { setSyncLabel("Sync Err"); });
+    if (r && r.ok) msg("syncMsg", "Synced to cloud!", false);
+  }).catch(function(e) {
+    setSyncLabel("Sync Err");
+    msg("syncMsg", "❌ " + e.message, true);
+  });
 }
 
 function syncNow(forcePull) {
@@ -1521,7 +1529,7 @@ function syncNow(forcePull) {
   try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
   if (!tok) return;
   setSyncLabel("Syncing...");
-  findOrCreateGist(tok).then(function(gist) {
+  findOrCreateGist(tok, false).then(function(gist) {
     var fileObj = gist && gist.files ? gist.files[GIST_FILE] : null;
     var remote = null;
     try { remote = fileObj && fileObj.content ? JSON.parse(fileObj.content) : null; } catch (e) {}
@@ -1535,7 +1543,6 @@ function syncNow(forcePull) {
       msg("syncMsg", "Loaded latest data from cloud!", false);
     } else {
       pushCloud();
-      msg("syncMsg", "Connected & synced!", false);
     }
   }).catch(function(err) {
     setSyncLabel("Sync Err");
@@ -1553,52 +1560,17 @@ function schedulePush() {
   syncTimer = setTimeout(pushCloud, 1500);
 }
 
-var origSv = sv;
-sv = function(k, v) { origSv(k, v); schedulePush(); };
-var origSaveLog = saveLog;
-saveLog = function() { origSaveLog(); schedulePush(); };
+var baseSv = sv;
+sv = function(k, v) { baseSv(k, v); schedulePush(); };
+var baseSaveLog = saveLog;
+saveLog = function() { baseSaveLog(); schedulePush(); };
 
 window.addEventListener("load", function() {
   try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
-});
-document.addEventListener("visibilitychange", function() {
-  if (!document.hidden) {
-    try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
-  }
-});
-
-function schedulePush() {
-  if (isPulling) return;
-  try { localStorage.setItem("eng_updated_at", String(Date.now())); } catch (e) {}
-  var tok = "";
-  try { tok = localStorage.getItem("eng_gh_token") || ""; } catch (e) {}
-  if (!tok) return;
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(pushCloud, 1500);
-}
-
-if (!sv._wrapped) {
-  var origSv = sv;
-  sv = function(k, v) { origSv(k, v); schedulePush(); };
-  sv._wrapped = true;
-}
-if (!saveLog._wrapped) {
-  var origSaveLog = saveLog;
-  saveLog = function() { origSaveLog(); schedulePush(); };
-  saveLog._wrapped = true;
-}
-
-window.addEventListener("load", function() {
-  try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
-});
-document.addEventListener("visibilitychange", function() {
-  if (!document.hidden) {
-    try { if (localStorage.getItem("eng_gh_token")) syncNow(false); } catch (e) {}
-  }
 });
 
 renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub • OK";
+document.getElementById("logo").textContent = "My English Hub 1 • OK";
 </script>
 </body>
 </html>
