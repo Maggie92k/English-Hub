@@ -268,7 +268,12 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
 </div>
 <div class="wrap">
   <input type="radio" name="t" id="t1" class="tab-r" checked><input type="radio" name="t" id="t2" class="tab-r"><input type="radio" name="t" id="t3" class="tab-r"><input type="radio" name="t" id="t4" class="tab-r">
-  <nav class="tabs"><label for="t1" class="tab-l">1. Vocabulary & Cards</label><label for="t2" class="tab-l">2. Grammar Drills</label><label for="t3" class="tab-l">3. Reading & Notes</label><label for="t4" class="tab-l">4. Progress Tracker</label></nav>
+<nav class="tabs">
+  <label for="t1" class="tab-l">1. Vocabulary</label>
+  <label for="t2" class="tab-l">2. Grammar</label>
+  <label for="t3" class="tab-l">3. Reading & Notes</label>
+  <label for="t4" class="tab-l">4. Progress Tracker</label>
+</nav>
   <section id="s1" class="sec">
     <div class="card">
       <div class="top" style="margin-bottom:10px;">
@@ -418,8 +423,8 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
           <button type="button" class="btn" style="flex:0 0 auto;" onclick="importUrl()">Extract & Save</button>
         </div>
         <div id="rM" class="msg"></div>
-        <details class="manual-box">
-          <summary>+ Or paste text manually (if site requires login)</summary>
+      <details class="manual-box">
+  <summary>+ Or paste text manually</summary>
           <div style="margin-top:10px;">
             <input id="rT" placeholder="Title" style="margin-bottom:8px;">
             <textarea id="rB" rows="4" placeholder="Paste English text here..." style="margin-bottom:8px;"></textarea>
@@ -1351,7 +1356,7 @@ setInterval(function() {
     ivSec++;
     if (!readLog[key]) readLog[key] = { totalSec: 0, articles: {} };
     readLog[key].totalSec = (readLog[key].totalSec || 0) + 1;
-    readLog[key].articles["Grammar: British Irregular Verbs"] = (readLog[key].articles["Grammar: British Irregular Verbs"] || 0) + 1;
+    readLog[key].articles["Grammar"] = (readLog[key].articles["Grammar"] || 0) + 1;
     updateHeaderBadge();
     tickCounter++;
     if (tickCounter % 5 === 0) {
@@ -1984,7 +1989,7 @@ function importGtJson(e) {
 initGt();
 
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub 29 • OK";
+document.getElementById("logo").textContent = "My English Hub 30 • OK";
 // ==========================================
 // НОВЫЕ ФУНКЦИИ ДЛЯ ЧИТАЛКИ (Оглавление и Словарь)
 // ==========================================
