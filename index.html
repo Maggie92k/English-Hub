@@ -254,6 +254,21 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
 .gt-hint-topic { font-weight:800; color:var(--primary); margin-bottom:4px; font-size:.85rem; text-transform:uppercase; }
 .gt-io-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
 
+    /* === Heatmap & Skill Balance === */
+.hm-wrap { overflow-x:auto; padding-bottom:6px; margin-top:10px; }
+.hm-grid { display:grid; grid-template-rows:repeat(7, 13px); grid-auto-flow:column; gap:3px; width:max-content; }
+.hm-cell { width:13px; height:13px; border-radius:3px; background:var(--bg); border:1px solid var(--border); cursor:pointer; transition:transform .1s; }
+.hm-cell:hover { transform:scale(1.25); border-color:var(--primary); }
+.hm-l1 { background:rgba(22, 163, 74, 0.25); border-color:rgba(22, 163, 74, 0.4); }
+.hm-l2 { background:rgba(22, 163, 74, 0.5); border-color:rgba(22, 163, 74, 0.65); }
+.hm-l3 { background:rgba(22, 163, 74, 0.75); border-color:rgba(22, 163, 74, 0.9); }
+.hm-l4 { background:#16a34a; border-color:#15803d; }
+.hm-legend { display:flex; align-items:center; gap:5px; font-size:.75rem; color:var(--muted); margin-top:8px; justify-content:flex-end; }
+.bal-bar { display:flex; height:16px; border-radius:99px; overflow:hidden; background:var(--bg); border:1px solid var(--border); margin:10px 0; }
+.bal-read { background:var(--primary); height:100%; transition:width .3s; }
+.bal-gram { background:#38bdf8; height:100%; transition:width .3s; }
+.bal-labels { display:flex; justify-content:space-between; font-size:.85rem; font-weight:600; flex-wrap:wrap; gap:8px; }
+
   </style>
 </head>
 <body>
@@ -293,10 +308,41 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
         <button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button>
       </div>
     </div>
-        <div class="card">
+            <div class="card">
+      <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Flashcard Practice</h2>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <select id="fcCatFilter" onchange="changeFcCat()" style="width:auto; padding:6px 10px; font-size:.85rem;">
+            <option value="all">All categories</option>
+            <option value="Phrasal Verb">Phrasal Verb</option>
+            <option value="Vocabulary">Vocabulary</option>
+            <option value="Idiom">Idiom</option>
+            <option value="Grammar Form">Grammar Form</option>
+          </select>
+          <button type="button" class="btn btn-o btn-s" id="fcSoundBtn" onclick="toggleFcSound()">Sound: OFF</button>
+        </div>
+      </div>
+      <div class="fc" onclick="flipFC()">
+        <div class="fc-w" id="fcF">keep track of</div>
+        <div class="fc-h" id="fcB">Click card to reveal definition &amp; example</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button>
+        <button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
         <h2 style="margin:0;">Listen and Write</h2>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <select id="lwCatFilter" onchange="changeLwCat()" style="width:auto; padding:6px 10px; font-size:.85rem;">
+            <option value="all">All categories</option>
+            <option value="Phrasal Verb">Phrasal Verb</option>
+            <option value="Vocabulary">Vocabulary</option>
+            <option value="Idiom">Idiom</option>
+            <option value="Grammar Form">Grammar Form</option>
+          </select>
           <span class="badge" id="lwScore">Score: 0 / 0</span>
           <button type="button" class="btn btn-o btn-s" onclick="playLw()">Listen</button>
         </div>
@@ -309,10 +355,12 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
         <button type="button" class="btn btn-s" id="lwCheckBtn" onclick="checkLw()">Check</button>
         <button type="button" class="btn btn-o btn-s" onclick="nextLw()">Next →</button>
+        <button type="button" class="btn btn-o btn-s" id="lwMistakeBtn" style="display:none; border-color:var(--err); color:var(--err);" onclick="toggleLwMistakeMode()">Repeat Mistakes (0)</button>
         <span id="lwFeedback" style="font-weight:600; font-size:.92rem;"></span>
       </div>
       <div id="lwEx" class="ex" style="margin-top:8px;"></div>
     </div>
+
     <div class="card">
       <h2>Add New Word</h2>
       <div class="pill-row" id="wPills">
@@ -489,7 +537,7 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
     </div>
   </section>
 
-  <section id="s4" class="sec">
+    <section id="s4" class="sec">
     <div class="card">
       <div class="cal-head">
         <button type="button" class="btn btn-o btn-s" onclick="shiftMonth(-1)">← Prev</button>
@@ -498,6 +546,39 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
       </div>
       <div class="cal-grid" id="calGrid"></div>
     </div>
+
+    <div class="card">
+      <div class="top" style="margin-bottom:6px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Yearly Activity Heatmap</h2>
+        <span class="badge" id="hmActiveDays">0 active days</span>
+      </div>
+      <div class="hm-wrap"><div class="hm-grid" id="hmGrid"></div></div>
+      <div class="hm-legend">
+        <span>Less</span>
+        <span class="hm-cell"></span>
+        <span class="hm-cell hm-l1"></span>
+        <span class="hm-cell hm-l2"></span>
+        <span class="hm-cell hm-l3"></span>
+        <span class="hm-cell hm-l4"></span>
+        <span>More</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top" style="margin-bottom:6px; flex-wrap:wrap;">
+        <h2 style="margin:0;">7-Day Skill Balance</h2>
+        <span class="badge" id="balTotal">0 min total</span>
+      </div>
+      <div class="bal-bar">
+        <div class="bal-read" id="balReadBar" style="width:50%;"></div>
+        <div class="bal-gram" id="balGramBar" style="width:50%;"></div>
+      </div>
+      <div class="bal-labels">
+        <span style="color:var(--primary);" id="balReadLbl">● Reading: 0 min (0%)</span>
+        <span style="color:#0ea5e9;" id="balGramLbl">● Grammar: 0 min (0%)</span>
+      </div>
+    </div>
+
     <div class="card">
       <div class="top" style="margin-bottom:10px;">
         <h2 id="dayDetailTitle" style="margin:0;">Selected Day</h2>
@@ -505,7 +586,8 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
       </div>
       <div id="dayDetailList"></div>
     </div>
-        <div class="card" style="text-align:center; padding:30px 20px;">
+
+    <div class="card" style="text-align:center; padding:30px 20px;">
       <h2 style="margin-bottom:15px;">Your Current Streak</h2>
       <div id="streakVisual" style="font-size:4.5rem; line-height:1; margin-bottom:10px; transition:0.3s;">🥚</div>
       <div id="streakText" style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:8px;">0 days</div>
@@ -514,6 +596,7 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
       </div>
     </div>
   </section>
+
 
 </div>
 
@@ -620,14 +703,28 @@ function toggleFcSound() {
   }
 }
 
+function getFcPool() {
+  var sel = document.getElementById("fcCatFilter");
+  var cat = sel ? sel.value : "all";
+  if (cat === "all") return words;
+  return words.filter(function(w) { return w.tag === cat; });
+}
+
+function changeFcCat() {
+  fcI = 0;
+  fcF = false;
+  renderFC(false);
+}
+
 function renderFC(shouldSpeak) {
-  if (!words.length) {
-    document.getElementById("fcF").textContent = "No entries yet";
-    document.getElementById("fcB").textContent = "Add words below";
+  var pool = getFcPool();
+  if (!pool.length) {
+    document.getElementById("fcF").textContent = "No entries in this category";
+    document.getElementById("fcB").textContent = "Switch filter above or add new words";
     return;
   }
-  fcI = (fcI + words.length) % words.length;
-  var it = words[fcI];
+  fcI = (fcI + pool.length) % pool.length;
+  var it = pool[fcI];
   document.getElementById("fcF").textContent = it.term;
   document.getElementById("fcB").textContent = fcF
     ? it.def + (it.ex ? ' — "' + it.ex + '"' : "")
@@ -636,7 +733,10 @@ function renderFC(shouldSpeak) {
 }
 function flipFC() { fcF = !fcF; renderFC(false); }
 function stepFC(d) { fcI += d; fcF = false; renderFC(true); }
+
 var lwIdx = 0, lwOk = 0, lwTotal = 0, lwChecked = false;
+var lwMistakes = [];
+var lwMistakeMode = false;
 
 function normLw(s) {
   return String(s || "")
@@ -647,7 +747,49 @@ function normLw(s) {
 }
 
 function getLwPool() {
-  return words.filter(function(w) { return w && w.term && w.term.trim().length > 0; });
+  if (lwMistakeMode) {
+    return words.filter(function(w) { return w && lwMistakes.indexOf(w.term) !== -1; });
+  }
+  var sel = document.getElementById("lwCatFilter");
+  var cat = sel ? sel.value : "all";
+  return words.filter(function(w) {
+    if (!w || !w.term || !w.term.trim()) return false;
+    return cat === "all" || w.tag === cat;
+  });
+}
+
+function updateLwMistakeBtn() {
+  var btn = document.getElementById("lwMistakeBtn");
+  if (!btn) return;
+  if (lwMistakes.length === 0 && !lwMistakeMode) {
+    btn.style.display = "none";
+    return;
+  }
+  btn.style.display = "inline-block";
+  if (lwMistakeMode) {
+    btn.textContent = "Exit Mistakes Mode";
+    btn.style.background = "var(--err)";
+    btn.style.color = "#fff";
+  } else {
+    btn.textContent = "Repeat Mistakes (" + lwMistakes.length + ")";
+    btn.style.background = "transparent";
+    btn.style.color = "var(--err)";
+  }
+}
+
+function changeLwCat() {
+  lwMistakeMode = false;
+  lwIdx = 0;
+  updateLwMistakeBtn();
+  renderLw(false);
+}
+
+function toggleLwMistakeMode() {
+  if (!lwMistakeMode && lwMistakes.length === 0) return;
+  lwMistakeMode = !lwMistakeMode;
+  lwIdx = 0;
+  updateLwMistakeBtn();
+  renderLw(true);
 }
 
 function playLw() {
@@ -672,7 +814,13 @@ function renderLw(shouldSpeak) {
   if (exEl) exEl.textContent = "";
 
   if (!pool.length) {
-    defEl.textContent = "Add words to your dictionary first.";
+    if (lwMistakeMode) {
+      lwMistakeMode = false;
+      updateLwMistakeBtn();
+      renderLw(false);
+      return;
+    }
+    defEl.textContent = "No words in this category.";
     if (tagEl) tagEl.style.display = "none";
     return;
   }
@@ -681,7 +829,7 @@ function renderLw(shouldSpeak) {
   var cur = pool[lwIdx];
   if (tagEl) {
     tagEl.style.display = "inline-block";
-    tagEl.textContent = cur.tag || "Vocabulary";
+    tagEl.textContent = (lwMistakeMode ? "Mistake • " : "") + (cur.tag || "Vocabulary");
   }
   defEl.textContent = cur.def || "Listen to the audio and type the word";
   if (shouldSpeak) speakUK(cur.term);
@@ -705,18 +853,22 @@ function checkLw() {
   lwChecked = true;
   lwTotal++;
   var targetVal = normLw(cur.term);
+  var mPos = lwMistakes.indexOf(cur.term);
 
   if (userVal === targetVal) {
     lwOk++;
     inp.style.borderColor = "var(--ok)";
     fb.style.color = "var(--ok)";
     fb.textContent = "Correct!";
+    if (mPos !== -1) lwMistakes.splice(mPos, 1);
   } else {
     inp.style.borderColor = "var(--err)";
     fb.style.color = "var(--err)";
     fb.textContent = "Incorrect. Answer: " + cur.term;
+    if (mPos === -1) lwMistakes.push(cur.term);
   }
 
+  updateLwMistakeBtn();
   if (cur.ex && exEl) exEl.textContent = '"' + cur.ex + '"';
   document.getElementById("lwScore").textContent = "Score: " + lwOk + " / " + lwTotal;
 }
@@ -1203,7 +1355,8 @@ function runProxies(url) {
   var p1 = "https://r." + "jina.ai/" + url;
   var p2 = "https://corsproxy." + "io/?" + encodeURIComponent(url);
   var p3 = "https://api." + "allorigins.win/get?url=" + encodeURIComponent(url);
-  var p4 = "https://api." + "://codetabs.com" + encodeURIComponent(url);
+  var p4 = "https://codetabs.com" + encodeURIComponent(url);
+
 
   fetch(p1)
     .then(function(res) { if (!res.ok) throw new Error("P1"); return res.text(); })
@@ -2186,12 +2339,12 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
   // ==========================================
-// СТРИК И РАСТЕНИЕ (Streak Logic)
+// СТРИК, HEATMAP И БАЛАНС НАВЫКОВ
 // ==========================================
 function isGoalMet(dayLog) {
   if (!dayLog) return false;
-  var hasTime = (dayLog.totalSec || 0) >= 600; // 10 минут (600 секунд)
-  var hasTests = (dayLog.gtCount || 0) >= 10;  // 10 тестов
+  var hasTime = (dayLog.totalSec || 0) >= 600;
+  var hasTests = (dayLog.gtCount || 0) >= 10;
   return hasTime || hasTests;
 }
 
@@ -2202,7 +2355,6 @@ function updateStreakSystem() {
   var freezeDays = new Set();
   var missedDays = 0;
 
-  // Просматриваем последние 365 дней
   for (var i = 0; i < 365; i++) {
     var key = getDateKey(checkDate);
     var rec = readLog[key];
@@ -2211,55 +2363,121 @@ function updateStreakSystem() {
     if (met) {
       streak++;
       streakDays.add(key);
-      missedDays = 0; // сбрасываем счетчик пропусков
+      missedDays = 0;
     } else {
-      // Если это сегодня и мы еще не выполнили цель, просто идем вчера (стрик не рвется)
       if (i === 0) {
         checkDate.setDate(checkDate.getDate() - 1);
         continue;
       }
-      
       missedDays++;
       if (missedDays >= 2) {
-        break; // Пропущено 2 дня подряд — стрик сгорает
+        break;
       } else {
-        freezeDays.add(key); // 1 пропущенный день = заморозка
+        freezeDays.add(key);
       }
     }
     checkDate.setDate(checkDate.getDate() - 1);
   }
 
-  // Обновляем визуал карточки
   var icon = "🥚";
   var text = streak + (streak === 1 ? " day" : " days");
-  
   if (streak >= 1 && streak <= 2) icon = "🌱";
   else if (streak >= 3 && streak <= 6) icon = "🌿";
   else if (streak >= 7 && streak <= 29) icon = "🌻";
   else if (streak >= 30) icon = "🌳";
-
-  if (streak === 0) { icon = "🥀"; text = "0 days"; } // Если сгорел
+  if (streak === 0) { icon = "🥀"; text = "0 days"; }
 
   var visEl = document.getElementById("streakVisual");
   var txtEl = document.getElementById("streakText");
   if (visEl) visEl.textContent = icon;
   if (txtEl) txtEl.textContent = "Your current streak: " + text;
 
-  // Возвращаем данные для календаря
+  var hdrBadge = document.getElementById("hdrStreak");
+  if (hdrBadge) {
+    hdrBadge.style.display = "inline-block";
+    hdrBadge.textContent = (streak > 0 ? icon : "🌱") + " " + streak;
+    hdrBadge.title = "Current streak: " + text;
+  }
+
   return { streakDays: streakDays, freezeDays: freezeDays };
 }
 
-// Переопределяем функцию отрисовки календаря, чтобы добавить цвета
+function renderHeatmapAndBalance() {
+  var hmGrid = document.getElementById("hmGrid");
+  if (hmGrid) {
+    var today = new Date();
+    var start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 363);
+    var dow = start.getDay();
+    var backToMon = (dow === 0) ? 6 : dow - 1;
+    start.setDate(start.getDate() - backToMon);
+
+    var html = "";
+    var activeCount = 0;
+    var cursor = new Date(start);
+
+    while (cursor <= today) {
+      var key = getDateKey(cursor);
+      var rec = readLog[key];
+      var sec = rec ? (rec.totalSec || 0) : 0;
+      var tests = rec ? (rec.gtCount || 0) : 0;
+      var score = Math.floor(sec / 60) + tests * 2;
+
+      var lvl = "";
+      if (score > 0) {
+        activeCount++;
+        if (score < 10) lvl = " hm-l1";
+        else if (score < 25) lvl = " hm-l2";
+        else if (score < 45) lvl = " hm-l3";
+        else lvl = " hm-l4";
+      }
+      var tip = key.split("-").reverse().join(".") + ": " + Math.floor(sec / 60) + " min, " + tests + " grammar tasks";
+      html += '<div class="hm-cell' + lvl + '" title="' + tip + '" onclick="selectCalDay(\'' + key + '\')"></div>';
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    hmGrid.innerHTML = html;
+    var actEl = document.getElementById("hmActiveDays");
+    if (actEl) actEl.textContent = activeCount + " active days";
+  }
+
+  var readSec7 = 0, gramSec7 = 0;
+  var d7 = new Date();
+  for (var i = 0; i < 7; i++) {
+    var k = getDateKey(d7);
+    var r = readLog[k];
+    if (r) {
+      var gSec = (r.articles && r.articles["Grammar"]) ? r.articles["Grammar"] : 0;
+      var rSec = Math.max(0, (r.totalSec || 0) - gSec);
+      readSec7 += rSec;
+      gramSec7 += gSec;
+    }
+    d7.setDate(d7.getDate() - 1);
+  }
+
+  var total7 = readSec7 + gramSec7;
+  var readPct = total7 > 0 ? Math.round((readSec7 / total7) * 100) : 50;
+  var gramPct = total7 > 0 ? (100 - readPct) : 50;
+
+  var rBar = document.getElementById("balReadBar");
+  var gBar = document.getElementById("balGramBar");
+  var rLbl = document.getElementById("balReadLbl");
+  var gLbl = document.getElementById("balGramLbl");
+  var tBadge = document.getElementById("balTotal");
+
+  if (rBar) rBar.style.width = readPct + "%";
+  if (gBar) gBar.style.width = gramPct + "%";
+  if (tBadge) tBadge.textContent = fmtDuration(total7) + " total";
+  if (rLbl) rLbl.textContent = "● Reading: " + fmtDuration(readSec7) + " (" + (total7 > 0 ? readPct : 0) + "%)";
+  if (gLbl) gLbl.textContent = "● Grammar: " + fmtDuration(gramSec7) + " (" + (total7 > 0 ? gramPct : 0) + "%)";
+}
+
 var originalRenderCal = renderCal;
 renderCal = function() {
-  originalRenderCal(); // Сначала рисуем базовый календарь
-  
-  var streakData = updateStreakSystem(); // Получаем данные стрика
-  
-  // Красим дни в календаре
+  originalRenderCal();
+  var streakData = updateStreakSystem();
+  renderHeatmapAndBalance();
+
   var calDays = document.querySelectorAll(".cal-day");
   calDays.forEach(function(el) {
-    // Находим ID дня (он лежит в атрибуте onclick="selectCalDay('2023-10-25')")
     var onclickAttr = el.getAttribute("onclick");
     if (!onclickAttr) return;
     var match = onclickAttr.match(/'([^']+)'/);
@@ -2274,8 +2492,8 @@ renderCal = function() {
   });
 };
 
-// Запускаем при загрузке
 updateStreakSystem();
+renderHeatmapAndBalance();
   
 </script>
 </body>
