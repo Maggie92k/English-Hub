@@ -103,6 +103,11 @@ details.manual-box { margin-top:12px; border-top:1px solid var(--border); paddin
 .cal-min { font-size:.7rem; font-weight:600; color:var(--primary); }
 .day-log-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); gap:10px; font-size:.95rem; }
 .day-log-item:last-child { border-bottom:none; }
+.cal-day.streak-met { background: rgba(22, 163, 74, 0.15); border-color: var(--ok); }
+body.dark .cal-day.streak-met { background: rgba(22, 163, 74, 0.25); }
+
+.cal-day.freeze-day { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #0ea5e9; position: relative; }
+.cal-day.freeze-day::after { content: "❄️"; font-size: 0.75rem; position: absolute; top: 4px; right: 4px; }
     .dict-pop { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:min(680px, calc(100% - 24px)); background:var(--card); border:2px solid var(--primary); border-radius:14px; padding:16px; box-shadow:0 12px 32px rgba(0,0,0,.25); z-index:99; display:none; }
 .dict-pop-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
 .dict-word { font-size:1.2rem; font-weight:800; color:var(--primary); }
@@ -500,6 +505,14 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
         <span class="badge" id="dayDetailTotal">0 min</span>
       </div>
       <div id="dayDetailList"></div>
+    </div>
+        <div class="card" style="text-align:center; padding:30px 20px;">
+      <h2 style="margin-bottom:15px;">Your Current Streak</h2>
+      <div id="streakVisual" style="font-size:4.5rem; line-height:1; margin-bottom:10px; transition:0.3s;">🥚</div>
+      <div id="streakText" style="font-size:1.4rem; font-weight:800; color:var(--primary); margin-bottom:8px;">0 days</div>
+      <div id="streakStatus" style="font-size:0.85rem; color:var(--muted); background:var(--bg); display:inline-block; padding:6px 12px; border-radius:20px; border:1px solid var(--border);">
+        Goal: 10 mins reading OR 10 grammar tests
+      </div>
     </div>
   </section>
 
@@ -1897,6 +1910,12 @@ function checkGt() {
     gtOk++;
     stEl.style.color = "var(--ok)";
     stEl.textContent = "Correct!";
+   
+    var key = getDateKey(new Date());
+    if (!readLog[key]) readLog[key] = { totalSec: 0, articles: {} };
+    readLog[key].gtCount = (readLog[key].gtCount || 0) + 1;
+    saveLog();
+    
   } else {
     stEl.style.color = "var(--err)";
     stEl.textContent = "Incorrect";
@@ -1989,7 +2008,7 @@ function importGtJson(e) {
 initGt();
 
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub 30 • OK";
+document.getElementById("logo").textContent = "My English Hub 31 • OK";
 // ==========================================
 // НОВЫЕ ФУНКЦИИ ДЛЯ ЧИТАЛКИ (Оглавление и Словарь)
 // ==========================================
@@ -2166,6 +2185,98 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 });
+
+  // ==========================================
+// СТРИК И РАСТЕНИЕ (Streak Logic)
+// ==========================================
+function isGoalMet(dayLog) {
+  if (!dayLog) return false;
+  var hasTime = (dayLog.totalSec || 0) >= 600; // 10 минут (600 секунд)
+  var hasTests = (dayLog.gtCount || 0) >= 10;  // 10 тестов
+  return hasTime || hasTests;
+}
+
+function updateStreakSystem() {
+  var streak = 0;
+  var checkDate = new Date();
+  var streakDays = new Set();
+  var freezeDays = new Set();
+  var missedDays = 0;
+
+  // Просматриваем последние 365 дней
+  for (var i = 0; i < 365; i++) {
+    var key = getDateKey(checkDate);
+    var rec = readLog[key];
+    var met = isGoalMet(rec);
+
+    if (met) {
+      streak++;
+      streakDays.add(key);
+      missedDays = 0; // сбрасываем счетчик пропусков
+    } else {
+      // Если это сегодня и мы еще не выполнили цель, просто идем вчера (стрик не рвется)
+      if (i === 0) {
+        checkDate.setDate(checkDate.getDate() - 1);
+        continue;
+      }
+      
+      missedDays++;
+      if (missedDays >= 2) {
+        break; // Пропущено 2 дня подряд — стрик сгорает
+      } else {
+        freezeDays.add(key); // 1 пропущенный день = заморозка
+      }
+    }
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  // Обновляем визуал карточки
+  var icon = "🥚";
+  var text = streak + (streak === 1 ? " day" : " days");
+  
+  if (streak >= 1 && streak <= 2) icon = "🌱";
+  else if (streak >= 3 && streak <= 6) icon = "🌿";
+  else if (streak >= 7 && streak <= 29) icon = "🌻";
+  else if (streak >= 30) icon = "🌳";
+
+  if (streak === 0) { icon = "🥀"; text = "0 days"; } // Если сгорел
+
+  var visEl = document.getElementById("streakVisual");
+  var txtEl = document.getElementById("streakText");
+  if (visEl) visEl.textContent = icon;
+  if (txtEl) txtEl.textContent = "Your current streak: " + text;
+
+  // Возвращаем данные для календаря
+  return { streakDays: streakDays, freezeDays: freezeDays };
+}
+
+// Переопределяем функцию отрисовки календаря, чтобы добавить цвета
+var originalRenderCal = renderCal;
+renderCal = function() {
+  originalRenderCal(); // Сначала рисуем базовый календарь
+  
+  var streakData = updateStreakSystem(); // Получаем данные стрика
+  
+  // Красим дни в календаре
+  var calDays = document.querySelectorAll(".cal-day");
+  calDays.forEach(function(el) {
+    // Находим ID дня (он лежит в атрибуте onclick="selectCalDay('2023-10-25')")
+    var onclickAttr = el.getAttribute("onclick");
+    if (!onclickAttr) return;
+    var match = onclickAttr.match(/'([^']+)'/);
+    if (!match) return;
+    var dateKey = match[1];
+
+    if (streakData.streakDays.has(dateKey)) {
+      el.classList.add("streak-met");
+    } else if (streakData.freezeDays.has(dateKey)) {
+      el.classList.add("freeze-day");
+    }
+  });
+};
+
+// Запускаем при загрузке
+updateStreakSystem();
   
 </script>
 </body>
