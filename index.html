@@ -61,6 +61,7 @@ body.dark .q-opt { color:#F3F4F6; }
 .lib-item:hover { border-color:var(--primary); }
 .lib-meta { font-size:.8rem; color:var(--muted); margin-top:2px; }
 .reader-body { background:var(--bg); padding:18px; border-radius:12px; white-space:pre-wrap; font-size:1.05rem; line-height:1.75; margin:14px 0; border:1px solid var(--border); }
+  
     /* --- Стили для макета с оглавлением --- */
 .reader-layout { display: flex; gap: 20px; align-items: flex-start; margin-top: 15px; }
 .reader-main { flex: 1; min-width: 0; }
@@ -89,6 +90,7 @@ body.dark .q-opt { color:#F3F4F6; }
   .reader-layout { flex-direction: column; }
   .reader-toc { width: 100%; position: static; max-height: none; margin-bottom: 15px; }
 }
+
 details.manual-box { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
 .timer-pill { background:var(--accent); color:var(--primary); padding:5px 12px; border-radius:99px; font-weight:700; font-size:.85rem; font-variant-numeric:tabular-nums; }
 .cal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
@@ -513,7 +515,7 @@ body.theme-sea.dark { --chart-read:#38BDF8; --chart-gram:#FBBF24; }
             <a id="readSrc" href="#" target="_blank" style="color:var(--primary); font-size:.85rem; font-weight:600; text-decoration:none; margin-left:4px;">Original ↗</a>
           </div>
         </div>
-             <!-- НОВЫЙ МАКЕТ (Оглавление слева, текст справа) -->
+   <!-- НОВЫЙ МАКЕТ (Оглавление слева, текст справа) -->
         <div class="reader-layout">
           <!-- Оглавление -->
           <aside id="readTOC" class="reader-toc">
@@ -528,6 +530,7 @@ body.theme-sea.dark { --chart-read:#38BDF8; --chart-gram:#FBBF24; }
             <div id="readBody" class="reader-body"></div>
           </div>
         </div>
+
         <h3 style="font-size:1rem; margin-bottom:6px;">My Notes & Vocabulary</h3>
         <textarea id="readNotes" rows="3" placeholder="Write new words, grammar notes or summary here..." oninput="saveNote()"></textarea>
       </div>
@@ -1742,6 +1745,9 @@ function lookupSelection() {
   document.getElementById("dpPhon").textContent = "";
   var defEl = document.getElementById("dpDef");
   if (defEl) defEl.style.display = "none";
+    var isAlreadySaved = words.some(function(w) { return w.term.toLowerCase() === cleanWord; });
+  var saveBtn = document.getElementById("dpSaveBtn");
+  if (saveBtn) saveBtn.style.display = isAlreadySaved ? "none" : "inline-block";
   document.getElementById("dpCamLink").href = camUrl;
   document.getElementById("dictPop").style.display = "block";
 }
@@ -2217,7 +2223,7 @@ function importGtJson(e) {
 initGt();
 
   renderW(); renderPV(); renderFC(); renderQ(); renderR(); renderCal(); updateHeaderBadge(); renderLw(false);
-document.getElementById("logo").textContent = "My English Hub 31 • OK";
+document.getElementById("logo").textContent = "My English Hub 32 • OK";
 // ==========================================
 // НОВЫЕ ФУНКЦИИ ДЛЯ ЧИТАЛКИ (Оглавление и Словарь)
 // ==========================================
@@ -2297,38 +2303,69 @@ function highlightWords(container) {
   });
 }
 
-// 3. Всплывающая карточка при клике на слово
+// 3. Всплывающая карточка при клике на подчеркнутое слово (без кнопки сохранения)
 function triggerDictLookup(e) {
   e.stopPropagation();
-  let el = e.target;
-  let match = el.textContent;
-  let base = el.getAttribute('data-base');
-  
-  let dictEntry = words.find(w => w.term.toLowerCase() === base);
-  let def = dictEntry ? dictEntry.def : "No definition saved yet.";
-  
+  var el = e.target;
+  var match = el.textContent;
+  var base = el.getAttribute('data-base');
+
+  var dictEntry = words.find(function(w) { return w.term.toLowerCase() === base; });
+  var def = dictEntry ? dictEntry.def : "No definition saved yet.";
+
   selData = { word: match, def: def, ex: dictEntry ? dictEntry.ex : "" };
-  
-  let wordDisplay = match;
+
+  var wordDisplay = match;
   if (match.toLowerCase() !== base) {
-    wordDisplay += ` <span style="font-size:0.85rem; font-weight:normal; color:var(--muted);">(${base})</span>`;
+    wordDisplay += ` <span style="font-size:0.85rem; font-weight:normal; color:var(--muted);">(${esc(base)})</span>`;
   }
-  
+
   document.getElementById("dpWord").innerHTML = wordDisplay;
   document.getElementById("dpPhon").textContent = "";
-  let defEl = document.getElementById("dpDef");
+
+  var defEl = document.getElementById("dpDef");
   defEl.style.display = "block";
   defEl.textContent = def;
-  document.getElementById("dpCamLink").href = "https://dictionary.cambridge.org/dictionary/english/" + encodeURIComponent(base);
+
+  var saveBtn = document.getElementById("dpSaveBtn");
+  if (saveBtn) saveBtn.style.display = "none";
+
+  document.getElementById("dpCamLink").href = "https://cambridge.org" + encodeURIComponent(base);
   document.getElementById("dictPop").style.display = "block";
 }
 
-// 4. Плавный скролл по оглавлению
+// 4. Открытие/закрытие шторки оглавления и плавный скролл
+function toggleTocDrawer(open) {
+  var toc = document.getElementById("readTOC");
+  var bg = document.getElementById("tocBackdrop");
+  if (!toc || !bg) return;
+  if (open) {
+    bg.classList.add("open");
+    toc.classList.add("open");
+  } else {
+    toc.classList.remove("open");
+    bg.classList.remove("open");
+  }
+}
+
 function scrollToSec(e, id) {
   e.preventDefault();
-  let el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  toggleTocDrawer(false);
+  var el = document.getElementById(id);
+  if (el) {
+    setTimeout(function() {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+  }
 }
+
+var origCloseRForToc = closeR;
+closeR = function() {
+  toggleTocDrawer(false);
+  var fab = document.getElementById("tocFab");
+  if (fab) fab.classList.remove("visible");
+  origCloseRForToc();
+};
 
 // 5. Переопределяем openR для генерации оглавления и подсветки
 var originalOpenR = openR;
@@ -2337,21 +2374,19 @@ openR = function(i) {
   var r = reads[i];
   if (!r) return;
 
-  let bodyEl = document.getElementById("readBody");
-  let tocBox = document.getElementById("readTOC");
-  let tocList = document.getElementById("tocList");
-  let rawText = r.text;
-  
-  // Парсим текст на абзацы и заголовки
-  let formatted = "";
-  let tocHTML = "";
-  let count = 0;
-  
-  let lines = rawText.split('\n');
-  lines.forEach(line => {
-    let t = line.trim();
+  var bodyEl = document.getElementById("readBody");
+  var fabBtn = document.getElementById("tocFab");
+  var tocList = document.getElementById("tocList");
+  var rawText = r.text;
+
+  var formatted = "";
+  var tocHTML = "";
+  var count = 0;
+
+  var lines = rawText.split('\n');
+  lines.forEach(function(line) {
+    var t = line.trim();
     if (!t) return;
-    // Если строка начинается с # или ##, считаем её заголовком
     var isPlainHeading = (
       count >= 0 &&
       t.length >= 3 && t.length <= 75 &&
@@ -2360,10 +2395,9 @@ openR = function(i) {
       t.split(/\s+/).length <= 10
     );
     if (t.startsWith('## ') || t.startsWith('# ') || isPlainHeading) {
-
-      let title = t.replace(/^#+\s*/, '');
+      var title = t.replace(/^#+\s*/, '');
       count++;
-      let id = 'sec-' + count;
+      var id = 'sec-' + count;
       formatted += `<h2 id="${id}" style="margin-top:20px; font-size:1.15rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:4px;">${esc(title)}</h2>`;
       tocHTML += `<li><a href="#${id}" onclick="scrollToSec(event, '${id}')">${esc(title)}</a></li>`;
     } else {
@@ -2371,18 +2405,18 @@ openR = function(i) {
     }
   });
 
-  // Если заголовков нет, просто разбиваем по абзацам
   if (count === 0) {
-    formatted = rawText.split('\n').filter(x => x.trim()).map(x => `<p>${x.trim()}</p>`).join('');
-    tocBox.classList.remove('active'); // Скрываем оглавление, если нечего показывать
+    formatted = rawText.split('\n').filter(function(x) { return x.trim(); }).map(function(x) { return `<p>${x.trim()}</p>`; }).join('');
+    if (fabBtn) fabBtn.classList.remove('visible');
   } else {
-    tocBox.classList.add('active');
-    tocList.innerHTML = tocHTML;
+    if (fabBtn) fabBtn.classList.add('visible');
+    if (tocList) tocList.innerHTML = tocHTML;
   }
 
   bodyEl.innerHTML = formatted;
-  highlightWords(bodyEl); // Запускаем подсветку
+  highlightWords(bodyEl);
 };
+
   // ==========================================
 // ЗАПОМИНАНИЕ АКТИВНОЙ ВКЛАДКИ
 // ==========================================
@@ -2394,11 +2428,16 @@ document.addEventListener("DOMContentLoaded", function() {
     if (radio) radio.checked = true;
   }
 
-  // 2. Сохраняем вкладку при клике
+   // 2. Сохраняем вкладку при клике
   var tabRadios = document.querySelectorAll('input[name="t"]');
   tabRadios.forEach(function(radio) {
     radio.addEventListener('change', function() {
       localStorage.setItem("eng_active_tab", this.id);
+      if (this.id !== "t3") {
+        toggleTocDrawer(false);
+        var fab = document.getElementById("tocFab");
+        if (fab) fab.classList.remove("visible");
+      }
     });
   });
 });
