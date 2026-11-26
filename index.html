@@ -254,25 +254,48 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
 .gt-hint-topic { font-weight:800; color:var(--primary); margin-bottom:4px; font-size:.85rem; text-transform:uppercase; }
 .gt-io-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
 
-    /* === Heatmap & Skill Balance === */
-.hm-wrap { overflow-x:auto; padding-bottom:6px; margin-top:10px; }
-.hm-grid { display:grid; grid-template-rows:repeat(7, 13px); grid-auto-flow:column; gap:3px; width:max-content; }
-.hm-cell { width:13px; height:13px; border-radius:3px; background:var(--bg); border:1px solid var(--border); cursor:pointer; transition:transform .1s; }
-.hm-cell:hover { transform:scale(1.25); border-color:var(--primary); }
-.hm-l1 { background:rgba(22, 163, 74, 0.25); border-color:rgba(22, 163, 74, 0.4); }
-.hm-l2 { background:rgba(22, 163, 74, 0.5); border-color:rgba(22, 163, 74, 0.65); }
-.hm-l3 { background:rgba(22, 163, 74, 0.75); border-color:rgba(22, 163, 74, 0.9); }
-.hm-l4 { background:#16a34a; border-color:#15803d; }
-.hm-legend { display:flex; align-items:center; gap:5px; font-size:.75rem; color:var(--muted); margin-top:8px; justify-content:flex-end; }
-.bal-bar { display:flex; height:16px; border-radius:99px; overflow:hidden; background:var(--bg); border:1px solid var(--border); margin:10px 0; }
-.bal-read { background:var(--primary); height:100%; transition:width .3s; }
-.bal-gram { background:#38bdf8; height:100%; transition:width .3s; }
-.bal-labels { display:flex; justify-content:space-between; font-size:.85rem; font-weight:600; flex-wrap:wrap; gap:8px; }
+/* === Theme Chart Colors (all 6 themes) === */
+:root { --chart-read:#E038AD; --chart-gram:#7C3AED; }
+body.dark { --chart-read:#F472B6; --chart-gram:#A78BFA; }
+
+body.theme-napoleon { --chart-read:#D98032; --chart-gram:#2E6F73; }
+body.theme-napoleon.dark { --chart-read:#E08A5E; --chart-gram:#68A691; }
+
+body.theme-sea { --chart-read:#0E7490; --chart-gram:#D97706; }
+body.theme-sea.dark { --chart-read:#38BDF8; --chart-gram:#FBBF24; }
+
+/* === Weekly Tracker === */
+.wk-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; }
+.wk-day { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:10px 6px; text-align:center; cursor:pointer; transition:.15s; display:flex; flex-direction:column; gap:4px; align-items:center; }
+.wk-day:hover { border-color:var(--primary); transform:translateY(-2px); }
+.wk-day.selected { outline:2px solid var(--primary); outline-offset:1px; }
+.wk-day.wk-l1 { background:rgba(22, 163, 74, 0.14); border-color:rgba(22, 163, 74, 0.4); }
+.wk-day.wk-l2 { background:rgba(22, 163, 74, 0.28); border-color:rgba(22, 163, 74, 0.65); }
+.wk-day.wk-l3 { background:rgba(22, 163, 74, 0.45); border-color:#16a34a; }
+.wk-dow { font-size:.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; }
+.wk-date { font-size:.82rem; font-weight:700; }
+.wk-val { font-size:.75rem; font-weight:700; color:var(--primary); min-height:16px; }
+
+/* === Donut Skill Balance === */
+.donut-wrap { display:flex; align-items:center; justify-content:space-around; gap:14px; flex-wrap:wrap; padding:8px 0; }
+.donut-side { display:flex; align-items:center; gap:10px; min-width:135px; }
+.donut-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+.donut-title { font-size:.82rem; color:var(--muted); font-weight:600; }
+.donut-val { font-size:.95rem; font-weight:700; }
+.donut-box { position:relative; width:124px; height:124px; flex-shrink:0; }
+.donut-svg { width:100%; height:100%; transform:rotate(-90deg); }
+.donut-track { fill:none; stroke:var(--border); stroke-width:14; }
+.donut-seg-read { fill:none; stroke:var(--chart-read); stroke-width:14; stroke-linecap:round; transition:stroke-dasharray .4s ease; }
+.donut-seg-gram { fill:none; stroke:var(--chart-gram); stroke-width:14; transition:stroke-dasharray .4s ease, stroke-dashoffset .4s ease; }
+.donut-center { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:.95rem; font-weight:800; color:var(--text); }
 
   </style>
 </head>
 <body>
-<header><div class="wrap top"><div class="logo" id="logo">My English Hub</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;"><span class="badge" id="hdrProg">Today: 0 min</span><span class="badge" id="hdrStreak" style="display:none; background:linear-gradient(135deg, #FF8C00, #FF4500); color:#fff; margin-left:5px;">🌱 0</span><button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><div class="theme-gal" title="Theme Gallery"><button type="button" class="t-swatch sw-rose active" id="swRose" onclick="setStyleTheme('rose')" title="Velvet Rose"></button><button type="button" class="t-swatch sw-nap" id="swNap" onclick="setStyleTheme('napoleon')" title="Coronation of Napoleon"></button><button type="button" class="t-swatch sw-sea" id="swSea" onclick="setStyleTheme('sea')" title="Sea Breeze"></button></div><label class="theme-switch" title="Light / Dark mode"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>  <div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
+<header><div class="wrap top"><div class="logo" id="logo">My English Hub</div><div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+  <span class="badge" id="hdrProg">Today: 0 min</span>
+<span class="badge" id="hdrStreak" style="display:none; border:1px solid var(--border);">🌱 0</span>
+  <button type="button" class="btn btn-o sync-btn" id="syncBtn" onclick="openSync()">Sync</button><div class="theme-gal" title="Theme Gallery"><button type="button" class="t-swatch sw-rose active" id="swRose" onclick="setStyleTheme('rose')" title="Velvet Rose"></button><button type="button" class="t-swatch sw-nap" id="swNap" onclick="setStyleTheme('napoleon')" title="Coronation of Napoleon"></button><button type="button" class="t-swatch sw-sea" id="swSea" onclick="setStyleTheme('sea')" title="Sea Breeze"></button></div><label class="theme-switch" title="Light / Dark mode"><input type="checkbox" id="tSw" onchange="togTheme()"><span class="slider"></span></label></div></div></header>  <div id="syncModal" class="sync-modal" onclick="if(event.target===this)closeSync()">
   <div class="sync-card">
     <div class="top" style="margin-bottom:10px;"><h2 style="margin:0;">GitHub Cloud Sync</h2><button type="button" class="btn btn-o btn-s" onclick="closeSync()">✕</button></div>
     <p style="font-size:.85rem;color:var(--muted);margin-bottom:10px;">Paste your GitHub Token (with <b>gist</b> scope). Your dictionary, library and reading calendar will sync automatically across all devices.</p>
@@ -294,20 +317,6 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
   <label for="t4" class="tab-l">4. Progress Tracker</label>
 </nav>
   <section id="s1" class="sec">
-    <div class="card">
-      <div class="top" style="margin-bottom:10px;">
-        <h2 style="margin:0;">Flashcard Practice</h2>
-        <button type="button" class="btn btn-o btn-s" id="fcSoundBtn" onclick="toggleFcSound()">Sound: OFF</button>
-      </div>
-      <div class="fc" onclick="flipFC()">
-        <div class="fc-w" id="fcF">keep track of</div>
-        <div class="fc-h" id="fcB">Click card to reveal definition &amp; example</div>
-      </div>
-      <div style="display:flex;gap:10px;justify-content:center;">
-        <button type="button" class="btn btn-o btn-s" onclick="stepFC(-1)">← Prev</button>
-        <button type="button" class="btn btn-s" onclick="stepFC(1)">Next Card →</button>
-      </div>
-    </div>
             <div class="card">
       <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
         <h2 style="margin:0;">Flashcard Practice</h2>
@@ -547,39 +556,49 @@ body.theme-sea.dark .gt-sentence { background:rgba(12,24,33,0.6); }
       <div class="cal-grid" id="calGrid"></div>
     </div>
 
-    <div class="card">
-      <div class="top" style="margin-bottom:6px; flex-wrap:wrap;">
-        <h2 style="margin:0;">Yearly Activity Heatmap</h2>
-        <span class="badge" id="hmActiveDays">0 active days</span>
+        <div class="card">
+      <div class="top" style="margin-bottom:12px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Weekly Activity</h2>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-o btn-s" onclick="shiftWeek(-1)">← Prev</button>
+          <span id="wkRangeLabel" style="font-size:.85rem; font-weight:700; min-width:130px; text-align:center;">This Week</span>
+          <button type="button" class="btn btn-o btn-s" onclick="shiftWeek(1)">Next →</button>
+        </div>
       </div>
-      <div class="hm-wrap"><div class="hm-grid" id="hmGrid"></div></div>
-      <div class="hm-legend">
-        <span>Less</span>
-        <span class="hm-cell"></span>
-        <span class="hm-cell hm-l1"></span>
-        <span class="hm-cell hm-l2"></span>
-        <span class="hm-cell hm-l3"></span>
-        <span class="hm-cell hm-l4"></span>
-        <span>More</span>
-      </div>
+      <div class="wk-grid" id="wkGrid"></div>
     </div>
 
     <div class="card">
-      <div class="top" style="margin-bottom:6px; flex-wrap:wrap;">
-        <h2 style="margin:0;">7-Day Skill Balance</h2>
+      <div class="top" style="margin-bottom:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Weekly Skill Balance</h2>
         <span class="badge" id="balTotal">0 min total</span>
       </div>
-      <div class="bal-bar">
-        <div class="bal-read" id="balReadBar" style="width:50%;"></div>
-        <div class="bal-gram" id="balGramBar" style="width:50%;"></div>
-      </div>
-      <div class="bal-labels">
-        <span style="color:var(--primary);" id="balReadLbl">● Reading: 0 min (0%)</span>
-        <span style="color:#0ea5e9;" id="balGramLbl">● Grammar: 0 min (0%)</span>
+      <div class="donut-wrap">
+        <div class="donut-side left">
+          <div class="donut-dot" style="background:var(--chart-read);"></div>
+          <div>
+            <div class="donut-title">Reading</div>
+            <div class="donut-val" id="balReadLbl">0 min (0%)</div>
+          </div>
+        </div>
+        <div class="donut-box">
+          <svg viewBox="0 0 120 120" class="donut-svg">
+            <circle cx="60" cy="60" r="46" class="donut-track"></circle>
+            <circle cx="60" cy="60" r="46" class="donut-seg-gram" id="donutGram" stroke-dasharray="0 289.03"></circle>
+            <circle cx="60" cy="60" r="46" class="donut-seg-read" id="donutRead" stroke-dasharray="0 289.03"></circle>
+          </svg>
+          <div class="donut-center" id="donutCenterPct">0%</div>
+        </div>
+        <div class="donut-side right">
+          <div class="donut-dot" style="background:var(--chart-gram);"></div>
+          <div>
+            <div class="donut-title">Grammar</div>
+            <div class="donut-val" id="balGramLbl">0 min (0%)</div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="card">
+      
       <div class="top" style="margin-bottom:10px;">
         <h2 id="dayDetailTitle" style="margin:0;">Selected Day</h2>
         <span class="badge" id="dayDetailTotal">0 min</span>
@@ -2402,72 +2421,97 @@ function updateStreakSystem() {
   return { streakDays: streakDays, freezeDays: freezeDays };
 }
 
+var weekOffset = 0;
+
+function shiftWeek(delta) {
+  weekOffset += delta;
+  if (weekOffset > 0) weekOffset = 0;
+  renderHeatmapAndBalance();
+}
+
+function getMondayOfWeek(offset) {
+  var now = new Date();
+  var day = now.getDay();
+  var diff = (day === 0 ? -6 : 1 - day) + (offset * 7);
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+}
+
 function renderHeatmapAndBalance() {
-  var hmGrid = document.getElementById("hmGrid");
-  if (hmGrid) {
-    var today = new Date();
-    var start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 363);
-    var dow = start.getDay();
-    var backToMon = (dow === 0) ? 6 : dow - 1;
-    start.setDate(start.getDate() - backToMon);
+  var wkGrid = document.getElementById("wkGrid");
+  var mon = getMondayOfWeek(weekOffset);
+  var sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6);
 
-    var html = "";
-    var activeCount = 0;
-    var cursor = new Date(start);
-
-    while (cursor <= today) {
-      var key = getDateKey(cursor);
-      var rec = readLog[key];
-      var sec = rec ? (rec.totalSec || 0) : 0;
-      var tests = rec ? (rec.gtCount || 0) : 0;
-      var score = Math.floor(sec / 60) + tests * 2;
-
-      var lvl = "";
-      if (score > 0) {
-        activeCount++;
-        if (score < 10) lvl = " hm-l1";
-        else if (score < 25) lvl = " hm-l2";
-        else if (score < 45) lvl = " hm-l3";
-        else lvl = " hm-l4";
-      }
-      var tip = key.split("-").reverse().join(".") + ": " + Math.floor(sec / 60) + " min, " + tests + " grammar tasks";
-      html += '<div class="hm-cell' + lvl + '" title="' + tip + '" onclick="selectCalDay(\'' + key + '\')"></div>';
-      cursor.setDate(cursor.getDate() + 1);
-    }
-    hmGrid.innerHTML = html;
-    var actEl = document.getElementById("hmActiveDays");
-    if (actEl) actEl.textContent = activeCount + " active days";
+  var lbl = document.getElementById("wkRangeLabel");
+  if (lbl) {
+    var f = function(d) { return pad2(d.getDate()) + "." + pad2(d.getMonth() + 1); };
+    lbl.textContent = weekOffset === 0 ? "This Week (" + f(mon) + "–" + f(sun) + ")" : f(mon) + " – " + f(sun);
   }
 
-  var readSec7 = 0, gramSec7 = 0;
-  var d7 = new Date();
+  var dows = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  var html = "";
+  var readSecWk = 0, gramSecWk = 0;
+
   for (var i = 0; i < 7; i++) {
-    var k = getDateKey(d7);
-    var r = readLog[k];
-    if (r) {
-      var gSec = (r.articles && r.articles["Grammar"]) ? r.articles["Grammar"] : 0;
-      var rSec = Math.max(0, (r.totalSec || 0) - gSec);
-      readSec7 += rSec;
-      gramSec7 += gSec;
+    var cur = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i);
+    var key = getDateKey(cur);
+    var rec = readLog[key];
+    var sec = rec ? (rec.totalSec || 0) : 0;
+    var tests = rec ? (rec.gtCount || 0) : 0;
+
+    if (rec) {
+      var gSec = (rec.articles && rec.articles["Grammar"]) ? rec.articles["Grammar"] : 0;
+      var rSec = Math.max(0, sec - gSec);
+      readSecWk += rSec;
+      gramSecWk += gSec;
     }
-    d7.setDate(d7.getDate() - 1);
+
+    var score = Math.floor(sec / 60) + tests * 2;
+    var lvl = "";
+    if (score >= 25) lvl = " wk-l3";
+    else if (score >= 10) lvl = " wk-l2";
+    else if (score > 0) lvl = " wk-l1";
+
+    var selCls = (key === selectedDayKey) ? " selected" : "";
+    var valTxt = sec > 0 ? Math.max(1, Math.floor(sec / 60)) + "m" : (tests > 0 ? tests + "t" : "—");
+
+    html += '<div class="wk-day' + lvl + selCls + '" onclick="selectCalDay(\'' + key + '\')">' +
+      '<span class="wk-dow">' + dows[i] + '</span>' +
+      '<span class="wk-date">' + pad2(cur.getDate()) + '.' + pad2(cur.getMonth() + 1) + '</span>' +
+      '<span class="wk-val">' + valTxt + '</span>' +
+    '</div>';
+  }
+  if (wkGrid) wkGrid.innerHTML = html;
+
+  var totalWk = readSecWk + gramSecWk;
+  var readPct = totalWk > 0 ? Math.round((readSecWk / totalWk) * 100) : 0;
+  var gramPct = totalWk > 0 ? (100 - readPct) : 0;
+
+  var circ = 2 * Math.PI * 46;
+  var readLen = totalWk > 0 ? (readPct / 100) * circ : 0;
+  var gramLen = totalWk > 0 ? (gramPct / 100) * circ : 0;
+
+  var dRead = document.getElementById("donutRead");
+  var dGram = document.getElementById("donutGram");
+  var dCenter = document.getElementById("donutCenterPct");
+
+  if (dRead) {
+    dRead.setAttribute("stroke-dasharray", readLen + " " + circ);
+    dRead.setAttribute("stroke-dashoffset", "0");
+  }
+  if (dGram) {
+    dGram.setAttribute("stroke-dasharray", gramLen + " " + circ);
+    dGram.setAttribute("stroke-dashoffset", String(-readLen));
+  }
+  if (dCenter) {
+    dCenter.textContent = totalWk > 0 ? (readPct + "/" + gramPct + "%") : "0%";
   }
 
-  var total7 = readSec7 + gramSec7;
-  var readPct = total7 > 0 ? Math.round((readSec7 / total7) * 100) : 50;
-  var gramPct = total7 > 0 ? (100 - readPct) : 50;
-
-  var rBar = document.getElementById("balReadBar");
-  var gBar = document.getElementById("balGramBar");
   var rLbl = document.getElementById("balReadLbl");
   var gLbl = document.getElementById("balGramLbl");
   var tBadge = document.getElementById("balTotal");
-
-  if (rBar) rBar.style.width = readPct + "%";
-  if (gBar) gBar.style.width = gramPct + "%";
-  if (tBadge) tBadge.textContent = fmtDuration(total7) + " total";
-  if (rLbl) rLbl.textContent = "● Reading: " + fmtDuration(readSec7) + " (" + (total7 > 0 ? readPct : 0) + "%)";
-  if (gLbl) gLbl.textContent = "● Grammar: " + fmtDuration(gramSec7) + " (" + (total7 > 0 ? gramPct : 0) + "%)";
+  if (tBadge) tBadge.textContent = fmtDuration(totalWk) + " total";
+  if (rLbl) rLbl.textContent = fmtDuration(readSecWk) + " (" + readPct + "%)";
+  if (gLbl) gLbl.textContent = fmtDuration(gramSecWk) + " (" + gramPct + "%)";
 }
 
 var originalRenderCal = renderCal;
