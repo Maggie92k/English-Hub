@@ -1304,18 +1304,56 @@ function cleanParsed(raw, url) {
   if (tm) title = tm[1].trim();
   var idx = raw.indexOf("Markdown Content:");
   if (idx !== -1) text = raw.slice(idx + 17);
+
+  // Превращаем подчёркнутые заголовки (Setext: Заголовок\n--- или ===) в ##
+  text = text.replace(/^([^\n]+)\n[=-]{3,}\s*$/gm, "## $1");
+
   text = text
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/^#{1,6}\s+/gm, "")
+    // Сохраняем заголовки h2-h6 как ##, а h1 убираем
+    .replace(/^#\s+(.+)$/gm, "$1")
+    .replace(/^#{2,6}\s+(.+)$/gm, "\n## $1\n")
     .replace(/[*_`~]+/g, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+
   if (!title) {
-    var firstLine = text.split("\n")[0] || url;
+    var firstLine = text.split("\n")[0].replace(/^#+\s*/, "") || url;
     title = firstLine.slice(0, 70);
   }
   return { title: title, text: text };
+}
+
+function extractFromHtml(html, url) {
+  var doc = new DOMParser().parseFromString(html || "", "text/html");
+  doc.querySelectorAll("script,style,nav,header,footer,aside,form,noscript,iframe").forEach(function(el) { el.remove(); });
+  var h1 = doc.querySelector("h1") || doc.querySelector("title");
+  var title = h1 ? h1.textContent.trim() : url;
+
+  var root = doc.querySelector("article") || doc.querySelector("main") || doc.querySelector(".post-content") || doc.body;
+  var nodes = Array.from(root.querySelectorAll("h2, h3, h4, p"));
+  var out = [];
+  var seen = {};
+
+  nodes.forEach(function(el) {
+    var t = el.textContent.replace(/\s+/g, " ").trim();
+    if (!t || seen[t]) return;
+    var tag = el.tagName.toLowerCase();
+    if (tag === "h2" || tag === "h3" || tag === "h4") {
+      if (t.length >= 2 && t.length <= 120) {
+        seen[t] = true;
+        out.push("## " + t);
+      }
+    } else if (t.length > 35) {
+      seen[t] = true;
+      out.push(t);
+    }
+  });
+
+  var clean = out.join("\n\n");
+  if (clean.length < 60) throw new Error("Empty");
+  return { title: title, text: clean };
 }
 
 function extractFromHtml(html, url) {
@@ -1357,9 +1395,9 @@ function importUrl() {
         var pageId = Object.keys(pages).shift();
         var page = pageId ? pages[pageId] : null;
         if (!page || !page.extract) throw new Error("Empty");
-        var clean = page.extract
+              var clean = page.extract
           .split(/\n==\s*(See also|Notes|References|Further reading|External links)\s*==/i).shift()
-          .replace(/={2,4}\s*([^=]+?)\s*={2,4}/g, "\n$1")
+          .replace(/={2,4}\s*([^=]+?)\s*={2,4}/g, "\n\n## $1\n")
           .replace(/\n{3,}/g, "\n\n")
           .trim();
         finishImport(page.title || slug.replace(/_/g, " "), clean, url);
@@ -2314,12 +2352,20 @@ openR = function(i) {
     let t = line.trim();
     if (!t) return;
     // Если строка начинается с # или ##, считаем её заголовком
-    if (t.startsWith('## ') || t.startsWith('# ')) {
+    var isPlainHeading = (
+      count >= 0 &&
+      t.length >= 3 && t.length <= 75 &&
+      !/[.!?,:;]$/.test(t) &&
+      /^[A-Z0-9"«]/.test(t) &&
+      t.split(/\s+/).length <= 10
+    );
+    if (t.startsWith('## ') || t.startsWith('# ') || isPlainHeading) {
+
       let title = t.replace(/^#+\s*/, '');
       count++;
       let id = 'sec-' + count;
-      formatted += `<h2 id="${id}" style="margin-top:20px; font-size:1.15rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:4px;">${title}</h2>`;
-      tocHTML += `<li><a href="#${id}" onclick="scrollToSec(event, '${id}')">${title}</a></li>`;
+      formatted += `<h2 id="${id}" style="margin-top:20px; font-size:1.15rem; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:4px;">${esc(title)}</h2>`;
+      tocHTML += `<li><a href="#${id}" onclick="scrollToSec(event, '${id}')">${esc(title)}</a></li>`;
     } else {
       formatted += `<p>${t}</p>`;
     }
